@@ -1,19 +1,24 @@
 import * as THREE from "three";
 
 /**
- * Tilt-shift inspired by https://github.com/andrewdcampbell/tilt-shift
+ * Peripheral horizontal motion blur (mask: white = max blur at L/R edges,
+ * black = sharp center band).
  *
- * Algorithm: keep a sharp band, then apply recursively stronger Gaussian
- * blur toward the top/bottom edges (cascaded full-frame blurs), alpha-blending
- * between blur levels by distance from horizontal focus lines — same idea as
- * their `increasing_blur` (horizontal miniature bands).
+ * Algorithm: keep a sharp vertical band, then apply recursively stronger
+ * horizontal Gaussian blur toward the left/right edges (cascaded full-frame
+ * blurs), alpha-blending between blur levels by distance from the focus
+ * band — same increasing-blur idea as tilt-shift, remapped to X.
+ *
+ * Mask mapping (matches reference gradient strip):
+ *   x in [focusMin, focusMax]  → d = 0 (sharp / black)
+ *   x → 0 or 1                 → d = 1 (max blur / white)
+ *   linear ramp in between
  */
 export class EdgeLensPass {
   private readonly level0: THREE.WebGLRenderTarget;
   private readonly level1: THREE.WebGLRenderTarget;
   private readonly level2: THREE.WebGLRenderTarget;
   private readonly level3: THREE.WebGLRenderTarget;
-  private readonly temp: THREE.WebGLRenderTarget;
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   private readonly blurMat: THREE.ShaderMaterial;
@@ -35,9 +40,8 @@ export class EdgeLensPass {
     this.level1 = new THREE.WebGLRenderTarget(width, height, { ...opts, depthBuffer: false });
     this.level2 = new THREE.WebGLRenderTarget(width, height, { ...opts, depthBuffer: false });
     this.level3 = new THREE.WebGLRenderTarget(width, height, { ...opts, depthBuffer: false });
-    this.temp = new THREE.WebGLRenderTarget(width, height, { ...opts, depthBuffer: false });
 
-    // Separable Gaussian ≈ OpenCV ksize 15×15 (sigmaX=0 → ~2.3)
+    // Separable Gaussian taps, applied only horizontally (motion-blur feel)
     this.blurMat = new THREE.ShaderMaterial({
       depthTest: false,
       depthWrite: false,
@@ -87,8 +91,9 @@ export class EdgeLensPass {
         tLevel1: { value: null },
         tLevel2: { value: null },
         tLevel3: { value: null },
-        uFocusMin: { value: 0.2 },
-        uFocusMax: { value: 0.8 },
+        // Middle third sharp (black band in reference mask)
+        uFocusMin: { value: 1 / 3 },
+        uFocusMax: { value: 2 / 3 },
       },
       vertexShader: /* glsl */ `
         varying vec2 vUv;
@@ -106,13 +111,13 @@ export class EdgeLensPass {
         uniform float uFocusMax;
         varying vec2 vUv;
 
-        // Linear 0 at the inner focus edge → 1 at the outer screen edge
-        float edgeDist(float y) {
-          if (y < uFocusMin) {
-            return clamp((uFocusMin - y) / max(uFocusMin, 1e-5), 0.0, 1.0);
+        // Linear 0 at the inner focus edge → 1 at the outer screen edge (X)
+        float edgeDist(float x) {
+          if (x < uFocusMin) {
+            return clamp((uFocusMin - x) / max(uFocusMin, 1e-5), 0.0, 1.0);
           }
-          if (y > uFocusMax) {
-            return clamp((y - uFocusMax) / max(1.0 - uFocusMax, 1e-5), 0.0, 1.0);
+          if (x > uFocusMax) {
+            return clamp((x - uFocusMax) / max(1.0 - uFocusMax, 1e-5), 0.0, 1.0);
           }
           return 0.0;
         }
@@ -125,8 +130,8 @@ export class EdgeLensPass {
         }
 
         void main() {
-          // 0% blur on the inner edge, 100% on the very outer edge — linear
-          float d = edgeDist(vUv.y);
+          // 0% blur in center band, 100% at L/R edges — linear (mask gray ramp)
+          float d = edgeDist(vUv.x);
           if (d <= 0.0) {
             gl_FragColor = texture2D(tLevel0, vUv);
             return;
@@ -151,28 +156,20 @@ export class EdgeLensPass {
     this.scene.add(this.blurMesh);
   }
 
-  private blurFull(
+  private blurHorizontal(
     renderer: THREE.WebGLRenderer,
     source: THREE.Texture,
     target: THREE.WebGLRenderTarget,
   ): void {
-    // Horizontal → temp
     this.blurMat.uniforms.tDiffuse.value = source;
     this.blurMat.uniforms.uDirection.value.set(1, 0);
-    renderer.setRenderTarget(this.temp);
-    renderer.clear();
-    renderer.render(this.scene, this.camera);
-
-    // Vertical → target
-    this.blurMat.uniforms.tDiffuse.value = this.temp.texture;
-    this.blurMat.uniforms.uDirection.value.set(0, 1);
     renderer.setRenderTarget(target);
     renderer.clear();
     renderer.render(this.scene, this.camera);
   }
 
   resize(width: number, height: number, pixelRatio = 1): void {
-    for (const rt of [this.level0, this.level1, this.level2, this.level3, this.temp]) {
+    for (const rt of [this.level0, this.level1, this.level2, this.level3]) {
       rt.setSize(width, height);
     }
     this.blurMat.uniforms.uResolution.value.set(width, height);
@@ -195,13 +192,13 @@ export class EdgeLensPass {
 
     renderer.toneMapping = THREE.NoToneMapping;
 
-    // Cascaded blurs (recursive increasing blur)
+    // Cascaded horizontal motion blurs (recursive increasing blur)
     this.blurMesh.material = this.blurMat;
-    this.blurFull(renderer, this.level0.texture, this.level1);
-    this.blurFull(renderer, this.level1.texture, this.level2);
-    this.blurFull(renderer, this.level2.texture, this.level3);
+    this.blurHorizontal(renderer, this.level0.texture, this.level1);
+    this.blurHorizontal(renderer, this.level1.texture, this.level2);
+    this.blurHorizontal(renderer, this.level2.texture, this.level3);
 
-    // Mix levels by distance from focus lines
+    // Mix levels by distance from vertical focus band
     this.mixMat.uniforms.tLevel0.value = this.level0.texture;
     this.mixMat.uniforms.tLevel1.value = this.level1.texture;
     this.mixMat.uniforms.tLevel2.value = this.level2.texture;
@@ -220,7 +217,6 @@ export class EdgeLensPass {
     this.level1.dispose();
     this.level2.dispose();
     this.level3.dispose();
-    this.temp.dispose();
     this.blurMat.dispose();
     this.mixMat.dispose();
   }

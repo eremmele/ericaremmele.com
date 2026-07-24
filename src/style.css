@@ -104,6 +104,7 @@ body,
 .hero-col-nav {
   flex: 0 1 auto;
   width: min(229px, 14%);
+  margin-right: 16px;
 }
 
 .hero-col-right {
@@ -147,10 +148,11 @@ body,
   margin: 0;
   max-width: 463px;
   color: var(--hero-soft);
-  font-family: var(--font-serif);
-  font-size: 35px;
-  font-weight: 400;
+  font-family: "swear-text", serif;
+  font-size: 32px;
+  font-weight: 300;
   line-height: 1.1;
+  letter-spacing: -2px;
 }
 
 .hero-bio-name {
@@ -173,10 +175,11 @@ body,
   margin: 0;
   width: 100%;
   color: var(--hero-soft);
-  font-family: var(--font-serif);
+  font-family: "degular-display", sans-serif;
   font-size: 24px;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.17;
+  text-wrap: balance;
 }
 
 .hero-clients-names {
@@ -283,7 +286,7 @@ body,
   width: 2rem;
   height: 2rem;
   border-radius: 0.35rem;
-  border: 1px solid rgba(244, 241, 234, 0.85);
+  border: 1px solid var(--hero-dim);
   background: transparent;
   color: var(--text);
   font-family: var(--font-sans);
@@ -320,13 +323,14 @@ body,
 
 .controls-toggle {
   pointer-events: auto;
-  border: 1px solid rgba(244, 241, 234, 0.85);
+  border: 1px solid var(--hero-dim);
   background: transparent;
   color: var(--text);
   border-radius: 999px;
-  padding: 0.4rem 0.9rem;
+  padding: 0.3rem 0.9rem 0.4rem 0.9rem;
   font-family: var(--font-sans);
   font-size: 0.78rem;
+  line-height: 0.78rem;
   letter-spacing: 0.01em;
   cursor: pointer;
 }
@@ -360,9 +364,8 @@ body,
   z-index: 6;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.78);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0;
 }
 
 .portfolio-panel[hidden] {
@@ -378,8 +381,131 @@ body,
   background: var(--panel);
 }
 
-.portfolio-content--image-only {
-  display: block;
+/* Full-bleed carousel: ignores page padding, spans the whole viewport. */
+.portfolio-content--carousel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.smear-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 600px;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: transparent;
+}
+
+.smear-carousel__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 9999;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.smear-carousel__stage {
+  position: relative;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+.smear-carousel__card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.smear-carousel__card-media {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  border-radius: 0;
+}
+
+.smear-carousel__caption {
+  position: absolute;
+  left: 50%;
+  z-index: 10002;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  min-height: 84px;
+  padding: 12px 0 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+  color: #fff;
+}
+
+.smear-carousel__caption-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--hero-muted);
+  text-wrap: balance;
+}
+
+.smear-carousel__caption-description {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.smear-carousel__caption-category {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-align: right;
+  text-transform: uppercase;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.smear-carousel__edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10000;
+  pointer-events: none;
+  backdrop-filter: blur(var(--smear-blur, 24px));
+  -webkit-backdrop-filter: blur(var(--smear-blur, 24px));
+}
+
+.smear-carousel__edge--left {
+  left: 0;
+  mask-image: linear-gradient(to right, black 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
+}
+
+.smear-carousel__edge--right {
+  right: 0;
+  mask-image: linear-gradient(to left, black 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
 }
 
 .portfolio-content img {
@@ -392,6 +518,7 @@ body,
 
 .portfolio-close {
   position: absolute;
+  z-index: 10001;
   top: 0.75rem;
   right: 0.75rem;
   width: 2.4rem;

@@ -1,28 +1,40 @@
 import type { InspectionPointData, PortfolioItem } from "../types";
 
+const slides = (ids: number[]): string[] =>
+  ids.map((n) => `/portfolio/carousel/slide-${n}.jpg`);
+
 export const portfolioItems: PortfolioItem[] = [
   {
     id: "motion-study",
     title: "Motion Study",
     year: "2024",
-    description: "Motion and interaction study. Replace with process notes and outcomes.",
+    category: "Motion",
+    description:
+      "Motion and interaction study exploring timing, smear, and depth across a product narrative.",
     image: "/portfolio/motion-study.jpg",
+    carouselImages: slides([1, 2, 3, 4, 5, 6, 7]),
     link: "#",
   },
   {
     id: "project-beta",
     title: "Project Beta",
     year: "2023",
-    description: "Another portfolio slot. Add screenshots from Cargo or Figma exports here.",
+    category: "Product Design",
+    description:
+      "Product design exploration across systems, surfaces, and campaign touchpoints for a growing brand.",
     image: "/portfolio/placeholder-2.svg",
+    carouselImages: slides([3, 5, 7, 2, 4, 6, 1]),
     link: "#",
   },
   {
     id: "project-gamma",
     title: "Project Gamma",
     year: "2022",
-    description: "Third inspection point. Each card in the garden maps to one portfolio entry.",
+    category: "Graphic Design",
+    description:
+      "Graphic design series spanning identity, editorial layouts, and immersive visual storytelling.",
     image: "/portfolio/placeholder-3.svg",
+    carouselImages: slides([7, 6, 5, 1, 2, 3, 4]),
     link: "#",
   },
 ];
