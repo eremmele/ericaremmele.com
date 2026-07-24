@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Erica Remmele — multidisciplinary graphic designer" />
+    <title>Erica Remmele</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="garden-canvas" aria-hidden="true"></canvas>
+      <canvas id="light-rays" class="light-rays" aria-hidden="true"></canvas>
+      <div id="css3d-root" class="css3d-root" aria-hidden="true"></div>
+
+      <header id="hero" class="hero" data-name="Hero">
+        <div class="hero-content" data-name="hero-content">
+          <div class="hero-columns" data-name="column-set">
+            <div class="hero-col hero-col-intro" data-name="col-intro">
+              <a class="hero-name" data-name="name" href="/">Erica Remmele</a>
+              <p class="hero-bio" data-name="bio">
+                <span class="hero-bio-name">Erica Remmele</span>
+                is a multidisciplinary graphic designer located in the US and often traveling the UK. She is interested in
+                <span class="hero-bio-break" aria-hidden="true"></span>
+                working with you.
+              </p>
+            </div>
+
+            <div class="hero-col hero-col-nav" data-name="col-graphic-design">
+              <p class="hero-nav-label" data-name="nav-label">/ Graphic Design</p>
+            </div>
+
+            <div class="hero-col hero-col-right" data-name="col-right">
+              <div class="hero-right-nav">
+                <p class="hero-nav-label" data-name="nav-label">/ Product Design</p>
+                <a
+                  class="hero-nav-label hero-nav-link"
+                  data-name="nav-label"
+                  href="https://www.linkedin.com/in/ericaremmele"
+                  target="_blank"
+                  rel="noreferrer"
+                  >/ LinkedIn</a
+                >
+              </div>
+              <div class="hero-client-list" data-name="client-list">
+                <p class="hero-clients">
+                  She’s worked with clients like
+                  <span class="hero-clients-names"
+                    >Wieden+Kennedy, Nike, Milk Makeup, Abercrombie &amp; Fitch, Universal Music, fashion startups, tech
+                    startups, and tech enterprises.</span
+                  >
+                </p>
+                <a class="hero-hire" href="mailto:erica@seeyoufriday.com">—Hire her!</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div id="controls-bar" class="controls-bar">
+        <div class="controls-left">
+          <div class="arrow-guide" aria-hidden="true">
+            <span class="arrow-key arrow-up">↑</span>
+            <span class="arrow-key arrow-left">←</span>
+            <span class="arrow-key arrow-down">↓</span>
+            <span class="arrow-key arrow-right">→</span>
+          </div>
+          <div id="inspect-guide" class="inspect-guide">
+            <span class="arrow-key inspect-key">E</span>
+          </div>
+        </div>
+        <button id="help-toggle" type="button" class="controls-toggle" aria-expanded="true" aria-label="Hide controls">
+          Hide controls
+        </button>
+      </div>
+
+      <p id="load-status" class="load-status" aria-live="polite">Loading garden…</p>
+
+      <div id="portfolio-panel" class="portfolio-panel" hidden>
+        <button id="portfolio-close" type="button" class="portfolio-close" aria-label="Close">×</button>
+        <div class="portfolio-content portfolio-content--image-only">
+          <img id="portfolio-image" alt="" />
+        </div>
+      </div>
+
+      <div id="touch-controls" class="touch-controls" hidden>
+        <div id="move-pad" class="move-pad" aria-label="Move"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

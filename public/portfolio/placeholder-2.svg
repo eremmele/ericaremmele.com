@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9ffcff"/>
+      <stop offset="100%" stop-color="#7c5cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="#07101c"/>
+  <rect x="48" y="48" width="704" height="504" rx="24" fill="url(#g2)" opacity="0.18"/>
+  <text x="400" y="310" fill="#d8f8ff" font-family="system-ui,sans-serif" font-size="42" text-anchor="middle">Project Beta</text>
+</svg>
