@@ -7,7 +7,7 @@
   --border: rgba(244, 241, 234, 0.28);
   --control-bg: rgba(16, 18, 17, 0.55);
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-serif: Charter, "Bitstream Charter", "Sitka Text", Georgia, serif;
+  --font-serif: "adobe-jenson-pro", "Adobe Jenson Pro", Georgia, serif;
   --hero-muted: rgb(106, 106, 106);
   --hero-soft: rgba(255, 255, 255, 0.75);
   --hero-dim: rgba(255, 255, 255, 0.4);
@@ -232,7 +232,7 @@ body,
   align-items: center;
   color: rgb(128, 128, 128);
   font-size: 12px;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-sans);
   line-height: 1.2;
 }
 

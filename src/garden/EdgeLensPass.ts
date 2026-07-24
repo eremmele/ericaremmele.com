@@ -106,7 +106,7 @@ export class EdgeLensPass {
         uniform float uFocusMax;
         varying vec2 vUv;
 
-        // 0 inside sharp horizontal band; 1 at top/bottom screen edges
+        // Linear 0 at the inner focus edge → 1 at the outer screen edge
         float edgeDist(float y) {
           if (y < uFocusMin) {
             return clamp((uFocusMin - y) / max(uFocusMin, 1e-5), 0.0, 1.0);
@@ -125,8 +125,9 @@ export class EdgeLensPass {
         }
 
         void main() {
+          // 0% blur on the inner edge, 100% on the very outer edge — linear
           float d = edgeDist(vUv.y);
-          if (d < 0.001) {
+          if (d <= 0.0) {
             gl_FragColor = texture2D(tLevel0, vUv);
             return;
           }
@@ -134,7 +135,12 @@ export class EdgeLensPass {
           float t = d * 3.0;
           float lo = floor(t);
           float hi = min(lo + 1.0, 3.0);
-          float f = smoothstep(0.0, 1.0, fract(t));
+          float f = fract(t);
+          // At d == 1, t == 3 → stay on max blur level
+          if (d >= 1.0) {
+            gl_FragColor = texture2D(tLevel3, vUv);
+            return;
+          }
 
           gl_FragColor = mix(sampleLevel(lo), sampleLevel(hi), f);
         }
