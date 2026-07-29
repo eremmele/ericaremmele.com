@@ -1,0 +1,87 @@
+/**
+ * SWG Wars — design tokens transcribed from the shipped Framer page at
+ * Shipped campaign microsite (SSR inline CSS + @font-face, Aug 2025 build).
+ */
+
+@font-face {
+  font-family: "ABC Whyte Inktrap Semi-Mono Regular";
+  src: url("https://framerusercontent.com/assets/FcQVoD7vzfa6cnxzvnByvtfDiQ.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABC Whyte Inktrap Light";
+  src: url("https://framerusercontent.com/assets/vZqCP0LHf6SgYfBH119oHSemS0.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  /* Full-page backdrop (local asset; path relative to css/) */
+  --swg-page-bg-image: url("../assets/library-background.png");
+
+  /* ─── Backgrounds (root = page chrome; panel = card surfaces) — blues swapped vs Framer labels ─── */
+  --swg-bg-root: #030c33;
+  --swg-bg-panel: #03081b;
+  --swg-bg-panel-soft: #030c33a6;
+  --swg-bg-purple-cta: rgb(109, 4, 201);
+  --swg-bg-frost: rgba(255, 255, 255, 0.2);
+
+  /* ─── Borders ─── */
+  --swg-border-navy: #000d52;
+
+  /* ─── Text & accents ─── */
+  --swg-text-white: rgb(255, 255, 255);
+  --swg-text-muted-footer: rgb(246, 248, 249);
+  --swg-accent-pink: rgb(238, 162, 198);
+  --swg-accent-green: rgb(0, 211, 126);
+  --swg-accent-violet: rgb(109, 4, 201);
+
+  /* ─── Supporting blues / deep ink (used in frames + masks) ─── */
+  --swg-blue-midnight: rgb(0, 23, 100);
+  --swg-blue-deep: rgb(2, 33, 132);
+  --swg-ink: rgb(3, 12, 51);
+
+  /* ─── UI chrome from production components ─── */
+  --swg-radius-panel: 10px;
+  --swg-border-top-accent: 5px solid var(--swg-border-navy);
+  --swg-border-cta: 2px solid var(--swg-accent-pink);
+  --swg-gap-framer: 10px;
+  --swg-padding-card: 24px;
+
+  /* ─── Typography families ─── */
+  --swg-font-pixel: "Press Start 2P", sans-serif;
+  --swg-font-label: "ABC Whyte Inktrap Semi-Mono Regular", monospace;
+  --swg-font-footer: "ABC Whyte Inktrap Light", sans-serif;
+
+  /* ─── Type scale (px values from inline --framer-font-size) ─── */
+  --swg-fs-footer-legal: 7.5px;
+  --swg-fs-label-caps: 8px;
+  --swg-fs-body-pixel: 12px;
+  --swg-fs-presented: 17px;
+  --swg-fs-nav-word: 18px;
+  --swg-fs-hero: 23.75px;
+  --swg-fs-story: 24px;
+  --swg-fs-mission-hero: 96px;
+
+  --swg-lh-body: 130%;
+  --swg-lh-mission: 140%;
+
+  --swg-label-tracking: 0.19em;
+  --swg-pixel-letter-tight: 0.01em;
+
+  /* ─── Decorative gradient copied from frames ─── */
+  --swg-shine-gradient: linear-gradient(270deg, hsla(0, 0%, 100%, 0.6) 0%, hsla(0, 0%, 100%, 0) 100%);
+
+  /* ─── Spacing (library layout; page uses 10px / 24px in frames) ─── */
+  --swg-space-1: 0.25rem;
+  --swg-space-2: 0.5rem;
+  --swg-space-3: 0.625rem;
+  --swg-space-4: 0.75rem;
+  --swg-space-5: 1rem;
+  --swg-space-6: 1.25rem;
+  --swg-space-8: 1.5rem;
+  --swg-space-10: 2rem;
+  --swg-space-12: 3rem;
+
+  --swg-transition-fast: 120ms ease;
+}

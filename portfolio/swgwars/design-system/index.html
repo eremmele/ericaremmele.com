@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      window.__SWG_EMBED__ = new URLSearchParams(location.search).get("embed");
+      if (window.__SWG_EMBED__ === "carousel") {
+        document.documentElement.classList.add("embed-carousel");
+      }
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SWG Wars — Design Library</title>
+    <meta
+      name="description"
+      content="SWG Wars design tokens in a retro CRT terminal frame; patterns from the shipped campaign microsite."
+    />
+    <meta
+      name="robots"
+      content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, max-snippet:0, max-image-preview:none, max-video-preview:0"
+    />
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/library.css" />
+    <link rel="stylesheet" href="css/meteors.css" />
+    <link rel="stylesheet" href="css/crt-terminal.css" />
+    <link rel="stylesheet" href="css/carousel-embed.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to library content</a>
+
+    <div class="crt-terminal">
+      <div class="crt-terminal__bezel">
+        <div class="crt-terminal__brand-row">
+          <p class="crt-terminal__marquee">
+            SWG_WARS://DESIGN_LIBRARY [v.1] · RGB · SYNC OK · RASTER ON
+          </p>
+          <a
+            class="crt-terminal__badge"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Play the Game</a>
+        </div>
+        <div class="crt-terminal__housing">
+          <div class="crt-terminal__screen-wrap">
+            <div class="crt-terminal__screen-mask" id="crt-screen-mask">
+              <div class="crt-babylon-stack">
+                <canvas id="crt-babylon-canvas" class="crt-babylon-canvas" aria-hidden="true"></canvas>
+                <div id="crt-babylon-source" class="crt-babylon-source">
+                  <div class="crt-terminal__content">
+    <div class="desktop-shell">
+      <header class="menubar" role="banner">
+        <div class="menubar__brand">
+          <img
+            class="menubar__logo"
+            src="assets/campaign-mark-white.svg"
+            width="60"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
+          <span>SWG WARS — LIBRARY</span>
+        </div>
+        <nav class="menubar__menu" aria-label="Design library sections">
+          <a href="#tokens">Tokens</a>
+          <a href="#color">Color</a>
+          <a href="#type">Type</a>
+          <a href="#components">Components</a>
+          <a href="#voice">Copy</a>
+        </nav>
+        <div class="menubar__clock" id="hud-clock" aria-live="polite">00:00:00</div>
+      </header>
+
+      <main id="main" class="window-grid window-grid--2">
+        <article class="window" aria-labelledby="win-overview-title">
+          <div class="window__titlebar">
+            <div class="window__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h1 class="window__title" id="win-overview-title">Overview.panel</h1>
+          </div>
+          <div class="window__body">
+            <p class="display-xl">You’re Our Only Hope</p>
+            <p class="body-lead">
+              Help a cyber startup bring down the Legacy Proxy Empire by banishing the data center backhauls and
+              eliminating threats lurking in the outages. Will you answer the call?
+            </p>
+            <p class="note-legal">
+              All colors, typography, radii, and component treatments below are taken from the live experience at
+              <a href="#" style="color: var(--swg-accent-green)">SWG Wars campaign</a>
+              (Framer SSR/CSS). The CRT look follows the
+              Babylon.js post-process recipe (curvature / scanlines / vignette / brightness) from
+              <a
+                href="https://babylonjs.medium.com/retro-crt-shader-a-post-processing-effect-study-1cb3f783afbc"
+                style="color: var(--swg-accent-green)"
+                >Retro CRT Shader — a post processing effect study</a
+              >: WebGL samples a raster of this page (html2canvas), then applies the same style of GLSL as in that
+              article.
+              <br /><br />
+              <code>css/tokens.css</code> · <code>css/library.css</code> · <code>css/crt-terminal.css</code> ·
+              <code>js/crt-babylon.js</code>
+            </p>
+          </div>
+        </article>
+
+        <article class="window" id="tokens" aria-labelledby="win-tokens-title">
+          <div class="window__titlebar">
+            <div class="window__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2 class="window__title" id="win-tokens-title">Layout.rules</h2>
+          </div>
+          <div class="window__body window__body--tight">
+            <p class="layout-spec">Observed frame rules</p>
+            <dl class="layout-spec">
+              <dt class="type-label" style="margin-bottom: var(--swg-space-2)">Card surface</dt>
+              <dd>Background <strong>#03081b</strong>, corner radius <strong>10px</strong>, top border <strong>5px #000d52</strong>, padding <strong>24px</strong>, gap <strong>10px</strong> in horizontal frames.</dd>
+              <dt class="type-label" style="margin-bottom: var(--swg-space-2)">Primary CTA</dt>
+              <dd>Fill <strong>rgb(109, 4, 201)</strong> with <strong>2px</strong> solid <strong>rgb(238, 162, 198)</strong>; label uses Press Start 2P pink text.</dd>
+              <dt class="type-label" style="margin-bottom: var(--swg-space-2)">Shine accent</dt>
+              <dd>Linear gradient <code>linear-gradient(270deg, hsla(0,0%,100%,0.6) 0%, hsla(0,0%,100%,0) 100%)</code> on decorative rules.</dd>
+            </dl>
+            <div class="hud" role="group" aria-label="Layout sample" style="margin-top: var(--swg-space-6)">
+              <div>
+                <div class="hud__label">Spacing sample</div>
+                <div class="hud__timer" style="font-size: 12px; letter-spacing: 0.08em">10 · 24 · 10</div>
+              </div>
+              <div class="hud__divider" aria-hidden="true"></div>
+              <div>
+                <div class="hud__label">Shine</div>
+                <div class="shine-bar" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="window window--wide" id="color" aria-labelledby="win-color-title">
+          <div class="window__titlebar">
+            <div class="window__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2 class="window__title" id="win-color-title">Palette.clr</h2>
+          </div>
+          <div class="window__body">
+            <p class="type-label">Production hex / rgb</p>
+            <div class="swatch-grid">
+              <div class="swatch">
+                <div class="swatch__chip" style="background: #030c33"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Root canvas</div>
+                  <div class="swatch__hex">#030c33</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: #03081b"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Panel</div>
+                  <div class="swatch__hex">#03081b</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: #000d52"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Border / chrome</div>
+                  <div class="swatch__hex">#000d52</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: rgb(109, 4, 201)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">CTA fill</div>
+                  <div class="swatch__hex">rgb(109, 4, 201)</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: rgb(238, 162, 198)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pink accent</div>
+                  <div class="swatch__hex">rgb(238, 162, 198)</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: rgb(0, 211, 126)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Green accent</div>
+                  <div class="swatch__hex">rgb(0, 211, 126)</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: rgb(0, 23, 100)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Blue midnight</div>
+                  <div class="swatch__hex">rgb(0, 23, 100)</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: rgb(2, 33, 132)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Blue deep</div>
+                  <div class="swatch__hex">rgb(2, 33, 132)</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background: rgb(246, 248, 249)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Footer legal</div>
+                  <div class="swatch__hex">rgb(246, 248, 249)</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div
+                  class="swatch__chip"
+                  style="background: #030c33a6; border-bottom: 1px solid var(--swg-border-navy)"
+                ></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Panel translucent</div>
+                  <div class="swatch__hex">#030c33a6</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="window window--wide" id="type" aria-labelledby="win-type-title">
+          <div class="window__titlebar">
+            <div class="window__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2 class="window__title" id="win-type-title">Typography.type</h2>
+          </div>
+          <div class="window__body">
+            <div class="type-row">
+              <p class="type-label">Hero — Press Start 2P · 23.75px · pink</p>
+              <p class="display-xl" style="margin-bottom: 0">You’re Our Only Hope</p>
+            </div>
+            <div class="type-row">
+              <p class="type-label">Mission — Press Start 2P · 96px · pink · 140% line height</p>
+              <p class="display-mission">The Mission</p>
+            </div>
+            <div class="type-row">
+              <p class="type-label">Story — Press Start 2P · 24px / 32px · white · justified</p>
+              <div class="story-block">
+                <p>
+                  Liberate the web by bringing down the Legacy Proxy Empire, banishing the data center backhauls, and
+                  eliminating threats lurking in the outages.
+                </p>
+              </div>
+            </div>
+            <div class="type-row">
+              <p class="type-label">Label — ABC Whyte Inktrap Semi-Mono · 8px · uppercase · pink</p>
+              <p class="type-label" style="margin-bottom: 0">Play to win</p>
+            </div>
+            <div class="type-row">
+              <p class="type-label">Presented by — Press Start 2P · 17px · centered · pink</p>
+              <p class="body-lead" style="font-size: var(--swg-fs-presented); color: var(--swg-accent-pink)">
+                PRESENTED BY CYBER STARTUP
+              </p>
+            </div>
+            <div class="type-row">
+              <p class="type-label">Footer legal — ABC Whyte Inktrap Light · 7.5px · 0.19em tracking</p>
+              <p class="footer-legal-sample">© 2025 Cyber Startup Inc.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="window" id="components" aria-labelledby="win-components-title">
+          <div class="window__titlebar">
+            <div class="window__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2 class="window__title" id="win-components-title">Components.ui</h2>
+          </div>
+          <div class="window__body">
+            <p class="type-label">Primary + link CTA</p>
+            <div class="btn-row">
+              <a class="btn btn--primary" href="#">I’m on it</a>
+              <a class="btn btn--play-now" href="#">PLAY NOW</a>
+            </div>
+            <p class="type-label">IA cluster (HOW TO / PLAY / THE …)</p>
+            <div class="nav-cluster" aria-label="Section navigation sample">
+              <div class="nav-cluster__group">
+                <p class="nav-cluster__small">HOW TO</p>
+                <p class="nav-cluster__word">PLAY</p>
+              </div>
+              <div class="nav-cluster__group">
+                <p class="nav-cluster__small">THE</p>
+                <p class="nav-cluster__word">OPPONENTS</p>
+              </div>
+              <div class="nav-cluster__group">
+                <p class="nav-cluster__small">The</p>
+                <p class="nav-cluster__word">PRIZES</p>
+              </div>
+              <div class="nav-cluster__group">
+                <p class="nav-cluster__small">THE</p>
+                <p class="nav-cluster__word">T&amp;Cs</p>
+              </div>
+            </div>
+            <p class="type-label" style="margin-top: var(--swg-space-10)">Body column (hero supporting copy)</p>
+            <div class="story-block">
+              <p>
+                Help a cyber startup bring down the Legacy Proxy Empire by banishing the data center backhauls and
+                eliminating threats lurking in the outages. Will you answer the call?
+              </p>
+            </div>
+            <p class="type-label" style="margin-top: var(--swg-space-10)">Play to win stack</p>
+            <div class="hud" role="group" aria-label="Countdown sample">
+              <div>
+                <div class="hud__label">Play to win</div>
+                <p class="hud__timer" id="demo-countdown">00:00:00:00</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="window" id="voice" aria-labelledby="win-voice-title">
+          <div class="window__titlebar">
+            <div class="window__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2 class="window__title" id="win-voice-title">Copy.patterns</h2>
+          </div>
+          <div class="window__body">
+            <p class="body-lead" style="margin-bottom: var(--swg-space-6); max-width: none">
+              Phrases below appear on the shipped landing page — use them as the tonal reference rather than inventing
+              new metaphors.
+            </p>
+            <ul class="token-list">
+              <li><strong>Presented by</strong> — “PRESENTED BY CYBER STARTUP”</li>
+              <li><strong>Hope CTA</strong> — “You’re Our Only Hope”</li>
+              <li><strong>Threat framing</strong> — “Legacy Proxy Empire”, “data center backhauls”, “outages”</li>
+              <li><strong>Product promise</strong> — “Fly Direct SWG”, “banishing the backhaul”, “endpoint”</li>
+              <li><strong>Player verbs</strong> — “Play The Game”, “Play to win”, “Start your mission”</li>
+            </ul>
+          </div>
+        </article>
+      </main>
+    </div>
+
+    <footer class="taskbar" role="contentinfo">
+      <span class="taskbar__presented">SWG WARS</span>
+      <span
+        >Source:
+        <a href="#">SWG Wars campaign</a></span
+      >
+      <span class="taskbar__meta">© 2025 Cyber Startup Inc.</span>
+    </footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+    <script>
+      if (window.__SWG_EMBED__ !== "carousel") {
+        var meteors = document.createElement("script");
+        meteors.src = "js/meteors.js";
+        document.body.appendChild(meteors);
+      }
+    </script>
+    <script src="js/desktop.js"></script>
+    <script src="js/crt-babylon.js?v=crt10"></script>
+    <script>
+      if (window.__SWG_EMBED__ === "carousel") {
+        var embed = document.createElement("script");
+        embed.src = "js/carousel-embed.js";
+        document.body.appendChild(embed);
+      }
+    </script>
+    <script>
+      (function () {
+        function pad(n) {
+          return String(n).padStart(2, "0");
+        }
+        function tickClock() {
+          var d = new Date();
+          var el = document.getElementById("hud-clock");
+          if (el) {
+            el.textContent = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+          }
+        }
+        function tickDemoCountdown() {
+          var el = document.getElementById("demo-countdown");
+          if (!el) return;
+          var d = new Date();
+          var end = new Date();
+          end.setHours(23, 59, 59, 999);
+          var ms = Math.max(0, end - d);
+          var s = Math.floor(ms / 1000);
+          var hh = Math.floor(s / 3600);
+          var mm = Math.floor((s % 3600) / 60);
+          var ss = s % 60;
+          var cs = Math.floor((ms % 1000) / 10);
+          el.textContent = pad(hh) + ":" + pad(mm) + ":" + pad(ss) + ":" + pad(cs);
+        }
+        tickClock();
+        tickDemoCountdown();
+        setInterval(tickClock, 1000);
+        setInterval(tickDemoCountdown, 50);
+      })();
+    </script>
+  </body>
+</html>

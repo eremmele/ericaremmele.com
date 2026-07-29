@@ -1,0 +1,61 @@
+/**
+ * Portfolio carousel embed: hide non-essential chrome.
+ * Desktop layout is forced by the parent iframe (1310px design width).
+ */
+
+html.embed-carousel,
+html.embed-carousel body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+html.embed-carousel::-webkit-scrollbar,
+html.embed-carousel body::-webkit-scrollbar {
+  display: none;
+}
+
+html.embed-carousel body {
+  pointer-events: none;
+  height: auto;
+  min-height: 100%;
+}
+
+html.embed-carousel .skip-link,
+html.embed-carousel #sound-dock,
+html.embed-carousel .sound-dock {
+  display: none !important;
+}
+
+html.embed-carousel .site-header {
+  pointer-events: none;
+}
+
+/* Design library */
+html.embed-carousel.library-embed,
+html.embed-carousel.library-embed body.library-page {
+  background: #f1ece1;
+}
+
+html.embed-carousel.library-embed .lib-nav {
+  display: none !important;
+}
+
+html.embed-carousel.library-embed .lib-shell {
+  display: block;
+  max-width: none;
+  grid-template-columns: none;
+  padding-left: var(--gutter, 40px);
+  padding-right: var(--gutter, 40px);
+}
+
+html.embed-carousel.library-embed .lib-main {
+  width: 100%;
+  max-width: 72ch;
+  margin: 0 auto;
+}

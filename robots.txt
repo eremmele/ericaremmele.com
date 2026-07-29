@@ -1,0 +1,151 @@
+# Portfolio garden — allow the site shell; block project assets from search + image OCR.
+# robots.txt is advisory. Pair with X-Robots-Tag / meta noimageindex where the host supports it.
+
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /sitemap.xml
+Disallow: /portfolio/
+Disallow: /models/
+Disallow: /draco/
+Disallow: /SITE-COPY.md
+Disallow: /site-copy.md
+Disallow: /README.md
+Disallow: /readme.md
+
+User-agent: Googlebot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /portfolio/
+Disallow: /models/
+Disallow: /draco/
+Disallow: /SITE-COPY.md
+Disallow: /site-copy.md
+Disallow: /README.md
+Disallow: /readme.md
+
+# Image / OCR crawlers — do not fetch project media or embeds
+User-agent: Googlebot-Image
+Disallow: /
+
+User-agent: Googlebot-Video
+Disallow: /
+
+User-agent: Googlebot-News
+Disallow: /portfolio/
+
+User-agent: Google-InspectionTool
+Disallow: /portfolio/
+
+User-agent: GoogleOther
+Disallow: /portfolio/
+
+User-agent: Storebot-Google
+Disallow: /portfolio/
+
+User-agent: Google-Extended
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /portfolio/
+
+User-agent: AdsBot-Google
+Disallow: /portfolio/
+
+User-agent: APIs-Google
+Disallow: /portfolio/
+
+User-agent: Bingbot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /portfolio/
+Disallow: /models/
+Disallow: /draco/
+
+User-agent: BingPreview
+Disallow: /portfolio/
+
+User-agent: adidxbot
+Disallow: /portfolio/
+
+User-agent: Slurp
+Disallow: /portfolio/
+
+User-agent: DuckDuckBot
+Disallow: /portfolio/
+
+User-agent: Baiduspider
+Disallow: /portfolio/
+
+User-agent: YandexBot
+Disallow: /portfolio/
+
+User-agent: YandexImages
+Disallow: /
+
+User-agent: Applebot
+Disallow: /portfolio/
+
+User-agent: Applebot-Extended
+Disallow: /portfolio/
+
+User-agent: facebookexternalhit
+Disallow: /portfolio/
+
+User-agent: Facebot
+Disallow: /portfolio/
+
+User-agent: Twitterbot
+Disallow: /portfolio/
+
+User-agent: LinkedInBot
+Disallow: /portfolio/
+
+User-agent: Slackbot
+Disallow: /portfolio/
+
+User-agent: Discordbot
+Disallow: /portfolio/
+
+User-agent: PetalBot
+Disallow: /portfolio/
+
+User-agent: GPTBot
+Disallow: /portfolio/
+
+User-agent: ChatGPT-User
+Disallow: /portfolio/
+
+User-agent: OAI-SearchBot
+Disallow: /portfolio/
+
+User-agent: CCBot
+Disallow: /portfolio/
+
+User-agent: anthropic-ai
+Disallow: /portfolio/
+
+User-agent: ClaudeBot
+Disallow: /portfolio/
+
+User-agent: Claude-Web
+Disallow: /portfolio/
+
+User-agent: Bytespider
+Disallow: /portfolio/
+
+User-agent: Diffbot
+Disallow: /portfolio/
+
+User-agent: omgili
+Disallow: /portfolio/
+
+User-agent: omgilibot
+Disallow: /portfolio/
+
+User-agent: ImagesiftBot
+Disallow: /
+
+Sitemap: https://ericaremmele.com/sitemap.xml

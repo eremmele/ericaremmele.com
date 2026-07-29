@@ -1,0 +1,223 @@
+/**
+ * Physical CRT bezel + scrollport. Tube distortion, scanlines, vignette and
+ * brightness follow the Babylon.js post-process study (WebGL + html2capture):
+ * https://babylonjs.medium.com/retro-crt-shader-a-post-processing-effect-study-1cb3f783afbc
+ */
+
+.crt-terminal {
+  --crt-library-column: 1200px;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  width: 100%;
+  padding: clamp(8px, 1.5vw, 16px) clamp(8px, 1.2vw, 14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Let the swgwars page background (body) show around the bezel */
+  background: radial-gradient(ellipse 85% 70% at 50% 40%, rgba(3, 8, 27, 0.35), transparent 62%);
+}
+
+/* Outer chrome width = library grid (1200px) + shell insets + housing + bezel padding */
+.crt-terminal__bezel {
+  --crt-frame-pad-shell-x: clamp(var(--swg-gap-framer), 2.4vw, 24px);
+  --crt-frame-bezel-x: clamp(12px, 2vw, 20px);
+  width: min(
+    100%,
+    calc(var(--crt-library-column) + 2 * var(--crt-frame-pad-shell-x) + 14px + 2 * var(--crt-frame-bezel-x))
+  );
+  max-width: 100%;
+  flex-shrink: 0;
+  padding: 12px var(--crt-frame-bezel-x) 16px;
+  border-radius: 14px;
+  background: linear-gradient(165deg, #35353a 0%, #1e1e22 38%, #121214 100%);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.75),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.4) inset;
+}
+
+.crt-terminal__brand-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--swg-gap-framer);
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.crt-terminal__marquee {
+  font-family: var(--swg-font-pixel);
+  font-size: clamp(6px, 1.1vw, 8px);
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  color: var(--swg-accent-green);
+  text-shadow: 0 0 8px rgba(0, 211, 126, 0.35);
+  margin: 0;
+  opacity: 0.92;
+}
+
+.crt-terminal__badge {
+  font-family: var(--swg-font-label);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(238, 162, 198, 0.75);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--swg-transition-fast), border-color var(--swg-transition-fast);
+}
+
+.crt-terminal__badge:hover {
+  color: var(--swg-accent-green);
+  border-bottom-color: rgba(0, 211, 126, 0.45);
+}
+
+.crt-terminal__badge:focus-visible {
+  outline: 2px solid var(--swg-accent-green);
+  outline-offset: 3px;
+}
+
+.crt-terminal__housing {
+  border-radius: 10px;
+  padding: 7px;
+  background: linear-gradient(180deg, #080809, #000);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.crt-terminal__screen-wrap {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Scrollport = full “glass” area the shader fills */
+.crt-terminal__screen-mask {
+  --crt-viewport-h: min(calc(100vh - 132px), 920px);
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  max-height: var(--crt-viewport-h);
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+  background: #000;
+  contain: layout style;
+  transform: translateZ(0);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.9),
+    inset 0 0 100px rgba(0, 0, 0, 0.65),
+    inset 0 0 28px rgba(109, 4, 201, 0.06);
+}
+
+.crt-babylon-stack {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+}
+
+.crt-babylon-canvas {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: var(--crt-viewport-h);
+  max-height: var(--crt-viewport-h);
+  pointer-events: none;
+  background: #000;
+  vertical-align: top;
+}
+
+/* Pull DOM under the sticky WebGL plane for overlap; canvas stays opaque so layout is hidden there */
+.crt-babylon-source {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * var(--crt-viewport-h));
+}
+
+.crt-babylon-source--fallback {
+  margin-top: 0 !important;
+}
+
+.crt-terminal__content {
+  position: relative;
+  z-index: 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.crt-terminal__content .desktop-shell {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding-top: var(--swg-space-5);
+  padding-bottom: var(--swg-space-8);
+  padding-left: clamp(var(--swg-gap-framer), 2.4vw, 24px);
+  padding-right: clamp(var(--swg-gap-framer), 2.4vw, 24px);
+}
+
+@media (min-width: 768px) {
+  .crt-terminal__content .desktop-shell {
+    padding-top: var(--swg-space-8);
+    padding-bottom: var(--swg-space-8);
+    padding-left: clamp(var(--swg-gap-framer), 2.4vw, 24px);
+    padding-right: clamp(var(--swg-gap-framer), 2.4vw, 24px);
+  }
+}
+
+.crt-babylon-stack > .crt-babylon-source {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.crt-terminal .menubar {
+  max-width: var(--crt-library-column);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.crt-terminal .taskbar {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  flex-shrink: 0;
+  margin-top: auto;
+  z-index: 1;
+  max-width: var(--crt-library-column);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.crt-terminal .window-grid {
+  max-width: var(--crt-library-column);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-babylon-canvas {
+    display: none;
+  }
+
+  .crt-babylon-source {
+    margin-top: 0;
+  }
+}
