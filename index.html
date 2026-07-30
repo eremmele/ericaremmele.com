@@ -134,8 +134,8 @@
         "inLanguage": "en-US"
       }
     </script>
-    <script type="module" crossorigin src="./assets/index-BJA5QvXA.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CbGFNWeC.css">
+    <script type="module" crossorigin src="./assets/index-CB87wyJE.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-zzGCx1B7.css">
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
@@ -168,7 +168,7 @@
               <a
                 class="hero-nav-label hero-nav-link hero-view-link"
                 data-name="nav-label"
-                href="#"
+                href="#view"
                 data-turn-right="16"
                 >/ Graphic Design</a
               >
@@ -179,7 +179,7 @@
                 <a
                   class="hero-nav-label hero-nav-link hero-view-link"
                   data-name="nav-label"
-                  href="#"
+                  href="#view"
                   data-turn-right="16"
                   >/ Product Design</a
                 >
@@ -225,10 +225,35 @@
         </div>
       </div>
 
+      <div class="controls-right" role="group" aria-label="Open project">
+        <button type="button" class="arrow-key project-key" data-project="1" aria-label="Open project 1" aria-keyshortcuts="1">1</button>
+        <button type="button" class="arrow-key project-key" data-project="2" aria-label="Open project 2" aria-keyshortcuts="2">2</button>
+        <button type="button" class="arrow-key project-key" data-project="3" aria-label="Open project 3" aria-keyshortcuts="3">3</button>
+        <button type="button" class="arrow-key project-key" data-project="4" aria-label="Open project 4" aria-keyshortcuts="4">4</button>
+        <button type="button" class="arrow-key project-key" data-project="5" aria-label="Open project 5" aria-keyshortcuts="5">5</button>
+      </div>
+
       <p id="load-status" class="load-status" aria-live="polite">Loading garden…</p>
 
       <div id="portfolio-panel" class="portfolio-panel" hidden>
-        <button id="portfolio-close" type="button" class="portfolio-close" aria-label="Close">×</button>
+        <button
+          id="portfolio-esc"
+          type="button"
+          class="arrow-key portfolio-esc"
+          aria-label="Close project (Esc)"
+          aria-keyshortcuts="Escape"
+        >
+          Esc
+        </button>
+        <button
+          id="portfolio-close"
+          type="button"
+          class="arrow-key portfolio-close"
+          aria-label="Close project (X)"
+          aria-keyshortcuts="X"
+        >
+          X
+        </button>
         <div class="portfolio-content portfolio-content--carousel">
           <div id="portfolio-carousel" class="smear-carousel" aria-label="Project carousel"></div>
         </div>
