@@ -11,7 +11,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "Product Design, Research, Product Management",
     description:
       "Leading product UX/UI and editorial systems across SWG, DLP, CASB, SSPM, LLMs + AI, and analytics, from feature definition and narrative framing through shipped interfaces and design systems.",
-    image: "/portfolio/cyber-product/casb.png",
+    image: "/portfolio/thumbs/cyber-product.jpg",
     carouselSlides: [
       img("/portfolio/cyber-product/casb.png"),
       img("/portfolio/cyber-product/sspm.png"),
@@ -28,7 +28,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "Product Design",
     description:
       "Website design for a dental practice: home, full-page flows, design systems, and brand.",
-    image: "/portfolio/bridgeway/bw_1-website_home.png",
+    image: "/portfolio/thumbs/bridgeway.jpg",
     carouselSlides: [
       img("/portfolio/bridgeway/bw_1-website_home.png"),
       img("/portfolio/bridgeway/bw_2-website_full.png"),
@@ -45,10 +45,13 @@ export const portfolioItems: PortfolioItem[] = [
     category: "Campaign",
     description:
       "Interactive campaign for a cyber startup: microsite, including screenplay-driven motion, opponent narratives, campaign graphics, and a CRT design library documenting tokens and components. Partnership with VO talent, musical talent, and lead in-house dev team.",
-    image: "/portfolio/swgwars/swgwars-01-hero.png",
+    image: "/portfolio/thumbs/swgwars.jpg",
     carouselSlides: [
       img("/portfolio/swgwars/swgwars-01-hero.png"),
-      img("/portfolio/swgwars/swgwars-02-screenplay-small-short.gif"),
+      vid(
+        "/portfolio/swgwars/swgwars-02-screenplay-small-short.webm",
+        "/portfolio/swgwars/swgwars-01-hero.png",
+      ),
       img("/portfolio/swgwars/swgwars-04-opponents.png"),
       img("/portfolio/swgwars/swgwars-05-graphics.png"),
       {
@@ -66,7 +69,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "Product Design & Development",
     description:
       "Marketing site and design library for undrmnd: an open-source, counter-algorithmic learning commons. Live at undrmnd.com. App in beta.",
-    image: "/portfolio/undrmnd/undrmnd-card.svg",
+    image: "/portfolio/thumbs/undrmnd.svg",
     carouselSlides: [
       {
         kind: "embed",
@@ -88,7 +91,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "Creative Direction, Brand Design, Website Design & Development",
     description:
       "Design and creative direction for a cybersecurity brand marketing site, ongoing iterations through the years.",
-    image: "/portfolio/cyber-brand/homepage.png",
+    image: "/portfolio/thumbs/cyber-brand.jpg",
     carouselSlides: [
       img("/portfolio/cyber-brand/homepage.png"),
       img("/portfolio/cyber-brand/desktop-1440.png"),

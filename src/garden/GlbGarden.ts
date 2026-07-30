@@ -15,6 +15,8 @@ export type LoadedGarden = {
   spawn: THREE.Vector3;
   heightField: HeightField;
   foliage: THREE.Group;
+  /** Streams foliage after the garden is already interactive. */
+  whenFoliageReady: Promise<void>;
 };
 
 export type LoadGardenOptions = {
@@ -23,6 +25,16 @@ export type LoadGardenOptions = {
 
 const TARGET_SIZE = 48;
 const GARDEN_URL = "./models/garden.glb";
+
+function preferLeanLoad(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
+    .connection;
+  if (connection?.saveData) return true;
+  if (connection?.effectiveType === "2g" || connection?.effectiveType === "3g") return true;
+  if (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4) return true;
+  return window.matchMedia("(pointer: coarse)").matches;
+}
 
 function createGltfLoader(): GLTFLoader {
   const loader = new GLTFLoader();
@@ -126,11 +138,29 @@ export async function loadGardenGlb(
 
   const heightField = HeightField.fromPositions(heightSamples, walkBounds, 96);
 
+  const groundY = heightField.sample(cx, cz + walkRadius * 0.4);
+  const spawn = new THREE.Vector3(cx, groundY + 1.65, cz + walkRadius * 0.4);
+
   onProgress?.("Building pixels…");
+  const lean = preferLeanLoad();
   const pointTexture = await loadPixelSprite();
+
+  // Overlap foliage downloads with the CPU particle bake so bandwidth isn't idle.
+  const foliageHost = new THREE.Group();
+  foliageHost.name = "forest-foliage-host";
+  const foliagePromise = createForestFoliageLayer({
+    heightField,
+    walkBounds,
+    walkCircle: { x: cx, z: cz, radius: walkRadius },
+    clearCenter: { x: spawn.x, z: spawn.z, radius: 2.8 },
+    lean,
+  }).then((layer) => {
+    foliageHost.add(layer);
+  });
+
   const cloud = await meshSceneToParticleCloud(gltf.scene, {
-    targetCount: 380_000,
-    maxCount: 440_000,
+    targetCount: lean ? 220_000 : 380_000,
+    maxCount: lean ? 260_000 : 440_000,
     bottomCutRatio: 0.12,
     groundBandRatio: 0.5,
     groundDensityBoost: 2.2,
@@ -140,24 +170,12 @@ export async function loadGardenGlb(
     },
   });
   root.add(cloud.points);
+  root.add(foliageHost);
 
   const materials: THREE.ShaderMaterial[] = [];
   if (cloud.points.material instanceof THREE.ShaderMaterial) {
     materials.push(cloud.points.material);
   }
-
-  const groundY = heightField.sample(cx, cz + walkRadius * 0.4);
-  const spawn = new THREE.Vector3(cx, groundY + 1.65, cz + walkRadius * 0.4);
-
-  onProgress?.("Scattering foliage…");
-  const foliage = await createForestFoliageLayer({
-    heightField,
-    walkBounds,
-    walkCircle: { x: cx, z: cz, radius: walkRadius },
-    clearCenter: { x: spawn.x, z: spawn.z, radius: 2.8 },
-    onProgress,
-  });
-  root.add(foliage);
 
   return {
     root,
@@ -167,7 +185,10 @@ export async function loadGardenGlb(
     colliders,
     spawn,
     heightField,
-    foliage,
+    foliage: foliageHost,
+    whenFoliageReady: foliagePromise.catch((error) => {
+      console.warn("Foliage failed to load — garden remains playable.", error);
+    }),
   };
 }
 

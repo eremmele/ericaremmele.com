@@ -13,6 +13,23 @@ export type ProjectCardOptions = {
   className?: string;
 };
 
+function scheduleCardMedia(media: HTMLElement, src: string): void {
+  const apply = (): void => {
+    media.style.backgroundImage = `url("${src.replace(/"/g, '\\"')}")`;
+  };
+
+  // Defer off the critical garden path; CSS3D cards don't reliably trip IO.
+  const ric = (window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+  }).requestIdleCallback;
+
+  if (typeof ric === "function") {
+    ric(apply, { timeout: 1800 });
+    return;
+  }
+  window.setTimeout(apply, 400);
+}
+
 export function createProjectCard(
   data: ProjectCardData,
   options?: ProjectCardOptions,
@@ -25,7 +42,7 @@ export function createProjectCard(
 
   const media = document.createElement("div");
   media.className = "project-card-media";
-  media.style.backgroundImage = `url("${data.image.replace(/"/g, '\\"')}")`;
+  scheduleCardMedia(media, data.image);
 
   const meta = document.createElement("div");
   meta.className = "project-card-meta";

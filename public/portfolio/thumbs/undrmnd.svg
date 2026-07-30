@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="undrmnd">
+  <rect width="800" height="500" fill="#16140f"/>
+  <rect x="48" y="48" width="704" height="404" rx="4" fill="#f1ece1"/>
+  <rect x="72" y="72" width="656" height="356" rx="2" fill="#cfc7b4" opacity="0.55"/>
+  <text x="400" y="255" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-style="italic" fill="#1b1a17">undrmnd</text>
+  <text x="400" y="300" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" letter-spacing="0.14em" fill="#5a4a2f">A PUBLIC LEARNING COMMONS</text>
+</svg>

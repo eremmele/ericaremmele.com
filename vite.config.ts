@@ -69,4 +69,14 @@ function portfolioNoIndexPlugin(): Plugin {
 export default defineConfig({
   base: "./",
   plugins: [portfolioNoIndexPlugin()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/three")) return "three";
+        },
+      },
+    },
+    chunkSizeWarningLimit: 700,
+  },
 });

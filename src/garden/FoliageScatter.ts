@@ -11,6 +11,8 @@ export type FoliageScatterOptions = {
   clearCenter?: { x: number; z: number; radius: number };
   onProgress?: (message: string) => void;
   seed?: number;
+  /** Fewer instances / lighter GPU for constrained devices. */
+  lean?: boolean;
 };
 
 type FoliageSpecies = {
@@ -205,6 +207,7 @@ export async function createForestFoliageLayer(
     clearCenter,
     onProgress,
     seed = 0xf01a9e,
+    lean = false,
   } = options;
 
   const root = new THREE.Group();
@@ -224,14 +227,20 @@ export async function createForestFoliageLayer(
 
   const allPlaced: Array<{ x: number; z: number }> = [];
 
-  for (let s = 0; s < SPECIES.length; s += 1) {
-    const species = SPECIES[s];
+  // Prefetch all foliage GLBs in parallel — sequential waits dominate on mid-speed links.
+  onProgress?.("Growing foliage…");
+  const templates = await Promise.all(
+    SPECIES.map(async (species) => {
+      const gltf = await loader.loadAsync(species.url);
+      return { species, ...extractPlantTemplate(gltf.scene) };
+    }),
+  );
+
+  for (const { species, geometry, material } of templates) {
     onProgress?.(`Growing foliage… ${species.name}`);
+    const count = lean ? Math.max(6, Math.round(species.count * 0.55)) : species.count;
 
-    const gltf = await loader.loadAsync(species.url);
-    const { geometry, material } = extractPlantTemplate(gltf.scene);
-
-    const mesh = new THREE.InstancedMesh(geometry, material, species.count);
+    const mesh = new THREE.InstancedMesh(geometry, material, count);
     mesh.name = species.name;
     mesh.castShadow = false;
     mesh.receiveShadow = true;
@@ -240,10 +249,10 @@ export async function createForestFoliageLayer(
 
     const placed: Array<{ x: number; z: number }> = [];
     let written = 0;
-    const maxAttempts = species.count * 60;
+    const maxAttempts = count * 60;
     const scatterRadius = walkCircle.radius * FOLIAGE_RADIUS_FRACTION;
 
-    for (let attempt = 0; attempt < maxAttempts && written < species.count; attempt += 1) {
+    for (let attempt = 0; attempt < maxAttempts && written < count; attempt += 1) {
       const ang = rand() * Math.PI * 2;
       const radial = Math.sqrt(rand()) * scatterRadius;
       const x = walkCircle.x + Math.cos(ang) * radial;

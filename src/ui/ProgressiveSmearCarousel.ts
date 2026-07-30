@@ -140,18 +140,19 @@ export class ProgressiveSmearCarousel {
       let iframe: HTMLIFrameElement | null = null;
       let video: HTMLVideoElement | null = null;
       if (slide.kind === "image") {
-        inner.style.backgroundImage = `url(${slide.src})`;
+        // Defer heavy PNGs/GIFs until the card is near center (see layout).
+        inner.dataset.src = slide.src;
       } else if (slide.kind === "video") {
         inner.classList.add("smear-carousel__card-media--video");
         video = document.createElement("video");
         video.className = "smear-carousel__card-video";
-        video.src = slide.src;
         if (slide.poster) video.poster = slide.poster;
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
         video.setAttribute("playsinline", "");
-        video.preload = "metadata";
+        video.preload = "none";
+        video.dataset.src = slide.src;
         inner.appendChild(video);
       } else {
         inner.classList.add("smear-carousel__card-media--embed");
@@ -413,6 +414,11 @@ export class ProgressiveSmearCarousel {
       inner.style.opacity = String(opacity);
 
       // Load embeds only when near the center card to keep the overlay light.
+      if (slide.kind === "image" && abs < 1.35 && inner.dataset.src) {
+        inner.style.backgroundImage = `url(${inner.dataset.src})`;
+        delete inner.dataset.src;
+      }
+
       if (iframe && slide.kind === "embed") {
         const scale = width / EMBED_DESIGN_WIDTH;
         iframe.style.width = `${EMBED_DESIGN_WIDTH}px`;
@@ -425,6 +431,11 @@ export class ProgressiveSmearCarousel {
       }
 
       if (video) {
+        if (abs < 1.35 && video.dataset.src && !video.src) {
+          video.src = video.dataset.src;
+          delete video.dataset.src;
+          video.preload = "metadata";
+        }
         if (abs < 0.55) {
           const play = video.play();
           if (play && typeof play.catch === "function") play.catch(() => {});

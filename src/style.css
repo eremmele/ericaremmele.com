@@ -551,7 +551,7 @@ body,
 }
 
 .smear-carousel__card-video {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .smear-carousel__caption {

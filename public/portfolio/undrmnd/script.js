@@ -81,7 +81,7 @@
 
   /* ---------- Hero ambient dot field for FoW ---------- */
   const heroCanvas = document.getElementById("hero-fog");
-  if (heroCanvas && !prefersReduced) {
+  if (heroCanvas && !prefersReduced && !isEmbed) {
     const ctx = heroCanvas.getContext("2d");
     let w, h, dpr;
     let dots = [];
@@ -135,7 +135,7 @@
   /* ---------- How it works / FoW map ---------- */
   const mapCanvas = document.getElementById("map");
   const mapWrap = document.getElementById("map-wrap");
-  if (mapCanvas && mapWrap) {
+  if (mapCanvas && mapWrap && !isEmbed) {
     const ctx = mapCanvas.getContext("2d");
     let w, h, dpr, nodes = [];
     let mouse = { x: -9999, y: -9999, active: false };

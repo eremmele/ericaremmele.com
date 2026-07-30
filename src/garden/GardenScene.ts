@@ -38,7 +38,7 @@ export class GardenScene {
       stencil: false,
       depth: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -97,6 +97,8 @@ export class GardenScene {
       this.navigation.setHeightField(loaded.heightField);
       this.navigation.setSpawn(loaded.spawn);
       this.placeInspectionPoints(defaultInspectionPositions(loaded.walkBounds));
+      // Foliage continues downloading/instancing after the garden is walkable.
+      void loaded.whenFoliageReady;
     } catch (error) {
       console.warn("Failed to load garden.glb — falling back to placeholder.", error);
       const placeholder = createPlaceholderGarden();
