@@ -348,10 +348,25 @@ export class ProgressiveSmearCarousel {
     const total = this.slides.length;
     if (total === 0) return;
 
+    const vw = window.innerWidth || 1280;
     const vh = window.innerHeight || this.itemHeightFallback;
-    // Taller center card so live embeds (e.g. undrmnd at 1310 design width) stay readable.
-    const activeH = vh > 0 ? (vh * 70) / 100 : this.itemHeightFallback;
-    const activeW = Math.min(1310, activeH * this.centerScale);
+    const isNarrow = vw <= 900;
+
+    // Fit card + caption into the viewport on mobile (room for Esc/X, hints, project keys).
+    const maxW = isNarrow ? Math.min(1310, vw * 0.88) : Math.min(1310, vw);
+    const maxH = isNarrow ? Math.min(vh * 0.46, vh - 210) : vh > 0 ? (vh * 70) / 100 : this.itemHeightFallback;
+
+    let activeH = Math.max(160, maxH);
+    let activeW = Math.min(maxW, activeH * this.centerScale);
+    if (activeW > maxW) {
+      activeW = maxW;
+      activeH = activeW / this.centerScale;
+    }
+    if (activeH > maxH) {
+      activeH = maxH;
+      activeW = Math.min(maxW, activeH * this.centerScale);
+    }
+
     const sideRatio = this.sideItemWidth / this.itemWidth;
     const sideW = activeW * sideRatio;
     const sideH = activeH * sideRatio;
@@ -361,7 +376,7 @@ export class ProgressiveSmearCarousel {
 
     // Keep card + caption optically centered as a unit.
     const captionH = this.caption?.offsetHeight ?? 0;
-    const captionGap = this.caption ? 16 : 0;
+    const captionGap = this.caption ? (isNarrow ? 10 : 16) : 0;
     const stackOffset = this.caption ? (captionH + captionGap) / 2 : 0;
     this.stage.style.transform = `translateY(${-stackOffset}px)`;
 
@@ -384,7 +399,7 @@ export class ProgressiveSmearCarousel {
       else x = sign * (r + (abs - 1) * a * 0.85);
 
       const z = -abs * 200;
-      const rotateY = sign * Math.min(abs * 35, this.maxRotation);
+      const rotateY = sign * Math.min(abs * (isNarrow ? 22 : 35), this.maxRotation);
       const zIndex = 1000 - Math.round(abs * 10);
       const opacity = interpolate(abs, [0, 5, 7], [1, 1, 0]);
 
@@ -420,7 +435,7 @@ export class ProgressiveSmearCarousel {
     }
 
     if (this.caption) {
-      this.caption.style.width = `${activeW}px`;
+      this.caption.style.width = `${Math.min(activeW, maxW)}px`;
       this.caption.style.top = `calc(50% + ${activeH / 2 - stackOffset + captionGap}px)`;
     }
   }
