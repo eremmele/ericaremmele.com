@@ -25,6 +25,12 @@ export class LightRays {
     this.ctx = ctx;
     this.resize();
     window.addEventListener("resize", () => this.resize());
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        this.lastTs = 0;
+        requestAnimationFrame((ts) => this.animate(ts));
+      }
+    });
     requestAnimationFrame((ts) => this.animate(ts));
   }
 
@@ -99,6 +105,10 @@ export class LightRays {
   }
 
   private animate(ts: number): void {
+    if (document.hidden) {
+      this.lastTs = 0;
+      return;
+    }
     if (this.lastTs === 0) this.lastTs = ts;
     const dt = Math.min(0.1, Math.max(0, (ts - this.lastTs) / 1000));
     this.lastTs = ts;

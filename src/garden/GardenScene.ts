@@ -27,7 +27,6 @@ export class GardenScene {
   private activePoint: InspectionPoint | null = null;
   private running = false;
   private ready = false;
-  private onInspect?: (point: InspectionPoint) => void;
 
   private constructor(canvas: HTMLCanvasElement, cssHost: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({
@@ -123,23 +122,16 @@ export class GardenScene {
     return garden;
   }
 
-  setOnInspect(callback: (point: InspectionPoint) => void): void {
-    this.onInspect = callback;
-  }
-
   private placeInspectionPoints(positions: Array<[number, number, number]>): void {
     inspectionPoints.forEach((point, index) => {
       const item = getPortfolioById(point.portfolioId);
       if (!item) return;
       const position = positions[index] ?? point.position;
-      const marker = new InspectionPoint(
-        { ...point, position },
-        item,
-        (p) => this.onInspect?.(p),
-      );
+      const marker = new InspectionPoint({ ...point, position }, item);
       this.liftMarkerToGround(marker);
       this.inspectionPoints.push(marker);
-      this.cssScene.add(marker.group);
+      // WebGL mesh so foliage / landscape depth can occlude the card.
+      this.scene.add(marker.group);
     });
   }
 
@@ -198,6 +190,23 @@ export class GardenScene {
     return this.inspectionPoints[n - 1] ?? null;
   }
 
+  /** Ray pick a project card under the cursor (depth-tested WebGL mesh). */
+  pickInspectionPoint(clientX: number, clientY: number): InspectionPoint | null {
+    const canvas = this.renderer.domElement;
+    const rect = canvas.getBoundingClientRect();
+    const ndc = new THREE.Vector2(
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -(((clientY - rect.top) / rect.height) * 2 - 1),
+    );
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(ndc, this.navigation.camera);
+    const meshes = this.inspectionPoints.filter((p) => p.mesh.visible).map((p) => p.mesh);
+    const hits = raycaster.intersectObjects(meshes, false);
+    const hit = hits[0]?.object;
+    if (!hit) return null;
+    return (hit.userData.inspectionPoint as InspectionPoint | undefined) ?? null;
+  }
+
   /** Hide the thumbnail for the open project; pass null to show all again. */
   setOverlayProjectId(pointId: string | null): void {
     for (const point of this.inspectionPoints) {
@@ -234,6 +243,8 @@ export class GardenScene {
     });
 
     this.edgeLens.render(this.renderer, this.scene, camera);
-    this.cssRenderer.render(this.cssScene, camera);
+    if (this.cssScene.children.length > 0) {
+      this.cssRenderer.render(this.cssScene, camera);
+    }
   }
 }

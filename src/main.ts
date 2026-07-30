@@ -73,12 +73,12 @@ async function main(): Promise<void> {
     panel.show(item);
   };
 
-  garden.setOnInspect((point) => openPoint(point, false));
   garden.bindControls(app, canvas, movePad);
   loadStatus.hidden = true;
 
   const isTouch = window.matchMedia("(pointer: coarse)").matches;
   if (isTouch) {
+    document.body.classList.add("is-touch");
     touchControls.hidden = false;
   }
 
@@ -105,6 +105,7 @@ async function main(): Promise<void> {
   let closeOverlayOnLeave = false;
 
   panel.setOnOpenChange((open) => {
+    document.body.classList.toggle("portfolio-open", open);
     if (!open) {
       garden.setOverlayProjectId(null);
       openProximityId = null;
@@ -112,7 +113,11 @@ async function main(): Promise<void> {
     }
   });
 
+  let raf = 0;
   const tick = (): void => {
+    raf = 0;
+    if (document.hidden) return;
+
     garden.update();
     const active = garden.getActivePoint();
     const id = active?.data.id ?? null;
@@ -131,11 +136,17 @@ async function main(): Promise<void> {
     }
 
     lastProximityId = id;
-    requestAnimationFrame(tick);
+    raf = requestAnimationFrame(tick);
+  };
+
+  const resumeTick = (): void => {
+    if (document.hidden || raf) return;
+    raf = requestAnimationFrame(tick);
   };
 
   garden.start();
-  requestAnimationFrame(tick);
+  resumeTick();
+  document.addEventListener("visibilitychange", resumeTick);
 
   controlsHide.addEventListener("click", () => {
     setControlsCollapsed(!controlsBar.classList.contains("is-collapsed"));
@@ -189,10 +200,22 @@ async function main(): Promise<void> {
 
   canvas.addEventListener("click", (event) => {
     if (panel.isOpen) return;
+    const hit = garden.pickInspectionPoint(event.clientX, event.clientY);
+    if (hit) {
+      openPoint(hit, false);
+      event.preventDefault();
+      return;
+    }
     if (isTouch && garden.getActivePoint()) {
       openActivePortfolio();
       event.preventDefault();
     }
+  });
+
+  canvas.addEventListener("pointermove", (event) => {
+    if (panel.isOpen || event.buttons !== 0) return;
+    const hit = garden.pickInspectionPoint(event.clientX, event.clientY);
+    canvas.style.cursor = hit ? "pointer" : "crosshair";
   });
 
   window.addEventListener("resize", () => garden.resize());

@@ -169,11 +169,14 @@ export class EdgeLensPass {
   }
 
   resize(width: number, height: number, pixelRatio = 1): void {
-    for (const rt of [this.level0, this.level1, this.level2, this.level3]) {
-      rt.setSize(width, height);
-    }
-    this.blurMat.uniforms.uResolution.value.set(width, height);
-    // Scale sigma with DPR so on-screen blur ≈ OpenCV 15×15 on CSS pixels
+    const bw = Math.max(1, (width * 0.5) | 0);
+    const bh = Math.max(1, (height * 0.5) | 0);
+    this.level0.setSize(width, height);
+    // Half-res blur cascade — same look, much steadier frame times while moving.
+    this.level1.setSize(bw, bh);
+    this.level2.setSize(bw, bh);
+    this.level3.setSize(bw, bh);
+    this.blurMat.uniforms.uResolution.value.set(bw, bh);
     this.blurMat.uniforms.uSigma.value = 2.3 * pixelRatio;
   }
 

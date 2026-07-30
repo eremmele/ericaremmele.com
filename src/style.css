@@ -319,20 +319,8 @@ body,
   pointer-events: auto;
 }
 
-.controls-bar:not(.is-collapsed) .inspect-key {
-  grid-column: 4;
-  grid-row: 2;
-  margin-left: calc(0.55rem - 0.28rem);
-}
-
-.controls-bar.is-collapsed .arrow-key:not(.inspect-key) {
+.controls-bar.is-collapsed .controls-left {
   display: none;
-}
-
-.controls-bar.is-collapsed .inspect-key {
-  grid-column: 1;
-  grid-row: 2;
-  margin-left: 0;
 }
 
 .inspect-key {
@@ -397,6 +385,11 @@ body,
 .arrow-key:hover,
 .arrow-key:focus-visible {
   background: rgba(255, 255, 255, 0.33);
+}
+
+/* After `.arrow-key { margin: 0 }` so it sticks: 5→H = 4× number gap. */
+.controls-right > .inspect-key {
+  margin-left: 0.84rem;
 }
 
 .arrow-key:focus:not(:focus-visible) {
@@ -763,10 +756,23 @@ body,
   position: fixed;
   left: var(--page-pad-x);
   bottom: var(--page-pad-y);
-  z-index: 5;
-  /* Invisible hit target — no visible circle behind keyboard guide */
+  z-index: 10007;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
   opacity: 0;
+  pointer-events: none;
+}
+
+body.is-touch .touch-controls:not([hidden]) {
+  opacity: 1;
   pointer-events: auto;
+}
+
+body.is-touch.portfolio-open .touch-controls {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .move-pad {
@@ -776,6 +782,136 @@ body,
   border: none;
   background: none;
   border-radius: 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body.is-touch .move-pad {
+  width: 118px;
+  height: 118px;
+}
+
+.move-pad__ring {
+  display: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid var(--hero-dim);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.move-pad__knob {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.22);
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+body.is-touch .move-pad__ring,
+body.is-touch .move-pad__knob {
+  display: block;
+}
+
+.touch-hint {
+  display: none;
+  margin: 0;
+  padding: 0.15rem 0 0.35rem;
+  color: var(--hero-dim);
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+body.is-touch .touch-hint {
+  display: block;
+}
+
+/* Hide on-screen arrows on touch; joystick / desktop-drag handle move. */
+body.is-touch .controls-left {
+  display: none;
+}
+
+/* Tablet+ touch: joystick left, 1–5 + H docked right. */
+body.is-touch .controls-right {
+  right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
+  left: auto;
+  bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
+  transform: none;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+body.is-touch .controls-right > .inspect-key {
+  margin-left: 1.65rem;
+}
+
+body.is-touch .touch-controls {
+  left: max(var(--page-pad-x), env(safe-area-inset-left, 0px));
+  right: auto;
+  bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
+  transform: none;
+  align-items: flex-start;
+}
+
+/* Phone: centered joystick; 1–5 only while overlay is open. */
+@media (max-width: 767px) {
+  body.is-touch .touch-controls {
+    left: 50%;
+    right: auto;
+    bottom: max(1.1rem, env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    align-items: center;
+  }
+
+  body.is-touch .touch-hint {
+    text-align: center;
+    padding: 0.2rem 0 0.45rem;
+  }
+
+  body.is-touch .controls-right .project-key {
+    display: none;
+  }
+
+  body.is-touch .controls-right > .inspect-key {
+    margin-left: 0;
+  }
+
+  body.is-touch .controls-right {
+    right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
+    left: auto;
+    transform: none;
+    justify-content: flex-end;
+    bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-touch.portfolio-open .controls-right {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    justify-content: center;
+    bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-touch.portfolio-open .controls-right .project-key {
+    display: grid;
+  }
+
+  body.is-touch.portfolio-open .controls-right > .inspect-key {
+    margin-left: 1.65rem;
+  }
 }
 
 @media (max-width: 900px) {
@@ -839,20 +975,8 @@ body,
     max-width: 1.75rem;
   }
 
-  .controls-right {
-    left: max(var(--page-pad-x), env(safe-area-inset-left, 0px));
-    right: auto;
-    bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
-    transform: none;
-    justify-content: flex-start;
-    gap: 0.55rem;
-  }
-
-  /* Lift arrow keys so the number row sits directly underneath, left-aligned */
-  .controls-bar {
-    bottom: calc(1.75rem + 0.55rem);
-    padding-bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
-    justify-content: flex-start;
+  .controls-right > .inspect-key {
+    margin-left: 1.65rem;
   }
 
   .portfolio-panel {
@@ -864,7 +988,7 @@ body,
     display: none !important;
   }
 
-  /* Sit above arrow + number keys, below Inquire block */
+  /* Sit above bottom chrome */
   .load-status {
     bottom: calc(var(--page-pad-y) + 7.75rem);
     max-width: calc(100vw - 2 * var(--page-pad-x));
@@ -891,18 +1015,21 @@ body,
   }
 
   .smear-carousel__caption-title {
+    order: 1;
     font-size: 15px;
   }
 
-  .smear-carousel__caption-description {
-    font-size: 13px;
-    line-height: 1.3;
-  }
-
   .smear-carousel__caption-category {
+    order: 2;
     text-align: left;
     font-size: 11px;
     opacity: 0.8;
+  }
+
+  .smear-carousel__caption-description {
+    order: 3;
+    font-size: 13px;
+    line-height: 1.3;
   }
 
   .portfolio-close {

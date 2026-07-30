@@ -120,6 +120,9 @@ function prepareFoliageMaterial(material: THREE.Material): void {
   std.color.set(0xffffff);
   std.envMapIntensity = 0;
   std.side = THREE.DoubleSide;
+  // Write depth so project thumbnails nest behind leaves/stems.
+  std.depthWrite = true;
+  std.depthTest = true;
   std.needsUpdate = true;
 }
 
