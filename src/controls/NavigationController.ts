@@ -9,6 +9,8 @@ export type NavigationInput = {
 export class NavigationController {
   readonly camera: THREE.PerspectiveCamera;
   readonly player: THREE.Object3D;
+  private static readonly INITIAL_RIGHT_ARROW_STEPS = 16;
+  private static readonly KEYBOARD_STEP_FPS = 60;
 
   private yaw = 0;
   private pitch = 0;
@@ -22,7 +24,6 @@ export class NavigationController {
   private walkCircle: { x: number; z: number; radius: number } | null = null;
   private targetEyeY = 1.65;
   private readonly keys = new Set<string>();
-  private pointerLocked = false;
   private lookTouchId: number | null = null;
   private lastLookTouch = { x: 0, y: 0 };
   private moveTouch = { x: 0, y: 0, active: false };
@@ -30,6 +31,12 @@ export class NavigationController {
   private mouseTarget = { x: 0, y: 0 };
   private mouseShift = { x: 0, y: 0 };
   private readonly mouseLookMax = { x: 0.12, y: 0.07 };
+  private turnAnim: {
+    startYaw: number;
+    deltaYaw: number;
+    startedAt: number;
+    durationMs: number;
+  } | null = null;
 
   constructor(aspect: number, bounds: THREE.Box3) {
     this.bounds = bounds;
@@ -39,11 +46,10 @@ export class NavigationController {
     this.player.add(this.camera);
     this.player.position.set(0, this.eyeHeight, 6);
     this.yaw = Math.PI;
+    this.yaw -=
+      (this.turnSpeed / NavigationController.KEYBOARD_STEP_FPS) *
+      NavigationController.INITIAL_RIGHT_ARROW_STEPS;
     this.applyRotation();
-  }
-
-  get isPointerLocked(): boolean {
-    return this.pointerLocked;
   }
 
   setBounds(bounds: THREE.Box3): void {
@@ -81,28 +87,12 @@ export class NavigationController {
       this.keys.delete(event.code);
     });
 
-    document.addEventListener("pointerlockchange", () => {
-      this.pointerLocked = document.pointerLockElement === canvas;
-    });
-
-    canvas.addEventListener("click", () => {
-      if (!this.pointerLocked && !this.isTouchPrimary()) {
-        canvas.requestPointerLock();
-      }
-    });
-
     canvas.addEventListener("mousemove", (event) => {
       const rect = canvas.getBoundingClientRect();
       const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const ny = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
       this.mouseTarget.x = THREE.MathUtils.clamp(nx, -1, 1);
       this.mouseTarget.y = THREE.MathUtils.clamp(ny, -1, 1);
-
-      if (!this.pointerLocked) return;
-      this.yaw -= event.movementX * 0.0022;
-      this.pitch -= event.movementY * 0.0022;
-      this.clampPitch();
-      this.applyRotation();
     });
 
     canvas.addEventListener(
@@ -150,6 +140,35 @@ export class NavigationController {
     element.addEventListener("contextmenu", (event) => event.preventDefault());
   }
 
+  setKeyPressed(code: string, pressed: boolean): void {
+    if (pressed) this.keys.add(code);
+    else this.keys.delete(code);
+  }
+
+  /** Instant yaw equal to holding → for `steps` frames at 60fps. */
+  turnRightSteps(steps = NavigationController.INITIAL_RIGHT_ARROW_STEPS): void {
+    this.turnAnim = null;
+    this.yaw -= (this.turnSpeed / NavigationController.KEYBOARD_STEP_FPS) * steps;
+    this.applyRotation();
+  }
+
+  /** Animate yaw over time so nav clicks feel like turning right. */
+  animateTurnRightSteps(
+    steps = NavigationController.INITIAL_RIGHT_ARROW_STEPS,
+    durationMs = 700,
+  ): void {
+    const deltaYaw = (this.turnSpeed / NavigationController.KEYBOARD_STEP_FPS) * steps;
+    this.turnAnim = {
+      startYaw: this.yaw,
+      deltaYaw,
+      startedAt: performance.now(),
+      durationMs,
+    };
+    // Cancel residual cursor-look so the click position doesn't jerk the view.
+    this.mouseTarget.x = 0;
+    this.mouseTarget.y = 0;
+  }
+
   bindTouchPad(pad: HTMLElement): void {
     let touchId: number | null = null;
     let origin = { x: 0, y: 0 };
@@ -190,18 +209,6 @@ export class NavigationController {
     pad.addEventListener("touchcancel", reset);
   }
 
-  requestPointerLock(canvas: HTMLCanvasElement): void {
-    if (!this.isTouchPrimary()) {
-      canvas.requestPointerLock();
-    }
-  }
-
-  exitPointerLock(): void {
-    if (document.pointerLockElement) {
-      document.exitPointerLock();
-    }
-  }
-
   resize(aspect: number): void {
     this.camera.aspect = aspect;
     this.camera.updateProjectionMatrix();
@@ -210,9 +217,14 @@ export class NavigationController {
   update(delta: number): void {
     const input = this.readInput();
 
-    if (input.turn !== 0) {
+    if (this.turnAnim) {
+      const { startYaw, deltaYaw, startedAt, durationMs } = this.turnAnim;
+      const t = Math.min(1, (performance.now() - startedAt) / durationMs);
+      const eased = 1 - Math.pow(1 - t, 3);
+      this.yaw = startYaw - deltaYaw * eased;
+      if (t >= 1) this.turnAnim = null;
+    } else if (input.turn !== 0) {
       this.yaw -= input.turn * this.turnSpeed * delta;
-      this.applyRotation();
     }
 
     if (input.forward !== 0) {
@@ -236,7 +248,7 @@ export class NavigationController {
     this.player.position.y = THREE.MathUtils.lerp(this.player.position.y, this.targetEyeY, t);
   }
 
-  /** Keep the player on the garden footprint (box + circular object bounds). */
+  /** Keep the player on the garden footprint (box + circular bounds). */
   private constrainToWalkable(pos: THREE.Vector3): void {
     pos.x = THREE.MathUtils.clamp(pos.x, this.bounds.min.x, this.bounds.max.x);
     pos.z = THREE.MathUtils.clamp(pos.z, this.bounds.min.z, this.bounds.max.z);
@@ -295,9 +307,5 @@ export class NavigationController {
       this.mouseShift.x * this.mouseLookMax.x,
       0,
     );
-  }
-
-  private isTouchPrimary(): boolean {
-    return window.matchMedia("(pointer: coarse)").matches;
   }
 }

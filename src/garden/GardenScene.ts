@@ -5,7 +5,7 @@ import { NavigationController } from "../controls/NavigationController";
 import { createPlaceholderGarden } from "./PlaceholderGarden";
 import { defaultInspectionPositions, loadGardenGlb } from "./GlbGarden";
 import { updateMovingPixelsMaterials } from "./MovingPixels";
-import { InspectionPoint, getNearestPoint } from "./InspectionPoint";
+import { InspectionPoint, getNearestPoint, INTERACT_RADIUS } from "./InspectionPoint";
 import { PALETTE } from "./palette";
 import { EdgeLensPass } from "./EdgeLensPass";
 import { FloatingParticlesBlack } from "../ui/FloatingParticlesBlack";
@@ -67,7 +67,13 @@ export class GardenScene {
     const hemi = new THREE.HemisphereLight(PALETTE[1], PALETTE[4], 0.45);
     const key = new THREE.DirectionalLight(PALETTE[5], 0.5);
     key.position.set(12, 28, 8);
-    this.scene.add(ambient, hemi, key);
+    // Soft cool fill so PBR foliage reads without washing the particle garden.
+    const foliageFill = new THREE.HemisphereLight(0xb8d4a8, 0x1a2820, 0.85);
+    foliageFill.name = "foliage-fill";
+    const foliageKey = new THREE.DirectionalLight(0xe8f0d8, 1.15);
+    foliageKey.name = "foliage-key";
+    foliageKey.position.set(-10, 22, 14);
+    this.scene.add(ambient, hemi, key, foliageFill, foliageKey);
 
     const tempBounds = new THREE.Box3(
       new THREE.Vector3(-20, 0, -20),
@@ -182,6 +188,27 @@ export class GardenScene {
 
   getActivePoint(): InspectionPoint | null {
     return this.activePoint;
+  }
+
+  /** 1-based hotkey index into inspection points (1 = first project). */
+  getPointByNumber(n: number): InspectionPoint | null {
+    if (!Number.isInteger(n) || n < 1) return null;
+    return this.inspectionPoints[n - 1] ?? null;
+  }
+
+  /** Hide the thumbnail for the open project; pass null to show all again. */
+  setOverlayProjectId(pointId: string | null): void {
+    for (const point of this.inspectionPoints) {
+      point.setThumbnailVisible(pointId === null || point.data.id !== pointId);
+    }
+  }
+
+  /** True when the given project marker is within walk/inspect radius. */
+  isPointWithinInteractRadius(pointId: string, radiusMultiplier = 1): boolean {
+    const point = this.inspectionPoints.find((p) => p.data.id === pointId);
+    if (!point) return false;
+    const dist = point.distanceTo(this.navigation.player.position);
+    return dist <= INTERACT_RADIUS * radiusMultiplier;
   }
 
   update(): void {

@@ -12,6 +12,8 @@ export class HeightField {
   private readonly resX: number;
   private readonly resZ: number;
   private readonly heights: Float32Array;
+  /** True where a real topside sample existed (not hole-fill / fallback). */
+  private readonly supported: Uint8Array;
   private readonly fallbackY: number;
 
   private constructor(
@@ -22,6 +24,7 @@ export class HeightField {
     resX: number,
     resZ: number,
     heights: Float32Array,
+    supported: Uint8Array,
     fallbackY: number,
   ) {
     this.minX = minX;
@@ -31,6 +34,7 @@ export class HeightField {
     this.resX = resX;
     this.resZ = resZ;
     this.heights = heights;
+    this.supported = supported;
     this.fallbackY = fallbackY;
   }
 
@@ -91,6 +95,11 @@ export class HeightField {
 
     const fallbackY = filledN > 0 ? filledSum / filledN : bounds.min.y;
 
+    const supported = new Uint8Array(resX * resZ);
+    for (let i = 0; i < heights.length; i += 1) {
+      if (!Number.isNaN(heights[i])) supported[i] = 1;
+    }
+
     for (let pass = 0; pass < 3; pass += 1) {
       for (let iz = 0; iz < resZ; iz += 1) {
         for (let ix = 0; ix < resX; ix += 1) {
@@ -126,6 +135,7 @@ export class HeightField {
       resX,
       resZ,
       heights,
+      supported,
       fallbackY,
     );
   }
@@ -151,5 +161,29 @@ export class HeightField {
     const h0 = h00 + (h10 - h00) * tx;
     const h1 = h01 + (h11 - h01) * tx;
     return h0 + (h1 - h0) * tz;
+  }
+
+  /**
+   * True when (x,z) sits on cells that had real mesh samples — not extrapolated
+   * hole-fill outside the landscape silhouette.
+   */
+  hasSupport(x: number, z: number, radius = 0): boolean {
+    if (radius <= 0) return this.cellSupported(x, z);
+    if (!this.cellSupported(x, z)) return false;
+    const samples = 6;
+    for (let i = 0; i < samples; i += 1) {
+      const a = (i / samples) * Math.PI * 2;
+      if (!this.cellSupported(x + Math.cos(a) * radius, z + Math.sin(a) * radius)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private cellSupported(x: number, z: number): boolean {
+    const ix = Math.round((x - this.minX) / this.stepX);
+    const iz = Math.round((z - this.minZ) / this.stepZ);
+    if (ix < 0 || iz < 0 || ix >= this.resX || iz >= this.resZ) return false;
+    return this.supported[iz * this.resX + ix] === 1;
   }
 }

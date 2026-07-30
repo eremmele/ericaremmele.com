@@ -1,40 +1,101 @@
 import type { InspectionPointData, PortfolioItem } from "../types";
 
-const slides = (ids: number[]): string[] =>
-  ids.map((n) => `/portfolio/carousel/slide-${n}.jpg`);
+const img = (src: string) => ({ kind: "image" as const, src });
+const vid = (src: string, poster?: string) => ({ kind: "video" as const, src, poster });
 
 export const portfolioItems: PortfolioItem[] = [
   {
-    id: "motion-study",
-    title: "Motion Study",
-    year: "2024",
-    category: "Motion",
+    id: "cyber-product",
+    title: "Cybersecurity",
+    year: "2021-2026",
+    category: "Product Design, Research, Product Management",
     description:
-      "Motion and interaction study exploring timing, smear, and depth across a product narrative.",
-    image: "/portfolio/motion-study.jpg",
-    carouselImages: slides([1, 2, 3, 4, 5, 6, 7]),
+      "Leading product UX/UI and editorial systems across SWG, DLP, CASB, SSPM, LLMs + AI, and analytics, from feature definition and narrative framing through shipped interfaces and design systems.",
+    image: "/portfolio/cyber-product/casb.png",
+    carouselSlides: [
+      img("/portfolio/cyber-product/casb.png"),
+      img("/portfolio/cyber-product/sspm.png"),
+      img("/portfolio/cyber-product/analytics-editorial.png"),
+      img("/portfolio/cyber-product/casb-editorial.png"),
+      img("/portfolio/cyber-product/misc-editorial.png"),
+    ],
     link: "#",
   },
   {
-    id: "project-beta",
-    title: "Project Beta",
-    year: "2023",
+    id: "bridgeway",
+    title: "Bridgeway Dental",
+    year: "2025-2026",
     category: "Product Design",
     description:
-      "Product design exploration across systems, surfaces, and campaign touchpoints for a growing brand.",
-    image: "/portfolio/placeholder-2.svg",
-    carouselImages: slides([3, 5, 7, 2, 4, 6, 1]),
+      "Website design for a dental practice: home, full-page flows, design systems, and brand.",
+    image: "/portfolio/bridgeway/bw_1-website_home.png",
+    carouselSlides: [
+      img("/portfolio/bridgeway/bw_1-website_home.png"),
+      img("/portfolio/bridgeway/bw_2-website_full.png"),
+      img("/portfolio/bridgeway/bw_3-website_full.png"),
+      img("/portfolio/bridgeway/bw_4-website_section.png"),
+      img("/portfolio/bridgeway/bw_5-logo.png"),
+    ],
     link: "#",
   },
   {
-    id: "project-gamma",
-    title: "Project Gamma",
-    year: "2022",
-    category: "Graphic Design",
+    id: "swgwars",
+    title: "Digital Experience",
+    year: "2025",
+    category: "Campaign",
     description:
-      "Graphic design series spanning identity, editorial layouts, and immersive visual storytelling.",
-    image: "/portfolio/placeholder-3.svg",
-    carouselImages: slides([7, 6, 5, 1, 2, 3, 4]),
+      "Interactive campaign for a cyber startup: microsite, including screenplay-driven motion, opponent narratives, campaign graphics, and a CRT design library documenting tokens and components. Partnership with VO talent, musical talent, and lead in-house dev team.",
+    image: "/portfolio/swgwars/swgwars-01-hero.png",
+    carouselSlides: [
+      img("/portfolio/swgwars/swgwars-01-hero.png"),
+      img("/portfolio/swgwars/swgwars-02-screenplay-small-short.gif"),
+      img("/portfolio/swgwars/swgwars-04-opponents.png"),
+      img("/portfolio/swgwars/swgwars-05-graphics.png"),
+      {
+        kind: "embed",
+        src: "/portfolio/swgwars/design-system/index.html?embed=carousel",
+        title: "Digital Experience",
+      },
+    ],
+    link: "/portfolio/swgwars/design-system/index.html",
+  },
+  {
+    id: "undrmnd",
+    title: "undrmnd",
+    year: "2026",
+    category: "Product Design & Development",
+    description:
+      "Marketing site and design library for undrmnd: an open-source, counter-algorithmic learning commons. Live at undrmnd.com. App in beta.",
+    image: "/portfolio/undrmnd/undrmnd-card.svg",
+    carouselSlides: [
+      {
+        kind: "embed",
+        src: "/portfolio/undrmnd/index.html?embed=carousel",
+        title: "undrmnd.com",
+      },
+      {
+        kind: "embed",
+        src: "/portfolio/undrmnd/library.html?embed=carousel",
+        title: "undrmnd Design Library",
+      },
+    ],
+    link: "https://www.undrmnd.com",
+  },
+  {
+    id: "cyber-brand",
+    title: "Cyber Startup",
+    year: "2021-2026",
+    category: "Creative Direction, Brand Design, Website Design & Development",
+    description:
+      "Design and creative direction for a cybersecurity brand marketing site, ongoing iterations through the years.",
+    image: "/portfolio/cyber-brand/homepage.png",
+    carouselSlides: [
+      img("/portfolio/cyber-brand/homepage.png"),
+      img("/portfolio/cyber-brand/desktop-1440.png"),
+      img("/portfolio/cyber-brand/desktop-1440-alt.png"),
+      img("/portfolio/cyber-brand/macbook.png"),
+      vid("/portfolio/cyber-brand/walkthrough.webm", "/portfolio/cyber-brand/homepage.png"),
+    ],
     link: "#",
   },
 ];
@@ -42,21 +103,33 @@ export const portfolioItems: PortfolioItem[] = [
 export const inspectionPoints: InspectionPointData[] = [
   {
     id: "point-1",
-    portfolioId: "motion-study",
+    portfolioId: "cyber-product",
     position: [-6, 0, -4],
-    label: "Motion Study",
+    label: "Product Design",
   },
   {
     id: "point-2",
-    portfolioId: "project-beta",
+    portfolioId: "bridgeway",
     position: [0, 0, -10],
-    label: "Beta",
+    label: "Web Design & Dev",
   },
   {
     id: "point-3",
-    portfolioId: "project-gamma",
+    portfolioId: "swgwars",
     position: [7, 0, -3],
-    label: "Gamma",
+    label: "SWG Wars",
+  },
+  {
+    id: "point-4",
+    portfolioId: "undrmnd",
+    position: [4, 0, 4],
+    label: "Design Engineering",
+  },
+  {
+    id: "point-5",
+    portfolioId: "cyber-brand",
+    position: [-5, 0, 3],
+    label: "Creative Direction",
   },
 ];
 

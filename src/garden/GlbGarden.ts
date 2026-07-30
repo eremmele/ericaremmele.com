@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { HeightField } from "../controls/HeightField";
+import { createForestFoliageLayer } from "./FoliageScatter";
 import { meshSceneToParticleCloud } from "./MeshToParticles";
 import { loadPixelSprite } from "./MovingPixels";
 
@@ -13,6 +14,7 @@ export type LoadedGarden = {
   colliders: THREE.Object3D[];
   spawn: THREE.Vector3;
   heightField: HeightField;
+  foliage: THREE.Group;
 };
 
 export type LoadGardenOptions = {
@@ -147,6 +149,16 @@ export async function loadGardenGlb(
   const groundY = heightField.sample(cx, cz + walkRadius * 0.4);
   const spawn = new THREE.Vector3(cx, groundY + 1.65, cz + walkRadius * 0.4);
 
+  onProgress?.("Scattering foliage…");
+  const foliage = await createForestFoliageLayer({
+    heightField,
+    walkBounds,
+    walkCircle: { x: cx, z: cz, radius: walkRadius },
+    clearCenter: { x: spawn.x, z: spawn.z, radius: 2.8 },
+    onProgress,
+  });
+  root.add(foliage);
+
   return {
     root,
     materials,
@@ -155,6 +167,7 @@ export async function loadGardenGlb(
     colliders,
     spawn,
     heightField,
+    foliage,
   };
 }
 
@@ -170,5 +183,7 @@ export function defaultInspectionPositions(
     [cx - spanX, 0, cz - spanZ * 0.2],
     [cx, 0, cz - spanZ],
     [cx + spanX, 0, cz - spanZ * 0.15],
+    [cx + spanX * 0.45, 0, cz + spanZ * 0.45],
+    [cx - spanX * 0.55, 0, cz + spanZ * 0.4],
   ];
 }

@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    window.__UNDRMND_EMBED__ = new URLSearchParams(location.search).get("embed");
+    if (window.__UNDRMND_EMBED__ === "carousel") {
+      document.documentElement.classList.add("embed-carousel", "library-embed");
+    }
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="robots"
+    content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, max-snippet:0, max-image-preview:none, max-video-preview:0"
+  />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta author="Erica Remmele" />
+  <title>Library « undrmnd</title>
+  <meta name="description" content="undrmnd design library — tokens, patterns, and context for humans and agents. Non-addictive UI, e-ink reading, open source." />
+  <meta property="og:title" content="Library « undrmnd" />
+  <meta property="og:description" content="Design systems &amp; context for a non-addictive, e-ink learning commons. Readable by people and agents." />
+  <meta property="og:type" content="website" />
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDLorien-Book.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDLorien-Regular.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDUI-Regular.woff2" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./css/carousel-embed.css" />
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+</head>
+<body class="library-page">
+
+<!-- ===== Header ===== -->
+<header class="site-header" id="site-header">
+  <div class="container">
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html#top" class="logo" aria-label="undrmnd home">undrmnd</a><span class="label">Library</span>
+      <div class="nav-links" role="list">
+        <a href="index.html#thesis">Thesis</a>
+        <a href="library.html" aria-current="page">Library</a>
+        <a href="index.html#community">Community</a>
+        <a href="https://github.com/eremmele/undrmnd" class="gh" target="_blank" rel="noopener">Build with us <span class="nav-arrow">↗</span></a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="lib-hero" id="top">
+  <div class="container">
+    <h1>Design context for <em>whomever.</em></h1>
+    <p class="lede">
+      Tokens and patterns that keep the commons focused. E‑ink on screen to combat the dopamine feed. Open source. Meant to be read and forked.
+    </p>
+    <div class="lib-hero-meta">
+      <a class="btn" href="#spec">Inspect the spec →</a>
+      <a class="btn btn-ghost" href="DESIGN.md">Agent source <span class="nav-arrow">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Annotated breakpoint spec ===== -->
+<section class="spec-board" id="spec" aria-label="Annotated breakpoint preview">
+  <div class="container">
+    <div class="spec-toolbar" role="tablist" aria-label="Spec view">
+      <button type="button" class="spec-tab is-active" data-spec-view="annotated" aria-pressed="true">Annotated</button>
+      <button type="button" class="spec-tab" data-spec-view="clean" aria-pressed="false">Clean preview</button>
+      <span class="spec-toolbar-meta">Desktop · Mobile · Type · Measure</span>
+    </div>
+
+    <div class="spec-stage">
+      <!-- Desktop mockup -->
+      <figure class="spec-frame spec-frame--desktop" aria-label="Desktop breakpoint mockup">
+        <figcaption class="spec-frame-cap">
+          <span>Desktop</span>
+          <span>≥980px</span>
+        </figcaption>
+        <div class="spec-chrome">
+          <span class="spec-dot"></span><span class="spec-dot"></span><span class="spec-dot"></span>
+          <span class="spec-url">undrmnd.com</span>
+        </div>
+        <div class="spec-viewport">
+          <div class="spec-rail" aria-hidden="true"><span>Hero</span></div>
+          <div class="spec-rail spec-rail--lower" aria-hidden="true"><span>Thesis</span></div>
+
+          <div class="spec-site">
+            <header class="spec-site-nav">
+              <span class="spec-logo">
+                undrmnd
+                <span class="spec-tag">MD Lórien / Logo</span>
+              </span>
+              <nav class="spec-site-links" aria-hidden="true">
+                <span>Thesis<span class="spec-tag">MD UI / Nav</span></span>
+                <span>Library</span>
+                <span>Community</span>
+                <span>Build ↗</span>
+              </nav>
+            </header>
+
+            <div class="spec-hero-block">
+              <div class="spec-guide-v" style="left:40px" data-label="gutter 40"></div>
+              <div class="spec-guide-v" style="right:40px" data-label="gutter 40"></div>
+
+              <div class="spec-measure-band spec-measure-band--top" data-label="pad 120–200">
+                <span class="spec-measure">clamp 120–200</span>
+              </div>
+
+              <h2 class="spec-h-display">
+                <span class="spec-tag spec-tag--anchor">MD Lórien / Display</span>
+                Design context for
+                <em>
+                  whomever.
+                  <span class="spec-tag spec-tag--accent">Accent italic</span>
+                </em>
+              </h2>
+
+              <div class="spec-gap" data-label="28">
+                <span class="spec-gap-label">28</span>
+              </div>
+
+              <p class="spec-lede">
+                <span class="spec-tag">MD Lórien / Lede · 62ch</span>
+                Tokens and patterns that keep the commons focused. E‑ink on screen to combat the dopamine feed.
+              </p>
+
+              <div class="spec-gap spec-gap--lg" data-label="48">
+                <span class="spec-gap-label">48</span>
+              </div>
+
+              <div class="spec-cta-row">
+                <span class="spec-btn">
+                  Start with principles →
+                  <span class="spec-tag">MD UI / Button</span>
+                </span>
+                <span class="spec-btn-ghost">
+                  Agent source ↗
+                  <span class="spec-tag">MD UI / Ghost</span>
+                </span>
+                <span class="spec-inline-measure" aria-hidden="true">gap 28</span>
+              </div>
+            </div>
+
+            <div class="spec-thesis-block">
+              <div class="spec-guide-h" data-label="section pad"></div>
+              <span class="spec-section-label">
+                Thesis
+                <span class="spec-tag">MD UI / Label 12</span>
+              </span>
+              <div class="spec-gap" data-label="18"><span class="spec-gap-label">18</span></div>
+              <div class="spec-two-col">
+                <h3 class="spec-h-section">
+                  <span class="spec-tag">MD Lórien / H2</span>
+                  A library, <em>not a feed.</em>
+                </h3>
+                <p class="spec-body">
+                  <span class="spec-tag">MD Lórien / Body 18/1.6</span>
+                  Curiosity, not algorithms, decides what you encounter next.
+                </p>
+              </div>
+              <div class="spec-measure-edge" aria-hidden="true">
+                <span>measure 62ch</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <!-- Mobile mockup -->
+      <figure class="spec-frame spec-frame--mobile" aria-label="Mobile breakpoint mockup">
+        <figcaption class="spec-frame-cap">
+          <span>Mobile</span>
+          <span>≤720px</span>
+        </figcaption>
+        <div class="spec-phone">
+          <div class="spec-phone-notch" aria-hidden="true"></div>
+          <div class="spec-viewport spec-viewport--mobile">
+            <div class="spec-site">
+              <header class="spec-site-nav">
+                <span class="spec-logo">
+                  undrmnd
+                  <span class="spec-tag">Logo</span>
+                </span>
+                <span class="spec-menu">
+                  Menu
+                  <span class="spec-tag">MD UI / 13</span>
+                </span>
+              </header>
+
+              <div class="spec-hero-block">
+                <div class="spec-guide-v" style="left:20px" data-label="20"></div>
+                <div class="spec-guide-v" style="right:20px" data-label="20"></div>
+
+                <h2 class="spec-h-display">
+                  <span class="spec-tag spec-tag--anchor">Display · stack</span>
+                  Design context for <em>whomever.</em>
+                </h2>
+
+                <div class="spec-gap" data-label="22"><span class="spec-gap-label">22</span></div>
+
+                <p class="spec-lede">
+                  <span class="spec-tag">Lede</span>
+                  For you. By you. Open source.
+                </p>
+
+                <div class="spec-gap" data-label="32"><span class="spec-gap-label">32</span></div>
+
+                <div class="spec-cta-row spec-cta-row--stack">
+                  <span class="spec-btn">Principles →<span class="spec-tag">Button</span></span>
+                  <span class="spec-btn-ghost">Agent source ↗</span>
+                </div>
+              </div>
+
+              <div class="spec-thesis-block">
+                <span class="spec-section-label">Thesis<span class="spec-tag">Label</span></span>
+                <h3 class="spec-h-section">
+                  <span class="spec-tag">H2</span>
+                  A library, <em>not a feed.</em>
+                </h3>
+                <p class="spec-body">
+                  <span class="spec-tag">Body</span>
+                  One column. Same hierarchy. Smaller gutters.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <!-- Side meta -->
+      <aside class="spec-meta" aria-label="Spec metadata">
+        <div class="spec-meta-card">
+          <p class="spec-meta-title">Palette</p>
+          <div class="spec-swatches" aria-hidden="true">
+            <span style="background:#f1ece1" title="paper"></span>
+            <span style="background:#e8e1d1" title="paper-raised"></span>
+            <span style="background:#cfc7b4" title="eink"></span>
+            <span style="background:#b9b09a" title="hairline"></span>
+            <span style="background:#8a7551" title="accent-soft"></span>
+            <span style="background:#5a4a2f" title="accent"></span>
+            <span style="background:#3a3833" title="graphite-600"></span>
+            <span style="background:#1b1a17" title="ink"></span>
+            <span style="background:#16140f" title="night"></span>
+            <span style="background:#e9e2d1" title="night-text"></span>
+          </div>
+        </div>
+
+        <div class="spec-meta-card">
+          <p class="spec-meta-title">Tags</p>
+          <div class="spec-pills">
+            <span>E‑ink</span>
+            <span>Non-addictive</span>
+            <span>Open source</span>
+            <span>Serif + UI sans</span>
+            <span>Finite sessions</span>
+            <span>Agent context</span>
+          </div>
+        </div>
+
+        <div class="spec-meta-card spec-meta-card--crop">
+          <p class="spec-meta-title">Type pair</p>
+          <div class="spec-crop">
+            <p class="spec-crop-sans">
+              <span class="spec-tag">MD UI / Label</span>
+              LIBRARY
+            </p>
+            <p class="spec-crop-serif">
+              <span class="spec-tag">MD Lórien / Display</span>
+              Design context,<br />
+              <em>
+                for humans
+                <span class="spec-tag spec-tag--accent">Accent</span>
+              </em>
+            </p>
+          </div>
+        </div>
+
+        <div class="spec-meta-card">
+          <p class="spec-meta-title">Key measures</p>
+          <dl class="spec-measure-list">
+            <div><dt>Gutter</dt><dd>40px · 20px mobile</dd></div>
+            <div><dt>Measure</dt><dd>62ch body</dd></div>
+            <div><dt>Body</dt><dd>18 / 1.6</dd></div>
+            <div><dt>Label</dt><dd>12 · tracked</dd></div>
+            <div><dt>CTA gap</dt><dd>28–48</dd></div>
+            <div><dt>Section pad</dt><dd>clamp 110–200</dd></div>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="lib-shell container">
+  <!-- ===== Side nav ===== -->
+  <nav class="lib-nav" aria-label="Library sections">
+    <p class="lib-nav-title">Browse</p>
+    <ol>
+      <li><a href="#spec">Spec / breakpoints</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#principles">Principles</a></li>
+      <li><a href="#tokens">Color tokens</a></li>
+      <li><a href="#typography">Typography</a></li>
+      <li><a href="#surfaces">Surfaces</a></li>
+      <li><a href="#patterns">Patterns</a></li>
+      <li><a href="#anti">Anti-patterns</a></li>
+      <li><a href="#components">Components</a></li>
+      <li><a href="#agents">For agents</a></li>
+    </ol>
+    <p class="lib-nav-foot">
+      Source of truth:<br />
+      <a href="./styles.css"><code>styles.css</code></a><br />
+      <a href="./DESIGN.md"><code>DESIGN.md</code></a><br />
+      <a href="./library/tokens.json"><code>tokens.json</code></a>
+    </p>
+  </nav>
+
+  <main class="lib-main">
+
+    <!-- Overview -->
+    <section class="lib-section" id="overview">
+      <div class="lib-eyebrow">Foundations / Overview</div>
+      <h2>A library, <em>not a design system for growth.</em></h2>
+      <p>
+        Most design systems optimize for GTM andconversion. This one optimizes for <strong>attention that leaves the screen</strong>. undrmnd translates the physical e‑ink reader paperwhite grain, finite pages, no urgency chrome — into interface so reading stays calm and contribution stays honest.
+      </p>
+      <p>
+        The context layer has a public URL. Humans browse it — including the <a href="#spec">annotated breakpoint spec</a> with type labels and measures. Agents load <a href="DESIGN.md"><code>DESIGN.md</code></a> and <a href="library/tokens.json"><code>library/tokens.json</code></a>. Both should say the same thing.
+      </p>
+      <dl class="lib-def">
+        <div>
+          <dt>What this is</dt>
+          <dd>Living context for the undrmnd site and iOS app: tokens, type, surfaces, behavioral patterns, and hard refusals.</dd>
+        </div>
+        <div>
+          <dt>What this is not</dt>
+          <dd>A component marketplace, a gamification kit, or a guide to “winning engagement.”</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Principles -->
+    <section class="lib-section" id="principles">
+      <div class="lib-eyebrow">Foundations / Principles</div>
+      <h2>North star:</h2>
+      <ol class="lib-principles">
+        <li>
+          <strong>Lower barriers to inquiry.</strong>
+          <span>Anyone can ask, explore, and contribute without credentials or fear of backlash.</span>
+        </li>
+        <li>
+          <strong>Think freely without addiction.</strong>
+          <span>Finite sessions, clear stopping points, e‑ink visuals — not infinite feeds.</span>
+        </li>
+        <li>
+          <strong>From doomscrolling to contribution.</strong>
+          <span>Micro-interactions that foster curiosity and real, any-sized contributions.</span>
+        </li>
+        <li>
+          <strong>Beginner-friendly commons.</strong>
+          <span>Lived experience and “beginner” questions are assets, not liabilities.</span>
+        </li>
+        <li>
+          <strong>Open-source infrastructure.</strong>
+          <span>Forkable, adaptable, outside extractive engagement models.</span>
+        </li>
+      </ol>
+      <blockquote class="lib-quote">
+        <p>The library should send you outside more often than it pulls you in.</p>
+      </blockquote>
+    </section>
+
+    <!-- Tokens -->
+    <section class="lib-section" id="tokens">
+      <div class="lib-eyebrow">Foundations / Color</div>
+      <h2>Tokens that refuse <em>spectacle.</em></h2>
+      <p>
+        Palette intent is paper, graphite, and a greenish paperwhite tint — never saturated marketing primaries. Accents are warm brown, not dopamine neon. If a color could belong on a billboard, it does not belong here.
+      </p>
+
+      <h3>Paper (day)</h3>
+      <div class="token-grid" role="list">
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#f1ece1"></span>
+          <span class="token-name">paper</span>
+          <span class="token-val">#f1ece1</span>
+          <span class="token-use">Page ground. Default reading surface.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#e8e1d1"></span>
+          <span class="token-name">paper-raised</span>
+          <span class="token-val">#e8e1d1</span>
+          <span class="token-use">Quiet lift for specimens and insets.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#d4cdb9"></span>
+          <span class="token-name">fog</span>
+          <span class="token-val">#d4cdb9</span>
+          <span class="token-use">Obscured map / atmosphere.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#b9b09a"></span>
+          <span class="token-name">hairline</span>
+          <span class="token-val">#b9b09a</span>
+          <span class="token-use">Borders, rules, soft structure.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#3a3833"></span>
+          <span class="token-name">graphite-600</span>
+          <span class="token-val">#3a3833</span>
+          <span class="token-use">Secondary text, nav, captions.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#1b1a17"></span>
+          <span class="token-name">ink</span>
+          <span class="token-val">#1b1a17</span>
+          <span class="token-use">Primary text. Near-black with warmth.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#5a4a2f"></span>
+          <span class="token-name">accent</span>
+          <span class="token-val">#5a4a2f</span>
+          <span class="token-use">Emphasis, italics hinge, links.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#8a7551"></span>
+          <span class="token-name">accent-soft</span>
+          <span class="token-val">#8a7551</span>
+          <span class="token-use">Eyebrows on dark; softer cues.</span>
+        </div>
+      </div>
+
+      <h3>Night</h3>
+      <div class="token-grid" role="list">
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#16140f"></span>
+          <span class="token-name">night</span>
+          <span class="token-val">#16140f</span>
+          <span class="token-use">Hero and deep sections.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#1f1c16"></span>
+          <span class="token-name">night-raised</span>
+          <span class="token-val">#1f1c16</span>
+          <span class="token-use">Panels on night.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#3a342a"></span>
+          <span class="token-name">night-hairline</span>
+          <span class="token-val">#3a342a</span>
+          <span class="token-use">Borders on night.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#e9e2d1"></span>
+          <span class="token-name">night-text</span>
+          <span class="token-val">#e9e2d1</span>
+          <span class="token-use">Primary text on night.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#aea493"></span>
+          <span class="token-name">night-muted</span>
+          <span class="token-val">#aea493</span>
+          <span class="token-use">Secondary on night.</span>
+        </div>
+      </div>
+
+      <h3>Paperwhite (e‑ink)</h3>
+      <div class="token-grid" role="list">
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#cfc7b4"></span>
+          <span class="token-name">eink</span>
+          <span class="token-val">#cfc7b4</span>
+          <span class="token-use">Greenish LCD / Kindlesque ground.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#b6ad99"></span>
+          <span class="token-name">eink-deep</span>
+          <span class="token-val">#b6ad99</span>
+          <span class="token-use">Bezel / deeper frame.</span>
+        </div>
+        <div class="token" role="listitem">
+          <span class="token-swatch" style="background:#2a2820"></span>
+          <span class="token-name">eink-ink</span>
+          <span class="token-val">#2a2820</span>
+          <span class="token-use">Ink on paperwhite.</span>
+        </div>
+      </div>
+
+      <div class="lib-callout">
+        <p><strong>Intent over position.</strong> Prefer names that say what a color <em>does</em> (<code>ink</code>, <code>fog</code>, <code>eink</code>) over <code>primary</code> / <code>secondary</code>. Agents and humans should pick by role, not by marketing hierarchy.</p>
+      </div>
+    </section>
+
+    <!-- Typography -->
+    <section class="lib-section" id="typography">
+      <div class="lib-eyebrow">Foundations / Typography</div>
+      <h2>Type that reads like <em>a public library.</em></h2>
+      <p>
+        Two faces from <a href="https://mass-driver.com/" target="_blank" rel="noopener">Mass-Driver</a>: MD Lórien for the contemplative voice, MD UI for chrome and labels. Warmth and e‑ink readability over tech-default stacks. See labels live on the <a href="#spec">spec board</a> (desktop + mobile).
+      </p>
+
+      <div class="type-specimens">
+        <div class="type-specimen serif">
+          <span class="type-label">MD Lórien · serif</span>
+          <p class="type-sample">A library, not a feed.</p>
+          <span class="type-meta">Headlines, body, quotes. Book / Regular / Semibold.</span>
+        </div>
+        <div class="type-specimen sans">
+          <span class="type-label">MD UI · sans</span>
+          <p class="type-sample">THESIS · FIELD NOTES · LOC 142</p>
+          <span class="type-meta">Nav, labels, Kindle chrome, metadata. Regular / Medium.</span>
+        </div>
+      </div>
+
+      <div class="lib-table-wrap">
+        <table class="lib-table">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Size / leading</th>
+              <th>Face</th>
+              <th>Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Display</td>
+              <td>clamp 48–96 / 1.02</td>
+              <td>Lórien</td>
+              <td>Page titles (Library, Colophon)</td>
+            </tr>
+            <tr>
+              <td>Section H2</td>
+              <td>clamp 28–44 / 1.1</td>
+              <td>Lórien</td>
+              <td>One job per section; italic hinge in accent</td>
+            </tr>
+            <tr>
+              <td>Body</td>
+              <td>18 / 1.6 · measure 62ch</td>
+              <td>Lórien Book</td>
+              <td>Reading length; oldstyle figures preferred</td>
+            </tr>
+            <tr>
+              <td>Label / eyebrow</td>
+              <td>12 / tracked</td>
+              <td>MD UI Medium</td>
+              <td>Section labels, status chrome</td>
+            </tr>
+            <tr>
+              <td>UI / button</td>
+              <td>13–14 / tracked</td>
+              <td>MD UI</td>
+              <td>Nav, CTAs, dock</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dos-grid">
+        <div class="dos">
+          <h4>Do</h4>
+          <ul>
+            <li>One H1 per page; sequential hierarchy</li>
+            <li>Italic hinge for the emotional word in a headline</li>
+            <li>Keep body near 62ch</li>
+            <li>Respect <code>prefers-reduced-motion</code></li>
+          </ul>
+        </div>
+        <div class="donts">
+          <h4>Don’t</h4>
+          <ul>
+            <li>Default to Inter / Roboto / system-only stacks</li>
+            <li>Use display type for dense UI chrome</li>
+            <li>Skip heading levels for visual effect</li>
+            <li>All-caps body copy</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Surfaces -->
+    <section class="lib-section" id="surfaces">
+      <div class="lib-eyebrow">Foundations / Surfaces</div>
+      <h2>Three climates, <em>one climate of mind.</em></h2>
+      <p>Every major surface should feel like paper, dusk, or a Kindle — never glass, never neon glassmorphism, never purple gradient SaaS.</p>
+
+      <div class="surface-demos">
+        <figure class="surface-demo is-paper">
+          <figcaption>Paper</figcaption>
+          <p>Default editorial ground. Soft grain overlay. For thesis, community, colophon, this library.</p>
+        </figure>
+        <figure class="surface-demo is-night">
+          <figcaption>Night</figcaption>
+          <p>Hero, how-it-works, AI stance, build. Warm charcoal — not pure black OLED.</p>
+        </figure>
+        <figure class="surface-demo is-eink">
+          <figcaption>Paperwhite</figcaption>
+          <p>Device metaphor for slow reading. Greenish-grey LCD tint. Status bar + passage, no badges.</p>
+        </figure>
+      </div>
+
+      <div class="lib-callout">
+        <p><strong>Grain is atmosphere, not decoration.</strong> SVG noise sits lightly on paper and night. Fog-of-war uses dither and soft reveal edges — paper clearing, not smoke machine.</p>
+      </div>
+    </section>
+
+    <!-- Patterns -->
+    <section class="lib-section" id="patterns">
+      <div class="lib-eyebrow">Patterns / Behavioral</div>
+      <h2>Behavior is the <em>delivery vehicle.</em></h2>
+      <p>Visual language alone is not enough. These patterns encode the counter-algorithmic thesis in interaction.</p>
+
+      <ul class="pattern-list">
+        <li>
+          <span class="pattern-num">01</span>
+          <div>
+            <h3>Finite sessions</h3>
+            <p>Three-card loops with an explicit end. No “one more.” Stopping is part of the product, not a failure state.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">02</span>
+          <div>
+            <h3>Fog reveal</h3>
+            <p>The commons opens as people read and contribute. Spatial adjacency by topic — not chronological feed ranking.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">03</span>
+          <div>
+            <h3>Strata as object</h3>
+            <p>Knowledge units with schema (summary, source, relations, prompts, field notes) — not posts optimized for engagement.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">04</span>
+          <div>
+            <h3>Friction as feature</h3>
+            <p>Small pauses, load-more gates, reflective interrupts. Conscious opt-in to continue — never phantom urgency.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">05</span>
+          <div>
+            <h3>Field notes → outside</h3>
+            <p>Affordances that push attention into the world: sketch, notice, observe. Counter digital anhedonia on purpose.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">06</span>
+          <div>
+            <h3>AI used sparingly</h3>
+            <p>Semantic starting points and related Strata only. Not an oracle. The thinking belongs to people in the library.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">07</span>
+          <div>
+            <h3>Time-honest content</h3>
+            <p>Estimated times reflect a calm read. No streaks, karma, leaderboards, or false scarcity. Citations must be real.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pattern-num">08</span>
+          <div>
+            <h3>One job per section</h3>
+            <p>On marketing surfaces: one purpose, one headline, one short supporting sentence. Hero budget stays lean.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Anti-patterns -->
+    <section class="lib-section" id="anti">
+      <div class="lib-eyebrow">Patterns / Never</div>
+      <h2>What we <em>refuse</em> to ship.</h2>
+      <p>If a proposal increases time-on-app without increasing inquiry or contribution quality, reject it.</p>
+
+      <ul class="anti-list">
+        <li>Infinite scroll without an explicit gate</li>
+        <li>Streaks, badges-for-completion, leaderboards, “one more for free”</li>
+        <li>Phantom notifications, fake urgency, intermittent variable rewards</li>
+        <li>Autoplay by default; pull-to-refresh without friction</li>
+        <li>Engagement-maximizing ranking without user control</li>
+        <li>Vibrant dopamine palettes, glow effects, pill clusters, stat strips</li>
+        <li>Cards in the hero; floating promo badges on media</li>
+        <li>AI that decides what users should wonder about</li>
+        <li>Tracking SDKs; analytics that leave the device without consent</li>
+        <li>Fabricated DOIs, sources, or scarcity</li>
+      </ul>
+    </section>
+
+    <!-- Components -->
+    <section class="lib-section" id="components">
+      <div class="lib-eyebrow">Components / Primitives</div>
+      <h2>Few parts, <em>used carefully.</em></h2>
+      <p>Prefer composition from existing primitives over inventing new chrome. Specimens below use live site styles.</p>
+
+      <h3>Buttons</h3>
+      <div class="comp-row">
+        <a class="btn" href="#components">Primary</a>
+        <a class="btn btn-ghost" href="#components">Ghost link</a>
+      </div>
+      <div class="comp-row on-night">
+        <a class="btn btn-on-dark" href="#components">On night</a>
+        <a class="btn btn-ghost btn-on-dark" href="#components">Ghost on night</a>
+      </div>
+      <p class="comp-note">Solid border, no rounded-full pills, no multi-layer shadows. Hover inverts ink and paper.</p>
+
+      <h3>Labels</h3>
+      <div class="comp-row">
+        <span class="label">Thesis</span>
+        <span class="eyebrow">Section eyebrow</span>
+        <span class="label dark-label" style="background:var(--night);padding:8px 12px;">On dark</span>
+      </div>
+
+      <h3>Paperwhite frame</h3>
+      <div class="paperwhite-frame lib-pw">
+        <div class="pw-screen">
+          <div class="pw-status">
+            <span class="pw-time">7:42</span>
+            <span class="pw-batt"><span class="pw-batt-bar" style="width:62%"></span></span>
+          </div>
+          <p class="pw-eyebrow">— passage —</p>
+          <p class="pw-quote"><em>Delight without addiction.</em></p>
+          <p class="pw-meta">undrmnd / library / loc — of —</p>
+        </div>
+      </div>
+      <p class="comp-note">Use for interstitial attention notes and device metaphor — never as a content card grid.</p>
+
+      <h3>Strata (schema sketch)</h3>
+      <article class="strata-card is-active lib-strata-demo" aria-label="Example Strata">
+        <div class="strata-card-head">
+          <span class="strata-label">Strata / Living World</span>
+          <span class="strata-status">schema</span>
+        </div>
+        <h3>Title · plain-language summary · source · tags · relations · prompts · field notes · map visibility</h3>
+        <p class="summary">Treat Strata as structured knowledge objects. Forkability depends on the schema as much as the UI.</p>
+      </article>
+    </section>
+
+    <!-- Agents -->
+    <section class="lib-section" id="agents">
+      <div class="lib-eyebrow">Context / Agents</div>
+      <h2>Context you can <em>hand to an agent.</em></h2>
+      <p>
+        This page is the human browse surface. For Cursor, Claude, and other agents, load the machine-readable sources first — then reason across them instead of inventing a louder palette.
+      </p>
+
+      <div class="agent-grid">
+        <a class="agent-card" href="DESIGN.md">
+          <span class="agent-kicker">Primary</span>
+          <strong>DESIGN.md</strong>
+          <span>Intent, surfaces, patterns, refusals — prose an agent can follow.</span>
+        </a>
+        <a class="agent-card" href="library/tokens.json">
+          <span class="agent-kicker">Tokens</span>
+          <strong>tokens.json</strong>
+          <span>Named colors, type roles, and usage hints as structured data.</span>
+        </a>
+        <a class="agent-card" href="styles.css">
+          <span class="agent-kicker">CSS</span>
+          <strong>styles.css</strong>
+          <span>Live <code>:root</code> tokens and component styles on this site.</span>
+        </a>
+        <a class="agent-card" href="https://github.com/eremmele/undrmnd" target="_blank" rel="noopener">
+          <span class="agent-kicker">App</span>
+          <strong>undrmnd repo ↗</strong>
+          <span>Product brief, content rubric, and Swift theme mirror.</span>
+        </a>
+      </div>
+
+      <h3>Agent checklist</h3>
+      <ol class="lib-checklist">
+        <li>Does this protect attention, or extract it?</li>
+        <li>Is the stopping point visible?</li>
+        <li>Would this still feel like e‑ink / paper if you removed the brand name?</li>
+        <li>Are you using intent-named tokens (<code>ink</code>, <code>eink</code>) rather than inventing new hues?</li>
+        <li>Would a public library put this on a quiet wall — or on a casino floor?</li>
+      </ol>
+
+      <div class="lib-callout">
+        <p>
+          Mirror docs in the app repo: <code>docs/undrmnd-product-brief.md</code>, <code>docs/CONTENT_RUBRIC.md</code>, and <code>.cursorrules</code>. When site and app disagree, prefer the product brief + this library over legacy pattern names.
+        </p>
+      </div>
+    </section>
+
+    <section class="lib-closing">
+      <p>“The library is what you make of it.”</p>
+      <a class="back-link" href="index.html">Back to undrmnd</a>
+    </section>
+  </main>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-row colophon">
+      <span>undrmnd &nbsp;/&nbsp; A commons for trading knowledge openly. &nbsp;/&nbsp; Open source. Always in development.</span>
+      <span>
+        <a href="https://github.com/eremmele/undrmnd-site" target="_blank" rel="noopener" style="margin-right:18px;">GitHub ↗</a>
+        <a href="mailto:err698@g.harvard.edu" style="margin-right:18px;">Contact ↗</a>
+        <a href="library.html" aria-current="page" style="margin-right:18px;">Library</a>
+        <a href="colophon.html">Colophon</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    const header = document.getElementById("site-header");
+    if (!header) return;
+    let lastY = window.scrollY;
+    let accum = 0;
+    const HIDE = 24, SHOW = 8;
+    const onScroll = () => {
+      const y = window.scrollY;
+      header.classList.toggle("scrolled", y > 12);
+      const delta = y - lastY;
+      if (y < 80) { header.classList.remove("is-hidden"); accum = 0; }
+      else if (delta > 0) { accum = Math.max(0, accum) + delta; if (accum > HIDE) header.classList.add("is-hidden"); }
+      else if (delta < 0) { accum = Math.min(0, accum) + delta; if (accum < -SHOW) header.classList.remove("is-hidden"); }
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const links = document.querySelectorAll(".lib-nav a[href^='#']");
+    const sections = [...links].map((a) => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+    const setActive = () => {
+      let current = sections[0];
+      for (const s of sections) {
+        if (s.getBoundingClientRect().top <= 120) current = s;
+      }
+      if (!current) return;
+      links.forEach((a) => {
+        a.classList.toggle("is-active", a.getAttribute("href") === "#" + current.id);
+      });
+    };
+    window.addEventListener("scroll", setActive, { passive: true });
+    setActive();
+
+    const board = document.getElementById("spec");
+    const tabs = document.querySelectorAll(".spec-tab");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const view = tab.getAttribute("data-spec-view");
+        tabs.forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle("is-active", on);
+          t.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        if (board) board.classList.toggle("is-clean", view === "clean");
+      });
+    });
+  })();
+</script>
+
+<script>
+  if (window.__UNDRMND_EMBED__ === "carousel") {
+    var embed = document.createElement("script");
+    embed.src = "./js/carousel-embed.js";
+    document.body.appendChild(embed);
+  }
+</script>
+
+</body>
+</html>

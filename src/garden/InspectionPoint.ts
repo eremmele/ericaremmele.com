@@ -3,7 +3,7 @@ import { CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer.js";
 import type { InspectionPointData, PortfolioItem } from "../types";
 import { createProjectCard } from "../ui/ProjectCard";
 
-const INTERACT_RADIUS = 3.2;
+export const INTERACT_RADIUS = 3.2;
 /** CSS3D uses px as world units — scale cards into garden space. */
 const CARD_SCALE = 0.012;
 const FLOAT_HEIGHT = 1.35;
@@ -16,6 +16,7 @@ export class InspectionPoint {
   readonly element: HTMLDivElement;
 
   private readonly onInspect?: (point: InspectionPoint) => void;
+  private thumbnailHidden = false;
 
   constructor(
     data: InspectionPointData,
@@ -45,6 +46,18 @@ export class InspectionPoint {
     this.group.add(this.object);
   }
 
+  /** Hide the garden thumbnail while its project overlay is open. */
+  setThumbnailVisible(visible: boolean): void {
+    this.thumbnailHidden = !visible;
+    this.element.classList.toggle("is-overlay-hidden", this.thumbnailHidden);
+    if (this.thumbnailHidden) {
+      this.element.style.opacity = "0";
+      this.element.style.pointerEvents = "none";
+    } else {
+      this.element.style.pointerEvents = "";
+    }
+  }
+
   update(elapsed: number, playerPosition: THREE.Vector3, camera: THREE.Camera): boolean {
     const distance = this.group.position.distanceTo(playerPosition);
     const active = distance <= INTERACT_RADIUS;
@@ -54,7 +67,9 @@ export class InspectionPoint {
     this.object.quaternion.copy(camera.quaternion);
 
     this.element.classList.toggle("is-active", active);
-    this.element.style.opacity = active ? "1" : distance < INTERACT_RADIUS * 2.2 ? "0.88" : "0.72";
+    if (!this.thumbnailHidden) {
+      this.element.style.opacity = active ? "1" : distance < INTERACT_RADIUS * 2.2 ? "0.88" : "0.72";
+    }
 
     return active;
   }

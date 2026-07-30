@@ -2,8 +2,10 @@
  * Full-viewport light rays — white, 1px, 20% opacity, soft-light blend.
  */
 const ANGLE = (65 * Math.PI) / 180; // steeper than the original 45°
-const OPACITY = 0.2;
-const THICKNESS = 1;
+// Canvas alpha is kept at 1.0; overall intensity is controlled via `.light-rays { opacity }`.
+const OPACITY = 1.0;
+const THICKNESS = 1; // base; per-ray width varies 1–5px at draw time
+const DRIFT_PX_PER_SEC = 8;
 /** Approximate rays per 1000px of diagonal coverage. */
 const DENSITY = 0.055;
 
@@ -13,6 +15,8 @@ export class LightRays {
   /** Offsets along the perpendicular axis, in CSS pixels (stable across resize). */
   private offsets: number[] = [];
   private seedExtent = 0;
+  private driftX = 0;
+  private lastTs = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -21,6 +25,7 @@ export class LightRays {
     this.ctx = ctx;
     this.resize();
     window.addEventListener("resize", () => this.resize());
+    requestAnimationFrame((ts) => this.animate(ts));
   }
 
   private ensureOffsets(extent: number): void {
@@ -54,14 +59,13 @@ export class LightRays {
 
     const extent = (w + h) * Math.SQRT1_2 * 2;
     this.ensureOffsets(extent);
-    this.draw(w, h);
+    this.draw(w, h, 0);
   }
 
-  private draw(w: number, h: number): void {
+  private draw(w: number, h: number, tsSec: number): void {
     const { ctx } = this;
     ctx.clearRect(0, 0, w, h);
     ctx.strokeStyle = `rgba(255, 255, 255, ${OPACITY})`;
-    ctx.lineWidth = THICKNESS;
     ctx.lineCap = "butt";
 
     const cos = Math.cos(ANGLE);
@@ -71,16 +75,39 @@ export class LightRays {
     const py = cos;
     // Half-length long enough to cross the full viewport from any offset
     const halfLen = (w + h) * 0.75;
-    const cx = w * 0.5;
+    const cx = w * 0.5 + this.driftX;
     const cy = h * 0.5;
+
+    const wrap = window.innerWidth + window.innerHeight;
+    const motionPhase = wrap > 0 ? this.driftX / wrap : 0;
 
     for (const offset of this.offsets) {
       const ox = cx + px * offset;
       const oy = cy + py * offset;
+      // Vary beam width with smooth "random" oscillation (drift + time),
+      // tuned to be subtle: 1–3px.
+      const phaseA = offset * 0.045 + motionPhase * 8 + tsSec * 0.18;
+      const phaseB = offset * 0.013 - motionPhase * 5 - tsSec * 0.12;
+      const width01 = (Math.sin(phaseA) + Math.sin(phaseB)) * 0.25 + 0.5; // 0..1
+      const lineW = THICKNESS + 2 * width01; // 1..3px
+      ctx.lineWidth = lineW;
       ctx.beginPath();
       ctx.moveTo(ox - cos * halfLen, oy - sin * halfLen);
       ctx.lineTo(ox + cos * halfLen, oy + sin * halfLen);
       ctx.stroke();
     }
+  }
+
+  private animate(ts: number): void {
+    if (this.lastTs === 0) this.lastTs = ts;
+    const dt = Math.min(0.1, Math.max(0, (ts - this.lastTs) / 1000));
+    this.lastTs = ts;
+
+    this.driftX -= DRIFT_PX_PER_SEC * dt; // right-to-left drift
+    const wrap = window.innerWidth + window.innerHeight;
+    if (this.driftX <= -wrap) this.driftX += wrap;
+
+    this.draw(window.innerWidth, window.innerHeight, ts / 1000);
+    requestAnimationFrame((nextTs) => this.animate(nextTs));
   }
 }

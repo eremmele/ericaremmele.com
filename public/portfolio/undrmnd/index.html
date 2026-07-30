@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    window.__UNDRMND_EMBED__ = new URLSearchParams(location.search).get("embed");
+    if (window.__UNDRMND_EMBED__ === "carousel") {
+      document.documentElement.classList.add("embed-carousel");
+    }
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="robots"
+    content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, max-snippet:0, max-image-preview:none, max-video-preview:0"
+  />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta author="Erica Remmele" />
+  <title>undrmnd « a public learning commons</title>
+  <meta name="description" content="Knowledge should be free and accessible. Undrmnd is a counter-algorithmic tool to build a common commons. Fork it, add to it, rewrite it." />
+  <meta property="og:title" content="undrmnd « a public learning commons" />
+  <meta property="og:description" content="Knowledge should be free and accessible. A counter-algorithmic tool to build a common commons. Built in Swift." />
+  <meta property="og:type" content="website" />
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDLorien-Book.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDLorien-Regular.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDUI-Regular.woff2" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./css/carousel-embed.css" />
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="site-header" id="site-header">
+  <div class="container">
+    <nav class="nav" aria-label="Primary">
+      <a href="#top" class="logo" aria-label="undrmnd home">undrmnd</a>
+      <div class="nav-links" role="list">
+        <a href="#thesis">Thesis</a>
+        <a href="library.html">Library</a>
+        <a href="#community">Community</a>
+        <a href="#build" class="gh">Build with us <span class="nav-arrow">↗</span></a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- //////// Hero //////// -->
+<section class="hero" id="top">
+  <canvas id="hero-fog" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-text">
+
+        <h1 class="hero-blurb reveal">
+          undrmnd is an open&#8209;source learning commons, where knowledge grows through community.</span>
+        </h1>
+
+        <div class="cta-row reveal">
+          <a class="btn btn-on-dark" href="#thesis">Read the thesis →</a>
+          <a class="btn btn-ghost btn-on-dark" href="#build">Build with us <span class="nav-arrow">↗</span></a>
+        </div>
+      </div>
+
+      <a class="build-link build-link--primary" href="https://github.com/eremmele/undrmnd" target="_blank" rel="noopener noreferrer">
+      <div class="hero-kindle reveal" aria-label="Repository preview">
+        <div class="kindle">
+          <div class="kindle-screen">
+            <div class="k-status">
+              <span>github.com/eremmele/undrmnd</span>
+              <span class="k-batt"><span class="k-batt-bar" style="width:62%"></span></span>
+            </div>
+
+            <div class="k-repo-head">
+              <!-- repo octicon -->
+              <svg class="k-octicon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+                <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.49 2.49 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.25.25 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"/>
+              </svg>
+              <span class="k-repo-path"><span class="k-org">eremmele</span><span class="k-slash">/</span><span class="k-name">undrmnd</span></span>
+              <span class="k-repo-vis">private</span>
+            </div>
+
+            <p class="k-desc">A spatial public learning library, built openly. iOS / Swift / forkable infrastructure for curiosity.</p>
+
+            <div class="k-meta-row">
+              <span class="k-stat">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+                <strong>184</strong> stars
+              </span>
+              <span class="k-stat">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"/></svg>
+                <strong>27</strong> forks
+              </span>
+              <span class="k-stat">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"/></svg>
+                <strong>13</strong> open issues
+              </span>
+              <span class="k-stat">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Z"/></svg>
+                main
+              </span>
+            </div>
+
+            <div>
+              <div class="k-lang-bar" aria-hidden="true">
+                <span style="width:64%; background:#3a3527;"></span>
+                <span style="width:18%; background:#5a4a2f;"></span>
+                <span style="width:11%; background:#7a6a4e;"></span>
+                <span style="width:7%;  background:#a99a7a;"></span>
+              </div>
+              <div class="k-lang-legend">
+                <span><span class="dot" style="background:#3a3527;"></span>Swift 64.2%</span>
+                <span><span class="dot" style="background:#5a4a2f;"></span>Metal 17.8%</span>
+                <span><span class="dot" style="background:#7a6a4e;"></span>SwiftUI 11.4%</span>
+                <span><span class="dot" style="background:#a99a7a;"></span>Markdown 6.6%</span>
+              </div>
+            </div>
+
+            <div class="k-tree" role="list" aria-label="Recent activity">
+              <div class="k-tree-row" role="listitem">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M.513 1.513A1.75 1.75 0 0 1 1.75 1h3.5c.55 0 1.07.26 1.4.7l.9 1.2a.25.25 0 0 0 .2.1H13.75A1.75 1.75 0 0 1 15.5 4.75v8.5A1.75 1.75 0 0 1 13.75 15H2.25A1.75 1.75 0 0 1 .5 13.25V2.75c0-.464.184-.91.513-1.237Z"/></svg>
+                <span class="k-tree-name">Sources/Undrmnd</span>
+                <span class="k-tree-msg">scaffolded Strata reader + fog map</span>
+                <span class="k-tree-time">2 days ago</span>
+              </div>
+              <div class="k-tree-row" role="listitem">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M.513 1.513A1.75 1.75 0 0 1 1.75 1h3.5c.55 0 1.07.26 1.4.7l.9 1.2a.25.25 0 0 0 .2.1H13.75A1.75 1.75 0 0 1 15.5 4.75v8.5A1.75 1.75 0 0 1 13.75 15H2.25A1.75 1.75 0 0 1 .5 13.25V2.75c0-.464.184-.91.513-1.237Z"/></svg>
+                <span class="k-tree-name">Strata/</span>
+                <span class="k-tree-msg">three reference Strata committed</span>
+                <span class="k-tree-time">5 days ago</span>
+              </div>
+              <div class="k-tree-row" role="listitem">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M.513 1.513A1.75 1.75 0 0 1 1.75 1h3.5c.55 0 1.07.26 1.4.7l.9 1.2a.25.25 0 0 0 .2.1H13.75A1.75 1.75 0 0 1 15.5 4.75v8.5A1.75 1.75 0 0 1 13.75 15H2.25A1.75 1.75 0 0 1 .5 13.25V2.75c0-.464.184-.91.513-1.237Z"/></svg>
+                <span class="k-tree-name">FieldNotes/</span>
+                <span class="k-tree-msg">attach sketches, audio, marginalia</span>
+                <span class="k-tree-time">1 week ago</span>
+              </div>
+              <div class="k-tree-row" role="listitem">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5a.25.25 0 0 0 .25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/></svg>
+                <span class="k-tree-name">README.md</span>
+                <span class="k-tree-msg">a quiet, public-interest library</span>
+                <span class="k-tree-time">today</span>
+              </div>
+              <div class="k-tree-row" role="listitem">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+                <span class="k-tree-name">LICENSE</span>
+                <span class="k-tree-msg">MIT, with attention</span>
+                <span class="k-tree-time">2 weeks ago</span>
+              </div>
+            </div>
+
+            <div class="k-foot">
+              <span>main · 14 commits</span>
+              <span>loc 142 of 1208</span>
+            </div>
+          </div>
+        </div>
+      </div></a>
+    </div>
+  </div>
+</section>
+
+<!-- //////// Thesis //////// -->
+<section id="thesis">
+  <div class="container">
+    <div class="section-head">
+      <span class="label">Thesis</span>
+    </div>
+    <div class="two-col">
+      <h2 class="section-title reveal">A library, <span class="it">not a feed.</span></h2>
+      <div class="section-body reveal">
+        <p>Most of what we read online is chosen for us. Ranked, recommended, optimised. Inquiry has been replaced with consumption.</p>
+        <p>undrmnd is built on a different premise: Research should feel open to anyone. Continued education should not require credentials. A healthier digital environment is one where curiosity, not algorithms, decides what you encounter next.</p>
+        <p><strong>We are building a quiet, public&#8209;interest place to read, discuss, and contribute.</strong> It's a bit more like a little free library than a platform. <i>Oh, and it's counter-algorithmic, too.</i></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// Paperwhite Interstitial //////// -->
+<section class="paperwhite" id="paperwhite" aria-label="A note on attention">
+  <div class="container">
+    <div class="paperwhite-frame">
+      <div class="pw-screen">
+        <div class="pw-status">
+          <span class="pw-time">7:42</span>
+          <span class="pw-batt">
+            <span class="pw-batt-bar" style="width:62%"></span>
+          </span>
+        </div>
+        <p class="pw-eyebrow">— passage —</p>
+        <p class="pw-quote">
+          <em>The library should send you outside more often than it pulls you in.</em>
+        </p>
+        <p class="pw-meta">undrmnd / field notes / loc 142 of 1208</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// How it works ayooo //////// -->
+<section id="how" class="howitworks dark">
+  <div class="container">
+    <div class="section-head">
+      <span class="label">How It Works</span>
+    </div>
+    <h2 class="section-title reveal">The library reveals itself <span class="it">as you read.</span></h2>
+
+    <div class="canvas-wrap reveal" id="map-wrap">
+      <canvas id="map"></canvas>
+      <div class="canvas-hint">Move your cursor — the fog clears around adjacent Strata</div>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="num">01</div>
+        <h3>Start with a question.</h3>
+        <p>Type a curiosity. Anything. A word, a fragment, a wondering. The map opens around it.</p>
+      </div>
+      <div class="step reveal">
+        <div class="num">02</div>
+        <h3>An island of Strata appears.</h3>
+        <p>Nearby knowledge (readings, notes, contributions from others) clusters into Strata. Everything else is fog.</p>
+      </div>
+      <div class="step reveal">
+        <div class="num">03</div>
+        <h3>The terrain grows.</h3>
+        <p>When you contribute to (or even just read!) a Strata, the fog starts to lift. The library grows, through collective attention.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// Strata anatomy cards //////// -->
+<section id="strata">
+  <div class="container">
+    <div class="section-head">
+      <span class="label">Strata</span>
+    </div>
+    <div class="strata-intro">
+      <h2 class="section-title reveal">A Strata is a small, <span class="it">considered thing.</span></h2>
+      <p class="section-body reveal" style="margin-top:24px;">
+        What you have to say matters. Your personal research and contributions are how we support each other.
+      </p>
+    </div>
+
+    <div class="strata-stack reveal" id="strata-stack" data-active="0">
+      <button class="strata-tab" data-i="0" aria-pressed="true">
+        <span class="strata-tab-num">01</span>
+        <span class="strata-tab-cat">Living world</span>
+        <span class="strata-tab-title">On the slow return of urban lichens.</span>
+      </button>
+      <button class="strata-tab" data-i="1" aria-pressed="false">
+        <span class="strata-tab-num">02</span>
+        <span class="strata-tab-cat">Cosmos</span>
+        <span class="strata-tab-title">What dark matter is, and isn't.</span>
+      </button>
+      <button class="strata-tab" data-i="2" aria-pressed="false">
+        <span class="strata-tab-num">03</span>
+        <span class="strata-tab-cat">Living world</span>
+        <span class="strata-tab-title">How many species share the earth?</span>
+      </button>
+
+      <div class="strata-cards">
+        <article class="strata-card is-active" data-i="0" aria-labelledby="strata-title-0">
+          <div class="strata-card-head">
+            <span class="strata-label">Strata / Living World</span>
+            <span class="strata-status">14 contributions</span>
+          </div>
+          <h3 id="strata-title-0">On the slow return of urban lichens.</h3>
+          <p class="summary">
+            A short reading on how lichen recolonisation tracks declining sulphur dioxide in post-industrial cities, why this matters as a folk indicator of air quality, and what readers in different geographies have begun to notice on their own walks.
+          </p>
+          <dl class="strata-meta">
+            <dt>Source</dt>
+            <dd>Gilbert, O.L. — <em>Lichens of the Urban Environment</em>; Field surveys, 1998–present</dd>
+            <dt>Relations</dt>
+            <dd>
+              <span class="tag">Air quality</span>
+              <span class="tag">Citizen science</span>
+              <span class="tag">Bioindicators</span>
+            </dd>
+            <dt>Field notes</dt>
+            <dd>Sketches from Glasgow, Berlin, Pittsburgh, and one window&#8209;frame in Hanoi.</dd>
+            <dt>Open prompt</dt>
+            <dd>What does the lichen on your street look like? Has it changed in the last five years?</dd>
+          </dl>
+        </article>
+
+        <article class="strata-card" data-i="1" aria-labelledby="strata-title-1">
+          <div class="strata-card-head">
+            <span class="strata-label">Strata / Cosmos</span>
+            <span class="strata-status">31 contributions</span>
+          </div>
+          <h3 id="strata-title-1">What dark matter is, <span class="it">and isn't.</span></h3>
+          <p class="summary">
+            A reader-friendly walk through the rotational anomalies of galaxies, the gravitational lensing evidence, and why most physicists think the universe is mostly something we have not yet directly seen — without claiming we already know what it is.
+          </p>
+          <dl class="strata-meta">
+            <dt>Source</dt>
+            <dd>Rubin &amp; Ford, 1970; Planck Collaboration, 2018; ongoing reviews</dd>
+            <dt>Relations</dt>
+            <dd>
+              <span class="tag">Cosmology</span>
+              <span class="tag">Galaxy rotation</span>
+              <span class="tag">MACHOs / WIMPs</span>
+            </dd>
+            <dt>Field notes</dt>
+            <dd>Backyard astronomy logs, a school telescope club's group sketches, one contributed thesis chapter.</dd>
+            <dt>Open prompt</dt>
+            <dd>What's the smallest, clearest analogy you've heard for "we measure it, but we cannot see it"?</dd>
+          </dl>
+        </article>
+
+        <article class="strata-card" data-i="2" aria-labelledby="strata-title-2">
+          <div class="strata-card-head">
+            <span class="strata-label">Strata / Living World</span>
+            <span class="strata-status">22 contributions</span>
+          </div>
+          <h3 id="strata-title-2">How many species <span class="it">share the earth?</span></h3>
+          <p class="summary">
+            We have described roughly two million; estimates of the total range from eight million to a trillion once microbes are counted. A short reading on what "species" even means across kingdoms, why the number keeps moving, and how amateur naturalists keep adding to it.
+          </p>
+          <dl class="strata-meta">
+            <dt>Source</dt>
+            <dd>Mora et al., 2011; Locey &amp; Lennon, 2016; Catalogue of Life</dd>
+            <dt>Relations</dt>
+            <dd>
+              <span class="tag">Biodiversity</span>
+              <span class="tag">Taxonomy</span>
+              <span class="tag">Citizen science</span>
+            </dd>
+            <dt>Field notes</dt>
+            <dd>iNaturalist crossovers, one mycology walk transcript, a reader's pond&#8209;water microscope photos.</dd>
+            <dt>Open prompt</dt>
+            <dd>Which species in your neighbourhood would you bet has never been formally described?</dd>
+          </dl>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// AI Note //////// -->
+<section id="position" class="dark">
+  <div class="container">
+    <div class="section-head">
+      <span class="label dark-label">Our Stance on AI</span>
+    </div>
+    <div class="two-col">
+      <h2 class="section-title reveal">We use AI <span class="it">sparingly,</span> and on purpose.</h2>
+      <div class="section-body reveal">
+        <p>AI is already saturated in education as an all-knowing tutor. We don't think that is what learning needs.</p>
+        <p>In undrmnd, AI helps interpret a curiosity into a starting point on the map, and surfaces related Strata that a reader might not have found alone. <strong>That is the limit of its role.</strong></p>
+        <p>It does not decide what you wonder about. It does not generate the community's intellectual life. It does not replace the slow work of reading something carefully, or the dignity of contributing what you know.</p>
+        <p>The thinking belongs to the people in the library.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// Community commons //////// -->
+<section id="community">
+  <div class="container">
+    <div class="section-head">
+      <span class="label">Common Commons</span>
+    </div>
+    <div class="two-col">
+      <h2 class="section-title reveal">A public learning <span class="it">organism.</span></h2>
+      <div class="section-body reveal">
+        <p>undrmnd is shared infrastructure for inquiry. A little free library, but for research, notes, and quiet expertise.</p>
+        <p>It connects strangers around adjacent curiosity, not identity or follower count. <strong>Every reader is also a participant.</strong> The map is built by the people walking it.</p>
+        <p>It will be open source, and forkable. The library should outlive its authors.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// Field Notes //////// -->
+<section id="fieldnotes" class="fieldnotes">
+  <div class="container">
+    <div class="section-head">
+      <span class="label">Field Notes</span>
+    </div>
+    <div class="two-col">
+      <h2 class="section-title reveal">Return attention <span class="it">to the world.</span></h2>
+      <div class="section-body reveal">
+        <p>There is a name for the dulling that happens when overstimulating digital systems flatten the pleasures of offline life: <em>digital anhedonia.</em> The mushroom on the walk home stops being interesting. The weather stops being weather.</p>
+        <p>Field Notes are how undrmnd pushes back. A reader can attach a sketch, a recording, a question, a small experiment, a noticing — and tether it to a Strata. Online curiosity becomes a reason to look up from the screen.</p>
+        <p><strong>The app should send you outside more often than it pulls you in.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- //////// Build with us //////// -->
+<section id="build" class="dark build-section">
+  <div class="container">
+    <div class="section-head build-head">
+      <span class="label dark-label">Build With Us</span>
+    </div>
+
+    <h2 class="section-title reveal build-title">
+      The library is what <span class="it">you make of it.</span>
+    </h2>
+    <p class="section-body reveal build-body">
+      Meant for you. Authored by you. Held in common for all of us. undrmnd is being developed openly as a native iOS application in Swift—unfinished on purpose, and built to be forkable infrastructure for public learning over time.
+    </p>
+
+    <div class="build-grid reveal">
+      <div class="build-step">
+        <span class="build-num">01</span>
+        <h4>Clone the repository</h4>
+        <pre class="terminal" aria-label="git clone command"><span class="prompt">$</span> git clone https://github.com/eremmele/undrmnd.git
+    <span class="prompt">$</span> cd undrmnd</pre>
+      </div>
+    
+      <div class="build-step">
+        <span class="build-num">02</span>
+        <h4>Open the workspace</h4>
+        <pre class="terminal"><span class="prompt">$</span> open Undrmnd.xcworkspace
+    <span class="comment"># Xcode 15+, iOS 17 SDK</span></pre>
+      </div>
+    
+      <div class="build-step">
+        <span class="build-num">03</span>
+        <h4>Run, and start a Strata</h4>
+        <pre class="terminal"><span class="prompt">$</span> xcodebuild -scheme Undrmnd build
+    <span class="comment"># or hit ⌘R in Xcode</span></pre>
+      </div>
+    </div>
+
+    <div class="cta-row reveal">
+      <a class="btn btn-on-dark" href="https://github.com/eremmele/undrmnd" data-link="repo">Open the repository →</a>
+      <a class="btn btn-ghost btn-on-dark" href="https://github.com/eremmele/undrmnd/blob/main/README.md" data-link="readme">Read the README ↗</a>
+      <a class="btn btn-ghost btn-on-dark" href="mailto:err698@g.harvard.edu?subject=I%27d%20like%20to%20be%20added%20to%20the%20private%20beta">Demo ↗</a>
+    </div>
+
+    
+  </div>
+  <div class="section-head build-head" style="padding-top:150px;margin-bottom:-150px;">
+    <span class="label dark-label">The library is being built quietly, <span class="it">and you are welcome in it.</span></br> Built in Swift to kick our habit of doomscrolling and promote kind community.</span>
+  </div>
+
+</section>
+
+<!-- //////// Footer //////// -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-row">
+      <span>undrmnd &nbsp;/&nbsp; A commons for trading knowledge openly. &nbsp;/&nbsp; Open source. Always in development. </span>
+      <span>
+        <a href="https://github.com/eremmele/undrmnd" data-link="repo" style="margin-right:18px;">GitHub ↗</a>
+        <a href="mailto:err698@g.harvard.edu" style="margin-right:18px;">Contact ↗</a>
+        <a href="library.html" style="margin-right:18px;">Library</a>
+        <a href="colophon.html" class="footer-colophon" aria-label="Colophon">
+          <span class="ch" style="--i:0">C</span><span class="ch" style="--i:1">o</span><span class="ch" style="--i:2">l</span><span class="ch" style="--i:3">o</span><span class="ch" style="--i:4">p</span><span class="ch" style="--i:5">h</span><span class="ch" style="--i:6">o</span><span class="ch" style="--i:7">n</span>
+        </a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- //////// Sound dock (ty @smallbits) //////// -->
+<div class="sound-dock" id="sound-dock" role="group" aria-label="Ambient sound">
+  <button class="sd-btn sd-track" id="sd-track" data-track="horizons" aria-label="Switch track">
+    <!-- 8x8 pixel cassette / track swap glyph -->
+    <svg viewBox="0 0 8 8" class="pix" aria-hidden="true">
+      <rect x="1" y="2" width="6" height="4"/>
+      <rect x="2" y="3" width="1" height="1" fill="var(--paper)"/>
+      <rect x="5" y="3" width="1" height="1" fill="var(--paper)"/>
+      <rect x="2" y="5" width="4" height="1" fill="var(--paper)"/>
+    </svg>
+    <span class="sd-label" id="sd-track-label">Horizons</span>
+  </button>
+  <button class="sd-btn sd-mute" id="sd-mute" aria-pressed="false" aria-label="Mute ambient">
+    <!-- speaker on (will swap to mute) -->
+    <svg viewBox="0 0 8 8" class="pix pix-on" aria-hidden="true">
+      <rect x="1" y="3" width="1" height="2"/>
+      <rect x="2" y="2" width="1" height="4"/>
+      <rect x="3" y="1" width="1" height="6"/>
+      <rect x="5" y="2" width="1" height="1"/>
+      <rect x="6" y="3" width="1" height="2"/>
+      <rect x="5" y="5" width="1" height="1"/>
+    </svg>
+    <svg viewBox="0 0 8 8" class="pix pix-off" aria-hidden="true">
+      <rect x="1" y="3" width="1" height="2"/>
+      <rect x="2" y="2" width="1" height="4"/>
+      <rect x="3" y="1" width="1" height="6"/>
+      <rect x="5" y="2" width="1" height="1"/>
+      <rect x="6" y="3" width="1" height="1"/>
+      <rect x="6" y="4" width="1" height="1"/>
+      <rect x="5" y="5" width="1" height="1"/>
+      <rect x="5" y="3" width="1" height="1" fill="var(--paper)"/>
+    </svg>
+  </button>
+</div>
+
+<audio id="audio-horizons" src="./audio/horizons-embrace.m4a" loop preload="auto"></audio>
+
+<script src="./script.js" defer></script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.undrmnd.com","https://undrmnd.com"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer can resolve them 
+      // -- maybe switch this to embed later
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="transform:translate(-${scrollX}px,-${scrollY}px);transform-origin:top left">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script>
+<script>
+  if (window.__UNDRMND_EMBED__ === "carousel") {
+    var embed = document.createElement("script");
+    embed.src = "./js/carousel-embed.js";
+    document.body.appendChild(embed);
+  }
+</script>
+
+</body>
+</html>

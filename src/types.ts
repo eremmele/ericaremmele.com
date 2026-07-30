@@ -7,10 +7,16 @@ export type PortfolioItem = {
   category: string;
   /** Garden thumbnail image. */
   image: string;
-  /** Slides shown in this project's ProgressiveSmearCarousel overlay. */
-  carouselImages: string[];
+  /** Slides shown in this project's carousel overlay. */
+  carouselSlides: CarouselSlide[];
   link?: string;
 };
+
+/** Image, video, or live embed (e.g. hosted design library). */
+export type CarouselSlide =
+  | { kind: "image"; src: string }
+  | { kind: "video"; src: string; poster?: string }
+  | { kind: "embed"; src: string; title?: string };
 
 export type InspectionPointData = {
   id: string;

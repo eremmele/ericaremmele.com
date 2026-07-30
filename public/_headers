@@ -1,0 +1,52 @@
+# Cloudflare Pages / Netlify-style hosts (ignored by plain GitHub Pages).
+# Block indexing + image OCR for every portfolio / model asset URL.
+
+/portfolio/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, max-snippet:0, max-image-preview:none, max-video-preview:0
+
+/portfolio/*
+  X-Robots-Tag: googlebot: noindex, nofollow, noimageindex
+  X-Robots-Tag: googlebot-image: noindex, noimageindex
+  X-Robots-Tag: googlebot-video: noindex
+
+/portfolio/*.png
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.jpg
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.jpeg
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.gif
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.webp
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.svg
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.webm
+  X-Robots-Tag: noindex, noimageindex
+
+/portfolio/*.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+
+/models/*
+  X-Robots-Tag: noindex, nofollow, noimageindex
+
+/draco/*
+  X-Robots-Tag: noindex, nofollow, noimageindex
+
+/pixel-sprite.png
+  X-Robots-Tag: noindex, noimageindex
+
+/SITE-COPY.md
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/site-copy.md
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/README.md
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
