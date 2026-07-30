@@ -113,15 +113,32 @@
     requestAnimationFrame(tick);
   }
 
+  // Reveal content immediately in the carousel so we don't wait on observers.
+  var reveals = document.querySelectorAll(".reveal, .reveal-mask");
+  for (var r = 0; r < reveals.length; r++) reveals[r].classList.add("in");
+
   scrollRoot().scrollTop = 0;
   sectionIndex = 0;
   moving = false;
   pendingIndex = null;
 
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function (now) {
-      pauseUntil = now + pauseSectionMs;
-      tick(now);
+  // Let the first paint settle before auto-scroll starts competing for main thread.
+  var start = function (now) {
+    pauseUntil = now + pauseSectionMs + 400;
+    tick(now);
+  };
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(
+      function () {
+        requestAnimationFrame(start);
+      },
+      { timeout: 900 },
+    );
+  } else {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function (now) {
+        start(now + 400);
+      });
     });
-  });
+  }
 })();

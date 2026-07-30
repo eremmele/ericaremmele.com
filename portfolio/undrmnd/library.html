@@ -21,9 +21,19 @@
   <meta property="og:title" content="Library « undrmnd" />
   <meta property="og:description" content="Design systems &amp; context for a non-addictive, e-ink learning commons. Readable by people and agents." />
   <meta property="og:type" content="website" />
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDLorien-Book.woff2" crossorigin />
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDLorien-Regular.woff2" crossorigin />
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/MDUI-Regular.woff2" crossorigin />
+  <script>
+    if (window.__UNDRMND_EMBED__ !== "carousel") {
+      ["MDLorien-Book", "MDLorien-Regular", "MDUI-Regular"].forEach(function (name) {
+        var link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "font";
+        link.type = "font/woff2";
+        link.href = "./fonts/" + name + ".woff2";
+        link.crossOrigin = "anonymous";
+        document.head.appendChild(link);
+      });
+    }
+  </script>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./css/carousel-embed.css" />
   <link rel="icon" type="image/x-icon" href="./favicon.ico">

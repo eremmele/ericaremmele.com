@@ -1,5 +1,5 @@
 /**
- * Portfolio carousel embed: hide non-essential chrome.
+ * Portfolio carousel embed: hide non-essential chrome + keep the iframe light.
  * Desktop layout is forced by the parent iframe (1310px design width).
  */
 
@@ -13,6 +13,9 @@ html.embed-carousel body {
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: none;
+  /* Skip ~540KB of branded woff2 in the carousel preview. */
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 html.embed-carousel::-webkit-scrollbar,
@@ -28,12 +31,23 @@ html.embed-carousel body {
 
 html.embed-carousel .skip-link,
 html.embed-carousel #sound-dock,
-html.embed-carousel .sound-dock {
+html.embed-carousel .sound-dock,
+html.embed-carousel #audio-horizons,
+html.embed-carousel #hero-fog,
+html.embed-carousel #map,
+html.embed-carousel .map-wrap {
   display: none !important;
 }
 
 html.embed-carousel .site-header {
   pointer-events: none;
+}
+
+/* Defer paint/layout for offscreen sections while the auto-scroller runs. */
+html.embed-carousel body > section:not(:first-of-type),
+html.embed-carousel .lib-main > section:not(:first-of-type) {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
 }
 
 /* Design library */
