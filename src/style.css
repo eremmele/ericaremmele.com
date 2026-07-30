@@ -840,16 +840,19 @@ body,
   }
 
   .controls-right {
-    left: 50%;
+    left: max(var(--page-pad-x), env(safe-area-inset-left, 0px));
     right: auto;
     bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%);
-    justify-content: center;
+    transform: none;
+    justify-content: flex-start;
     gap: 0.55rem;
   }
 
+  /* Lift arrow keys so the number row sits directly underneath, left-aligned */
   .controls-bar {
+    bottom: calc(1.75rem + 0.55rem);
     padding-bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
+    justify-content: flex-start;
   }
 
   .portfolio-panel {
@@ -861,9 +864,9 @@ body,
     display: none !important;
   }
 
-  /* Sit above arrow / project keys, below Inquire block */
+  /* Sit above arrow + number keys, below Inquire block */
   .load-status {
-    bottom: calc(var(--page-pad-y) + 5.5rem);
+    bottom: calc(var(--page-pad-y) + 7.75rem);
     max-width: calc(100vw - 2 * var(--page-pad-x));
     padding: 0 0.5rem;
     box-sizing: border-box;
