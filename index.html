@@ -143,9 +143,9 @@
         "inLanguage": "en-US"
       }
     </script>
-    <script type="module" crossorigin src="./assets/index-CjaLPcIn.js"></script>
-    <link rel="modulepreload" crossorigin href="./assets/three-Lnrf91tK.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-gLNl065-.css">
+    <script type="module" crossorigin src="./assets/index-D-QOICOY.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/three-DkyqMjKV.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-DGVDp2rq.css">
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
@@ -222,25 +222,25 @@
           <button type="button" class="arrow-key arrow-left" data-key="ArrowLeft" aria-label="Turn left">←</button>
           <button type="button" class="arrow-key arrow-down" data-key="ArrowDown" aria-label="Move backward">↓</button>
           <button type="button" class="arrow-key arrow-right" data-key="ArrowRight" aria-label="Turn right">→</button>
-          <button
-            type="button"
-            id="controls-hide"
-            class="arrow-key inspect-key"
-            aria-expanded="true"
-            aria-label="Toggle controls (H)"
-            aria-keyshortcuts="H"
-          >
-            H
-          </button>
         </div>
       </div>
 
-      <div class="controls-right" role="group" aria-label="Open project">
+      <div class="controls-right" role="group" aria-label="Projects and controls">
         <button type="button" class="arrow-key project-key" data-project="1" aria-label="Open project 1" aria-keyshortcuts="1">1</button>
         <button type="button" class="arrow-key project-key" data-project="2" aria-label="Open project 2" aria-keyshortcuts="2">2</button>
         <button type="button" class="arrow-key project-key" data-project="3" aria-label="Open project 3" aria-keyshortcuts="3">3</button>
         <button type="button" class="arrow-key project-key" data-project="4" aria-label="Open project 4" aria-keyshortcuts="4">4</button>
         <button type="button" class="arrow-key project-key" data-project="5" aria-label="Open project 5" aria-keyshortcuts="5">5</button>
+        <button
+          type="button"
+          id="controls-hide"
+          class="arrow-key inspect-key"
+          aria-expanded="true"
+          aria-label="Toggle controls (H)"
+          aria-keyshortcuts="H"
+        >
+          H
+        </button>
       </div>
 
       <p id="load-status" class="load-status" aria-live="polite">Loading garden…</p>
@@ -274,7 +274,11 @@
       </div>
 
       <div id="touch-controls" class="touch-controls" hidden>
-        <div id="move-pad" class="move-pad" aria-label="Move"></div>
+        <div id="move-pad" class="move-pad" role="application" aria-label="Move joystick">
+          <span class="move-pad__ring" aria-hidden="true"></span>
+          <span id="move-pad-knob" class="move-pad__knob" aria-hidden="true"></span>
+        </div>
+        <p class="touch-hint" aria-hidden="true">drag to look</p>
       </div>
     </div>
   </body>
