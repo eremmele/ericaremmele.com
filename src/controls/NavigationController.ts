@@ -20,10 +20,10 @@ export class NavigationController {
   private readonly moveSpeed = 7.4;
   private readonly turnSpeed = 2.35;
   /** How quickly planar velocity catches desired input (higher = snappier). */
-  private readonly moveAccel = 16;
-  private readonly moveDecel = 20;
-  private readonly turnAccel = 14;
-  private readonly turnDecel = 18;
+  private readonly moveAccel = 22;
+  private readonly moveDecel = 26;
+  private readonly turnAccel = 18;
+  private readonly turnDecel = 22;
   private readonly eyeHeight = 1.65;
   private readonly groundFollow = 28;
   private readonly heightSmooth = 22;

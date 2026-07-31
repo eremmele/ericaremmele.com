@@ -9,7 +9,7 @@ export function createMovingPixelsMaterial(
 ): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     transparent: true,
-    depthWrite: true,
+    depthWrite: false,
     depthTest: true,
     blending: THREE.NormalBlending,
     vertexColors: true,

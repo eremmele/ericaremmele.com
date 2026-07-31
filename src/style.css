@@ -324,6 +324,11 @@ body,
 }
 
 .inspect-key {
+  position: fixed;
+  right: var(--page-pad-x);
+  bottom: var(--page-pad-y);
+  /* Below .portfolio-panel (6) so H stays under the overlay; 1–5 stay above. */
+  z-index: 5;
   width: 2rem;
   min-width: 2rem;
   max-width: 2rem;
@@ -336,7 +341,8 @@ body,
 
 .controls-right {
   position: fixed;
-  right: var(--page-pad-x);
+  /* Leave room for H + 4× number-key gutter to its right. */
+  right: calc(var(--page-pad-x) + 2rem + 1.12rem);
   bottom: var(--page-pad-y);
   z-index: 10006;
   display: flex;
@@ -385,11 +391,6 @@ body,
 .arrow-key:hover,
 .arrow-key:focus-visible {
   background: rgba(255, 255, 255, 0.33);
-}
-
-/* After `.arrow-key { margin: 0 }` so it sticks: 5→H = 4× number gap. */
-.controls-right > .inspect-key {
-  margin-left: 0.84rem;
 }
 
 .arrow-key:focus:not(:focus-visible) {
@@ -493,7 +494,7 @@ body,
   inset: 0;
   z-index: 9999;
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: none;
 }
 
 .smear-carousel__stage {
@@ -801,6 +802,7 @@ body.is-touch.portfolio-open .touch-controls {
 body.is-touch .move-pad {
   width: 118px;
   height: 118px;
+  opacity: 0.8;
 }
 
 .move-pad__ring {
@@ -855,7 +857,7 @@ body.is-touch .controls-left {
   display: none;
 }
 
-/* Tablet+ touch: joystick left, 1–5 + H docked right. */
+/* Tablet+ touch: 1–5 docked right (H hidden). */
 body.is-touch .controls-right {
   right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
   left: auto;
@@ -865,8 +867,8 @@ body.is-touch .controls-right {
   gap: 0.55rem;
 }
 
-body.is-touch .controls-right > .inspect-key {
-  margin-left: 1.65rem;
+body.is-touch .inspect-key {
+  display: none;
 }
 
 body.is-touch .touch-controls {
@@ -896,10 +898,6 @@ body.is-touch .touch-controls {
     display: none;
   }
 
-  body.is-touch .controls-right > .inspect-key {
-    margin-left: 0;
-  }
-
   body.is-touch .controls-right {
     right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
     left: auto;
@@ -918,15 +916,6 @@ body.is-touch .touch-controls {
 
   body.is-touch.portfolio-open .controls-right .project-key {
     display: grid;
-  }
-
-  body.is-touch.portfolio-open .controls-right > .inspect-key {
-    display: none;
-  }
-
-  /* ~20% less opaque than the shared 0.66 key opacity. */
-  body.is-touch .controls-right > .inspect-key {
-    opacity: 0.528;
   }
 }
 
@@ -991,8 +980,13 @@ body.is-touch .touch-controls {
     max-width: 1.75rem;
   }
 
-  .controls-right > .inspect-key {
-    margin-left: 1.65rem;
+  .inspect-key {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .controls-right {
+    right: calc(var(--page-pad-x) + 1.75rem + 1.12rem);
   }
 
   .portfolio-panel {
@@ -1019,6 +1013,14 @@ body.is-touch .touch-controls {
   .smear-carousel {
     min-width: 0;
     min-height: 0;
+  }
+
+  .smear-carousel__edge {
+    display: none;
+  }
+
+  .smear-carousel__hit {
+    touch-action: none;
   }
 
   .smear-carousel__caption {

@@ -24,6 +24,7 @@ export class EdgeLensPass {
   private readonly blurMat: THREE.ShaderMaterial;
   private readonly mixMat: THREE.ShaderMaterial;
   private readonly blurMesh: THREE.Mesh;
+  private enabled = true;
 
   constructor(width: number, height: number) {
     const opts: THREE.RenderTargetOptions = {
@@ -69,10 +70,10 @@ export class EdgeLensPass {
         void main() {
           vec2 stepPx = uDirection / uResolution;
           float twoSigma2 = 2.0 * uSigma * uSigma;
-          // Half-width 7 → 15 taps (matches ksize=15)
+          // Half-width 4 → 9 taps (cheaper than 15; still reads as soft edge smear)
           vec4 color = vec4(0.0);
           float wSum = 0.0;
-          for (int i = -7; i <= 7; i++) {
+          for (int i = -4; i <= 4; i++) {
             float fi = float(i);
             float w = exp(-(fi * fi) / twoSigma2);
             color += texture2D(tDiffuse, vUv + stepPx * fi) * w;
@@ -173,16 +174,22 @@ export class EdgeLensPass {
     this.mixMat.uniforms.uFocusMax.value = max;
   }
 
+  /** When false, skip the blur cascade and draw the scene once (mobile). */
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
   resize(width: number, height: number, pixelRatio = 1): void {
-    const bw = Math.max(1, (width * 0.5) | 0);
-    const bh = Math.max(1, (height * 0.5) | 0);
+    const scale = 0.33;
+    const bw = Math.max(1, (width * scale) | 0);
+    const bh = Math.max(1, (height * scale) | 0);
     this.level0.setSize(width, height);
-    // Half-res blur cascade — same look, much steadier frame times while moving.
+    // Low-res blur cascade — same look, much less fill-rate heat while moving.
     this.level1.setSize(bw, bh);
     this.level2.setSize(bw, bh);
     this.level3.setSize(bw, bh);
     this.blurMat.uniforms.uResolution.value.set(bw, bh);
-    this.blurMat.uniforms.uSigma.value = 2.3 * pixelRatio;
+    this.blurMat.uniforms.uSigma.value = 1.8 * Math.min(pixelRatio, 1.25);
   }
 
   render(
@@ -190,6 +197,12 @@ export class EdgeLensPass {
     scene: THREE.Scene,
     camera: THREE.Camera,
   ): void {
+    if (!this.enabled) {
+      renderer.setRenderTarget(null);
+      renderer.render(scene, camera);
+      return;
+    }
+
     const prevTone = renderer.toneMapping;
     const prevTarget = renderer.getRenderTarget();
 

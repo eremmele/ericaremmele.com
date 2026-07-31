@@ -96,6 +96,7 @@ export class ProgressiveSmearCarousel {
   private readonly perspective: number;
   private readonly damping: number;
   private readonly centerScale: number;
+  private readonly isTouchUi: boolean;
 
   private scroll = 0;
   private scrollTarget = 0;
@@ -120,14 +121,17 @@ export class ProgressiveSmearCarousel {
     this.gap = options.gap ?? 64;
     this.maxRotation = options.maxRotation ?? 90;
     this.perspective = options.perspective ?? 400;
-    this.damping = options.scrollDamping ?? 100;
+    this.isTouchUi =
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+    this.damping = options.scrollDamping ?? (this.isTouchUi ? 48 : 100);
     this.centerScale = options.centerScale ?? 1.6;
     this.onUserInteract = options.onUserInteract;
     this.onFrustrationTap = options.onFrustrationTap;
     this.onActiveSlideChange = options.onActiveSlideChange;
 
-    const blurSpread = options.blurSpread ?? 25;
-    const blurStrength = options.blurStrength ?? 24;
+    const blurSpread = options.blurSpread ?? (this.isTouchUi ? 12 : 25);
+    const blurStrength = options.blurStrength ?? (this.isTouchUi ? 8 : 24);
 
     // Pad to ≥18 like the Framer component so the loop feels continuous.
     const source = resolveSlidesForDevice(options.slides.filter(Boolean));
@@ -307,7 +311,8 @@ export class ProgressiveSmearCarousel {
 
   private onPointerMove = (event: PointerEvent): void => {
     if (!this.dragging) return;
-    if (!this.gestureMoved && Math.abs(event.clientX - this.gestureStartX) > GESTURE_DRAG_PX) {
+    const dragThreshold = this.isTouchUi ? 4 : GESTURE_DRAG_PX;
+    if (!this.gestureMoved && Math.abs(event.clientX - this.gestureStartX) > dragThreshold) {
       this.gestureMoved = true;
       this.onUserInteract?.();
     }
@@ -315,7 +320,9 @@ export class ProgressiveSmearCarousel {
     const dx = event.clientX - this.lastPointerX;
     const dt = Math.max(1, now - this.lastPointerT);
     this.pointerVelocity = (-dx / dt) * 1000;
-    this.scrollTarget += -dx * 0.005;
+    // Drag distance relative to card width so one swipe ≈ one slide on mobile.
+    const unit = Math.max(140, this.activeWidth * (this.isTouchUi ? 0.52 : 0.85));
+    this.scrollTarget += -dx / unit;
     this.lastPointerX = event.clientX;
     this.lastPointerT = now;
   };
@@ -326,9 +333,21 @@ export class ProgressiveSmearCarousel {
     this.hit.style.cursor = "grab";
     if (!this.gestureMoved) {
       this.onFrustrationTap?.();
+      return;
     }
-    this.scrollTarget += -this.pointerVelocity * 0.0015;
-    this.scrollTarget = Math.round(this.scrollTarget);
+
+    const unit = Math.max(140, this.activeWidth * (this.isTouchUi ? 0.52 : 0.85));
+    const flickSlides = -this.pointerVelocity / (unit * (this.isTouchUi ? 2.4 : 3.4));
+    this.scrollTarget += flickSlides;
+
+    // Commit to the nearest slide; favor the flick direction when close to halfway.
+    const nearest = Math.round(this.scrollTarget);
+    const partial = this.scrollTarget - nearest;
+    if (this.isTouchUi && Math.abs(partial) > 0.18) {
+      this.scrollTarget = nearest + Math.sign(partial);
+    } else {
+      this.scrollTarget = nearest;
+    }
   };
 
   private queueSnap(): void {
@@ -348,7 +367,10 @@ export class ProgressiveSmearCarousel {
       last = now;
       if (dt === 0) return;
 
-      const lambda = Math.max(6, Math.min(20, 1400 / Math.max(40, this.damping)));
+      const lambda = Math.max(
+        this.isTouchUi ? 10 : 6,
+        Math.min(this.isTouchUi ? 28 : 20, 1400 / Math.max(40, this.damping)),
+      );
       const t = 1 - Math.exp(-lambda * dt);
       this.scroll += (this.scrollTarget - this.scroll) * t;
 

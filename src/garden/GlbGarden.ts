@@ -32,7 +32,9 @@ function preferLeanLoad(): boolean {
     .connection;
   if (connection?.saveData) return true;
   if (connection?.effectiveType === "2g" || connection?.effectiveType === "3g") return true;
-  if (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4) return true;
+  const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  if (typeof mem === "number" && mem > 0 && mem <= 4) return true;
+  if (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 6) return true;
   return window.matchMedia("(pointer: coarse)").matches;
 }
 
@@ -159,8 +161,8 @@ export async function loadGardenGlb(
   });
 
   const cloud = await meshSceneToParticleCloud(gltf.scene, {
-    targetCount: lean ? 220_000 : 380_000,
-    maxCount: lean ? 260_000 : 440_000,
+    targetCount: lean ? 180_000 : 260_000,
+    maxCount: lean ? 220_000 : 300_000,
     bottomCutRatio: 0.12,
     groundBandRatio: 0.5,
     groundDensityBoost: 2.2,

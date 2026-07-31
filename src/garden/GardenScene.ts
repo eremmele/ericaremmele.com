@@ -29,17 +29,22 @@ export class GardenScene {
   private ready = false;
   /** Skip WebGL draws while the portfolio overlay covers the garden. */
   private renderSuspended = false;
+  private navAccumulator = 0;
+  private frameMsEma = 16;
+  private preferBlur = true;
+  private static readonly NAV_STEP = 1 / 60;
+  private static readonly NAV_MAX_STEPS = 3;
 
   private constructor(canvas: HTMLCanvasElement, cssHost: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      antialias: false,
       alpha: false,
-      powerPreference: "high-performance",
+      powerPreference: "default",
       stencil: false,
       depth: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -182,9 +187,23 @@ export class GardenScene {
 
   private applyMobileFocusBand(): void {
     const narrow = typeof window !== "undefined" && window.innerWidth <= 900;
-    // Wider sharp center on phones/tablets so less of the view is smeared.
-    if (narrow) this.edgeLens.setFocusBand(0.12, 0.88);
-    else this.edgeLens.setFocusBand(1 / 3, 2 / 3);
+    const touch =
+      typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+    // No peripheral landscape blur on phones/tablets (incl. landscape widths > 900).
+    this.preferBlur = !narrow && !touch;
+    this.edgeLens.setEnabled(this.preferBlur);
+    if (this.preferBlur) this.edgeLens.setFocusBand(1 / 3, 2 / 3);
+  }
+
+  private tuneAdaptiveQuality(frameMs: number): void {
+    this.frameMsEma = this.frameMsEma * 0.88 + frameMs * 0.12;
+    if (!this.preferBlur) {
+      this.edgeLens.setEnabled(false);
+      return;
+    }
+    // Drop blur when frames sag; restore when they recover.
+    if (this.frameMsEma > 20) this.edgeLens.setEnabled(false);
+    else if (this.frameMsEma < 14) this.edgeLens.setEnabled(true);
   }
 
   resize(): void {
@@ -246,10 +265,18 @@ export class GardenScene {
   update(): void {
     if (!this.running || !this.ready) return;
 
-    const delta = Math.min(this.clock.getDelta(), 0.05);
+    const frameDelta = Math.min(this.clock.getDelta(), 0.05);
     const elapsed = this.clock.getElapsedTime();
 
-    this.navigation.update(delta);
+    // Fixed-step locomotion so motion stays smooth when render frames hitch.
+    this.navAccumulator += frameDelta;
+    let steps = 0;
+    while (this.navAccumulator >= GardenScene.NAV_STEP && steps < GardenScene.NAV_MAX_STEPS) {
+      this.navigation.update(GardenScene.NAV_STEP);
+      this.navAccumulator -= GardenScene.NAV_STEP;
+      steps += 1;
+    }
+    if (this.navAccumulator > GardenScene.NAV_STEP) this.navAccumulator = 0;
 
     const playerPosition = this.navigation.player.position;
     const camera = this.navigation.camera;
@@ -260,7 +287,7 @@ export class GardenScene {
       return;
     }
 
-    this.floatingParticles.update(delta);
+    this.floatingParticles.update(frameDelta);
     if (this.gardenMaterials.length > 0) {
       updateMovingPixelsMaterials(this.gardenMaterials, elapsed);
     }
@@ -269,9 +296,11 @@ export class GardenScene {
       point.update(elapsed, playerPosition, camera);
     });
 
+    const t0 = performance.now();
     this.edgeLens.render(this.renderer, this.scene, camera);
     if (this.cssScene.children.length > 0) {
       this.cssRenderer.render(this.cssScene, camera);
     }
+    this.tuneAdaptiveQuality(performance.now() - t0);
   }
 }

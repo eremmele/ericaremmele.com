@@ -17,6 +17,8 @@ export class LightRays {
   private seedExtent = 0;
   private driftX = 0;
   private lastTs = 0;
+  private raf = 0;
+  private skipDraw = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -28,10 +30,15 @@ export class LightRays {
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         this.lastTs = 0;
-        requestAnimationFrame((ts) => this.animate(ts));
+        this.schedule();
       }
     });
-    requestAnimationFrame((ts) => this.animate(ts));
+    this.schedule();
+  }
+
+  private schedule(): void {
+    if (this.raf || document.hidden) return;
+    this.raf = requestAnimationFrame((ts) => this.animate(ts));
   }
 
   private ensureOffsets(extent: number): void {
@@ -54,7 +61,7 @@ export class LightRays {
   }
 
   resize(): void {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1);
     const w = window.innerWidth;
     const h = window.innerHeight;
     this.canvas.width = Math.round(w * dpr);
@@ -105,6 +112,7 @@ export class LightRays {
   }
 
   private animate(ts: number): void {
+    this.raf = 0;
     if (document.hidden) {
       this.lastTs = 0;
       return;
@@ -117,7 +125,11 @@ export class LightRays {
     const wrap = window.innerWidth + window.innerHeight;
     if (this.driftX <= -wrap) this.driftX += wrap;
 
-    this.draw(window.innerWidth, window.innerHeight, ts / 1000);
-    requestAnimationFrame((nextTs) => this.animate(nextTs));
+    // ~30fps draw — rays are slow-moving ambience, not gameplay-critical.
+    this.skipDraw = !this.skipDraw;
+    if (!this.skipDraw) {
+      this.draw(window.innerWidth, window.innerHeight, ts / 1000);
+    }
+    this.schedule();
   }
 }
