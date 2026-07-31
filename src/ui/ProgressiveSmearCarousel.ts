@@ -61,6 +61,22 @@ const GESTURE_DRAG_PX = 8;
 /** Layout width embeds should render at (desktop site breakpoint). */
 const EMBED_DESIGN_WIDTH = 1310;
 
+/** Live iframes (esp. Babylon CRT) crash / freeze many phones — use posters instead. */
+function preferStaticEmbeds(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+}
+
+function resolveSlidesForDevice(slides: CarouselSlide[]): CarouselSlide[] {
+  if (!preferStaticEmbeds()) return slides;
+  return slides.map((slide) => {
+    if (slide.kind !== "embed") return slide;
+    const poster = slide.poster;
+    if (!poster) return slide;
+    return { kind: "image", src: poster };
+  });
+}
+
 export class ProgressiveSmearCarousel {
   private readonly root: HTMLElement;
   private readonly stage: HTMLDivElement;
@@ -114,7 +130,7 @@ export class ProgressiveSmearCarousel {
     const blurStrength = options.blurStrength ?? 24;
 
     // Pad to ≥18 like the Framer component so the loop feels continuous.
-    const source = options.slides.filter(Boolean);
+    const source = resolveSlidesForDevice(options.slides.filter(Boolean));
     const padded: CarouselSlide[] = [];
     while (padded.length < 18 && source.length > 0) padded.push(...source);
     this.slides = padded.length > 0 ? padded : source;
@@ -163,6 +179,12 @@ export class ProgressiveSmearCarousel {
         iframe.setAttribute("tabindex", "-1");
         iframe.setAttribute("referrerpolicy", "no-referrer");
         iframe.setAttribute("aria-hidden", "true");
+        // Scripts needed for auto-scroll; no top-nav / forms / pointer capture.
+        iframe.setAttribute(
+          "sandbox",
+          "allow-scripts allow-same-origin allow-popups-to-escape-sandbox",
+        );
+        iframe.setAttribute("importance", "low");
         inner.appendChild(iframe);
       }
 
@@ -202,6 +224,17 @@ export class ProgressiveSmearCarousel {
     cancelAnimationFrame(this.raf);
     window.clearTimeout(this.snapTimer);
     this.unbind();
+    for (const card of this.cards) {
+      if (card.iframe) {
+        card.iframe.src = "about:blank";
+        card.iframe.removeAttribute("src");
+      }
+      if (card.video) {
+        card.video.pause();
+        card.video.removeAttribute("src");
+        card.video.load();
+      }
+    }
     this.root.replaceChildren();
     this.cards.length = 0;
   }

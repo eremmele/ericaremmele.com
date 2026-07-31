@@ -16,7 +16,7 @@ export type PortfolioItem = {
 export type CarouselSlide =
   | { kind: "image"; src: string }
   | { kind: "video"; src: string; poster?: string }
-  | { kind: "embed"; src: string; title?: string };
+  | { kind: "embed"; src: string; title?: string; /** Static fallback on mobile (no live iframe). */ poster?: string };
 
 export type InspectionPointData = {
   id: string;

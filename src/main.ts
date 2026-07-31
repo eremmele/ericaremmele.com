@@ -106,6 +106,7 @@ async function main(): Promise<void> {
 
   panel.setOnOpenChange((open) => {
     document.body.classList.toggle("portfolio-open", open);
+    garden.setRenderSuspended(open);
     if (!open) {
       garden.setOverlayProjectId(null);
       openProximityId = null;

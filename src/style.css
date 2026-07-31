@@ -526,6 +526,13 @@ body,
   background: #000;
 }
 
+.smear-carousel__card-media--embed {
+  /* Keep the 1310px design iframe from expanding the page on mobile WebKit. */
+  contain: strict;
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
 .smear-carousel__card-embed,
 .smear-carousel__card-video {
   display: block;
@@ -537,8 +544,12 @@ body,
 }
 
 .smear-carousel__card-embed {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: auto;
   height: auto;
+  max-width: none;
   transform-origin: top left;
   will-change: transform;
 }
@@ -910,7 +921,12 @@ body.is-touch .touch-controls {
   }
 
   body.is-touch.portfolio-open .controls-right > .inspect-key {
-    margin-left: 1.65rem;
+    display: none;
+  }
+
+  /* ~20% less opaque than the shared 0.66 key opacity. */
+  body.is-touch .controls-right > .inspect-key {
+    opacity: 0.528;
   }
 }
 

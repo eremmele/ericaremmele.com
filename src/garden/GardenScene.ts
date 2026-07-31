@@ -27,6 +27,8 @@ export class GardenScene {
   private activePoint: InspectionPoint | null = null;
   private running = false;
   private ready = false;
+  /** Skip WebGL draws while the portfolio overlay covers the garden. */
+  private renderSuspended = false;
 
   private constructor(canvas: HTMLCanvasElement, cssHost: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({
@@ -57,6 +59,7 @@ export class GardenScene {
       Math.floor(window.innerHeight * this.renderer.getPixelRatio()),
       this.renderer.getPixelRatio(),
     );
+    this.applyMobileFocusBand();
 
     this.scene.background = new THREE.Color(0x000000);
     this.scene.fog = null;
@@ -167,6 +170,23 @@ export class GardenScene {
     return this.ready;
   }
 
+  /** Pause expensive WebGL while the overlay is open (keeps proximity updates). */
+  setRenderSuspended(suspended: boolean): void {
+    if (this.renderSuspended === suspended) return;
+    this.renderSuspended = suspended;
+    if (!suspended) {
+      // Drop the backlog so the first resumed frame doesn't spike.
+      this.clock.getDelta();
+    }
+  }
+
+  private applyMobileFocusBand(): void {
+    const narrow = typeof window !== "undefined" && window.innerWidth <= 900;
+    // Wider sharp center on phones/tablets so less of the view is smeared.
+    if (narrow) this.edgeLens.setFocusBand(0.12, 0.88);
+    else this.edgeLens.setFocusBand(1 / 3, 2 / 3);
+  }
+
   resize(): void {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -177,6 +197,7 @@ export class GardenScene {
       Math.floor(height * this.renderer.getPixelRatio()),
       this.renderer.getPixelRatio(),
     );
+    this.applyMobileFocusBand();
     this.navigation.resize(width / height);
   }
 
@@ -229,14 +250,20 @@ export class GardenScene {
     const elapsed = this.clock.getElapsedTime();
 
     this.navigation.update(delta);
-    this.floatingParticles.update(delta);
-    if (this.gardenMaterials.length > 0) {
-      updateMovingPixelsMaterials(this.gardenMaterials, elapsed);
-    }
 
     const playerPosition = this.navigation.player.position;
     const camera = this.navigation.camera;
     this.activePoint = getNearestPoint(this.inspectionPoints, playerPosition);
+
+    if (this.renderSuspended) {
+      // Overlay covers the garden — skip GPU work; keep walk/proximity alive.
+      return;
+    }
+
+    this.floatingParticles.update(delta);
+    if (this.gardenMaterials.length > 0) {
+      updateMovingPixelsMaterials(this.gardenMaterials, elapsed);
+    }
 
     this.inspectionPoints.forEach((point) => {
       point.update(elapsed, playerPosition, camera);

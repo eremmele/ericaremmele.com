@@ -168,6 +168,11 @@ export class EdgeLensPass {
     renderer.render(this.scene, this.camera);
   }
 
+  setFocusBand(min: number, max: number): void {
+    this.mixMat.uniforms.uFocusMin.value = min;
+    this.mixMat.uniforms.uFocusMax.value = max;
+  }
+
   resize(width: number, height: number, pixelRatio = 1): void {
     const bw = Math.max(1, (width * 0.5) | 0);
     const bh = Math.max(1, (height * 0.5) | 0);
