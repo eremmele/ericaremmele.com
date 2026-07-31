@@ -148,6 +148,7 @@ export async function loadGardenGlb(
   const pointTexture = await loadPixelSprite();
 
   // Overlap foliage downloads with the CPU particle bake so bandwidth isn't idle.
+  // Keep full foliage density on mobile — instance count is tiny vs particle load.
   const foliageHost = new THREE.Group();
   foliageHost.name = "forest-foliage-host";
   const foliagePromise = createForestFoliageLayer({
@@ -155,7 +156,8 @@ export async function loadGardenGlb(
     walkBounds,
     walkCircle: { x: cx, z: cz, radius: walkRadius },
     clearCenter: { x: spawn.x, z: spawn.z, radius: 2.8 },
-    lean,
+    lean: false,
+    onProgress,
   }).then((layer) => {
     foliageHost.add(layer);
   });
