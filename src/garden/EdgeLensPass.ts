@@ -27,8 +27,8 @@ export class EdgeLensPass {
   private blurScale = 0.33;
   private blurLevels: 1 | 2 | 3 = 3;
   private enabled = true;
-  /** When true, skip the blur cascade for this stretch of frames (moving camera). */
-  private lean = false;
+  /** 0 = sharp only (cheap), 1 = full edge cascade. Smoothed by GardenScene. */
+  private blurAmount = 1;
 
   constructor(width: number, height: number) {
     const opts: THREE.RenderTargetOptions = {
@@ -101,6 +101,8 @@ export class EdgeLensPass {
         // Slightly wider than middle-third so more of the view stays sharp
         uFocusMin: { value: 0.26 },
         uFocusMax: { value: 0.74 },
+        /** 0 = fully sharp (no edge mix), 1 = full edge cascade strength. */
+        uBlurAmount: { value: 1 },
       },
       vertexShader: /* glsl */ `
         varying vec2 vUv;
@@ -116,6 +118,7 @@ export class EdgeLensPass {
         uniform sampler2D tLevel3;
         uniform float uFocusMin;
         uniform float uFocusMax;
+        uniform float uBlurAmount;
         varying vec2 vUv;
 
         // Linear 0 at the inner focus edge → 1 at the outer screen edge (X)
@@ -137,10 +140,11 @@ export class EdgeLensPass {
         }
 
         void main() {
-          // 0% blur in center band, 100% at L/R edges — linear (mask gray ramp)
-          float d = edgeDist(vUv.x);
-          if (d <= 0.0) {
-            gl_FragColor = texture2D(tLevel0, vUv);
+          vec4 sharp = texture2D(tLevel0, vUv);
+          // Scale edge distance by blur amount so lean fades instead of popping.
+          float d = edgeDist(vUv.x) * uBlurAmount;
+          if (d <= 0.001) {
+            gl_FragColor = sharp;
             return;
           }
 
@@ -148,7 +152,6 @@ export class EdgeLensPass {
           float lo = floor(t);
           float hi = min(lo + 1.0, 3.0);
           float f = fract(t);
-          // At d == 1, t == 3 → stay on max blur level
           if (d >= 1.0) {
             gl_FragColor = texture2D(tLevel3, vUv);
             return;
@@ -177,7 +180,9 @@ export class EdgeLensPass {
 
   /** Sharp-pass garden depth — used to tuck bright cards into foliage. */
   get sharpDepth(): THREE.DepthTexture | null {
-    if (!this.enabled || this.lean) return null;
+    // Always expose level0 depth when the cascade path is active. Cards composite
+    // after a fullscreen blit that wipes canvas depth — without this they float.
+    if (!this.enabled || this.blurAmount < 0.02) return null;
     return (this.level0.depthTexture as THREE.DepthTexture | null) ?? null;
   }
 
@@ -198,9 +203,18 @@ export class EdgeLensPass {
     if (options.blurLevels !== undefined) this.blurLevels = options.blurLevels;
   }
 
-  /** Skip post while the camera is whipping around (restored when settled). */
+  /**
+   * Edge blur strength 0–1. Callers should ease this so lean-while-moving
+   * fades instead of hard-cutting the cascade.
+   */
+  setBlurAmount(amount: number): void {
+    this.blurAmount = Math.min(1, Math.max(0, amount));
+    this.mixMat.uniforms.uBlurAmount.value = this.blurAmount;
+  }
+
+  /** @deprecated Prefer setBlurAmount — kept for call-site clarity. */
   setLean(lean: boolean): void {
-    this.lean = lean;
+    this.setBlurAmount(lean ? 0 : 1);
   }
 
   resize(width: number, height: number, pixelRatio = 1): void {
@@ -220,7 +234,8 @@ export class EdgeLensPass {
     scene: THREE.Scene,
     camera: THREE.Camera,
   ): void {
-    if (!this.enabled || this.lean) {
+    // Below ~2%: skip the cascade entirely (cheap pan path).
+    if (!this.enabled || this.blurAmount < 0.02) {
       renderer.setRenderTarget(null);
       renderer.render(scene, camera);
       return;
@@ -254,6 +269,7 @@ export class EdgeLensPass {
     this.mixMat.uniforms.tLevel1.value = l1;
     this.mixMat.uniforms.tLevel2.value = l2;
     this.mixMat.uniforms.tLevel3.value = l3;
+    this.mixMat.uniforms.uBlurAmount.value = this.blurAmount;
     this.blurMesh.material = this.mixMat;
 
     renderer.setRenderTarget(null);

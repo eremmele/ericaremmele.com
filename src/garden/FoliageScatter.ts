@@ -81,11 +81,9 @@ function mulberry32(seed: number): () => number {
 }
 
 /**
- * Meshy foliage ships as metalness=1 + dark-scene lights → near-black PBR.
- * Force dielectric leaves and lift albedo via soft emissive so they read on
- * the particle garden's near-black lighting. Keep original maps otherwise.
- * On mobile, a fragment dim uniform pulls leaves back so they don't blow out
- * under simpler/no-blur lighting.
+ * Bake foliage to an unlit shader with a stable world-up hemisphere term.
+ * Leaves keep a shaded grade without realtime lights — so lean-while-moving
+ * (dropping EdgeLens) no longer pops brightness when the camera settles.
  */
 function isMobileFoliageView(): boolean {
   if (typeof window === "undefined") return false;
@@ -94,75 +92,68 @@ function isMobileFoliageView(): boolean {
   );
 }
 
-function prepareFoliageMaterial(material: THREE.Material): void {
+function prepareFoliageMaterial(material: THREE.Material): THREE.Material {
   const std = material as THREE.MeshStandardMaterial;
-  if (std.map instanceof THREE.Texture) {
-    std.map.colorSpace = THREE.SRGBColorSpace;
-    std.map.anisotropy = 4;
-    std.map.needsUpdate = true;
-  }
-  if (std.normalMap instanceof THREE.Texture) {
-    std.normalMap.colorSpace = THREE.NoColorSpace;
-    std.normalMap.needsUpdate = true;
-  }
-  if (std.emissiveMap instanceof THREE.Texture && std.emissiveMap !== std.map) {
-    std.emissiveMap.colorSpace = THREE.SRGBColorSpace;
-    std.emissiveMap.needsUpdate = true;
-  }
-
-  // Kill metallic response (no env map in this scene).
-  std.metalness = 0;
-  std.metalnessMap = null;
-  std.roughness = 0.78;
-  // Keep roughnessMap if present for leaf variation.
-  if (std.roughnessMap) {
-    std.roughnessMap.colorSpace = THREE.NoColorSpace;
+  const map = std.map ?? null;
+  if (map instanceof THREE.Texture) {
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 4;
+    map.needsUpdate = true;
   }
 
   const mobile = isMobileFoliageView();
+  const color = mobile
+    ? new THREE.Color(0.5, 0.56, 0.46)
+    : new THREE.Color(0.68, 0.76, 0.64);
 
-  // Soft albedo lift — original Meshy emissive maps are often near-black.
-  if (std.map) {
-    std.emissiveMap = std.map;
-    if (mobile) {
-      // Lower self-light so leaves don't read neon on phones.
-      std.emissive.setRGB(0.14, 0.16, 0.13);
-      std.emissiveIntensity = 0.55;
-      std.color.setRGB(0.78, 0.82, 0.76);
-    } else {
-      std.emissive.setRGB(0.35, 0.35, 0.35);
-      std.emissiveIntensity = 1;
-      std.color.set(0xffffff);
-    }
-  }
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      map: { value: map },
+      color: { value: color },
+      hasMap: { value: map ? 1 : 0 },
+    },
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      varying float vHemi;
 
-  std.envMapIntensity = 0;
-  std.side = THREE.DoubleSide;
-  // Write depth so project thumbnails nest behind leaves/stems.
-  std.depthWrite = true;
-  std.depthTest = true;
+      void main() {
+        vUv = uv;
+        vec3 transformed = position;
+        vec3 objectNormal = normal;
 
-  if (mobile) {
-    const dim = 0.58;
-    std.onBeforeCompile = (shader) => {
-      shader.uniforms.uFoliageDim = { value: dim };
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "void main() {",
-        "uniform float uFoliageDim;\nvoid main() {",
-      );
-      // Multiply final lit color before tonemap/output packing.
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <opaque_fragment>",
-        /* glsl */ `
-          outgoingLight *= uFoliageDim;
-          #include <opaque_fragment>
-        `,
-      );
-    };
-    std.customProgramCacheKey = () => `foliage-mobile-dim-${dim}`;
-  }
+        #ifdef USE_INSTANCING
+          objectNormal = mat3(instanceMatrix) * objectNormal;
+          transformed = (instanceMatrix * vec4(transformed, 1.0)).xyz;
+        #endif
 
-  std.needsUpdate = true;
+        // Baked top-light from world up — view-stable, no scene lights.
+        vec3 wN = normalize(mat3(modelMatrix) * objectNormal);
+        vHemi = clamp(wN.y * 0.55 + 0.45, 0.42, 1.0);
+
+        vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform sampler2D map;
+      uniform vec3 color;
+      uniform float hasMap;
+      varying vec2 vUv;
+      varying float vHemi;
+
+      void main() {
+        vec3 base = color;
+        if (hasMap > 0.5) {
+          base *= texture2D(map, vUv).rgb;
+        }
+        gl_FragColor = vec4(base * vHemi, 1.0);
+      }
+    `,
+    side: THREE.DoubleSide,
+    depthTest: true,
+    depthWrite: true,
+    toneMapped: false,
+  });
 }
 
 /**
@@ -201,8 +192,7 @@ function extractPlantTemplate(scene: THREE.Object3D): {
   geometry.computeBoundingSphere();
 
   const rawMat = Array.isArray(source.material) ? source.material[0] : source.material;
-  const material = (rawMat as THREE.Material).clone();
-  prepareFoliageMaterial(material);
+  const material = prepareFoliageMaterial((rawMat as THREE.Material).clone());
 
   return { geometry, material };
 }

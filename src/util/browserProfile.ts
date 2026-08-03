@@ -27,7 +27,10 @@ export type BrowserProfile = {
   edgeBlurScale: number;
   /** How many increasing-blur levels (1 = cheapest). */
   blurLevels: 1 | 2 | 3;
-  /** Drop blur while the camera is turning/looking (big Firefox win). */
+  /**
+   * Keep edge blur while the camera moves. Prefer true — lean clears sharpDepth
+   * and makes project cards sit on top of foliage.
+   */
   blurWhileMoving: boolean;
   particleCount: number;
   toneMapping: boolean;
@@ -87,7 +90,7 @@ export function createBrowserProfile(
       edgeBlur: false,
       edgeBlurScale: 0.25,
       blurLevels: 1,
-      blurWhileMoving: false,
+      blurWhileMoving: true,
       particleCount: 28,
       toneMapping: false,
       foliageLights: "simple",
@@ -104,7 +107,7 @@ export function createBrowserProfile(
       edgeBlur: !mobileLike,
       edgeBlurScale: 0.28,
       blurLevels: 2,
-      blurWhileMoving: false,
+      blurWhileMoving: true,
       particleCount: 36,
       toneMapping: true,
       foliageLights: "simple",
@@ -126,7 +129,7 @@ export function createBrowserProfile(
     edgeBlur: !mobileLike,
     edgeBlurScale: mobileLike ? 0.28 : 0.33,
     blurLevels: mobileLike ? 2 : 3,
-    blurWhileMoving: false,
+    blurWhileMoving: true,
     particleCount: mobileLike ? 36 : 50,
     toneMapping: true,
     foliageLights: mobileLike ? "simple" : "full",

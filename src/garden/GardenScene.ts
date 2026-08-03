@@ -321,9 +321,9 @@ export class GardenScene {
       return;
     }
 
-    const moving = this.navigation.motionActivity > 0.28;
-    // Firefox/Safari: drop post while panning — biggest pan-latency win.
-    this.edgeLens.setLean(Boolean(this.preferBlur && moving && !this.profile.blurWhileMoving));
+    // Keep EdgeLens on while moving: baked foliage no longer needs lean, and
+    // dropping the cascade also drops sharpDepth → thumbnails float over leaves.
+    this.edgeLens.setBlurAmount(this.preferBlur ? 1 : 0);
 
     const runFx = this.frameIndex % this.profile.fxFrameStride === 0;
     if (runFx) {
@@ -337,7 +337,7 @@ export class GardenScene {
       point.update(elapsed, playerPosition, camera);
     });
 
-    // Foliage: lit (+ edge blur when settled). Thumbnails: unlit, depth-nested.
+    // Foliage (baked) + edge blur. Thumbnails depth-nested via sharpDepth.
     this.renderer.autoClear = true;
     this.edgeLens.render(this.renderer, this.scene, camera);
 
