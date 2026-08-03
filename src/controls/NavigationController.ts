@@ -50,6 +50,8 @@ export class NavigationController {
     startedAt: number;
     durationMs: number;
   } | null = null;
+  private onFirstMoveIntent: (() => void) | null = null;
+  private firstMoveIntentFired = false;
 
   constructor(aspect: number, bounds: THREE.Box3) {
     this.bounds = bounds;
@@ -84,6 +86,19 @@ export class NavigationController {
     this.player.position.y = this.targetEyeY;
   }
 
+  /** One-shot: fires the first time the user intentionally moves (not auto-spawn turn). */
+  setOnFirstMoveIntent(callback: () => void): void {
+    this.onFirstMoveIntent = callback;
+  }
+
+  private notifyFirstMoveIntent(): void {
+    if (this.firstMoveIntentFired || !this.onFirstMoveIntent) return;
+    this.firstMoveIntentFired = true;
+    const cb = this.onFirstMoveIntent;
+    this.onFirstMoveIntent = null;
+    cb();
+  }
+
   bind(element: HTMLElement, canvas: HTMLCanvasElement): void {
     window.addEventListener("keydown", (event) => {
       if (
@@ -93,6 +108,7 @@ export class NavigationController {
         event.code === "ArrowRight"
       ) {
         event.preventDefault();
+        this.notifyFirstMoveIntent();
       }
       this.keys.add(event.code);
     });
@@ -158,8 +174,17 @@ export class NavigationController {
   }
 
   setKeyPressed(code: string, pressed: boolean): void {
-    if (pressed) this.keys.add(code);
-    else this.keys.delete(code);
+    if (pressed) {
+      this.keys.add(code);
+      if (
+        code === "ArrowUp" ||
+        code === "ArrowDown" ||
+        code === "ArrowLeft" ||
+        code === "ArrowRight"
+      ) {
+        this.notifyFirstMoveIntent();
+      }
+    } else this.keys.delete(code);
   }
 
   /** Instant yaw equal to holding → for `steps` frames at 60fps. */
@@ -216,6 +241,7 @@ export class NavigationController {
       const scale = (mag - deadzone) / (1 - deadzone);
       this.moveTouch.x = (nx / mag) * scale;
       this.moveTouch.y = (ny / mag) * scale;
+      this.notifyFirstMoveIntent();
     };
 
     const reset = (): void => {
@@ -278,6 +304,7 @@ export class NavigationController {
       const scale = (mag - deadzone) / (1 - deadzone);
       this.moveTouch.x = (nx / mag) * scale;
       this.moveTouch.y = (ny / mag) * scale;
+      this.notifyFirstMoveIntent();
     };
 
     const reset = (pointerId: number): void => {

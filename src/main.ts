@@ -1,8 +1,21 @@
+import {
+  trackCarouselInteracted,
+  trackControlsToggled,
+  trackGardenFoliageReady,
+  trackGardenNavigated,
+  trackGardenReady,
+  trackHeroViewTurn,
+  trackInspectionApproached,
+  trackProjectClosed,
+  trackProjectOpened,
+  type ProjectOpenSource,
+} from "./analytics/fullstory";
 import { getPortfolioById } from "./data/portfolio";
 import { GardenScene } from "./garden/GardenScene";
 import type { InspectionPoint } from "./garden/InspectionPoint";
 import { LightRays } from "./ui/LightRays";
 import { PortfolioPanel } from "./ui/PortfolioPanel";
+import type { PortfolioItem } from "./types";
 
 const ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"] as const;
 
@@ -34,6 +47,16 @@ async function main(): Promise<void> {
   const movePad = document.getElementById("move-pad") as HTMLElement;
 
   let turnRight: ((steps: number) => void) | null = null;
+  let openItem: PortfolioItem | null = null;
+  let carouselInteracted = false;
+  let hasNavigated = false;
+  let lastApproachedPointId: string | null = null;
+
+  const markNavigated = (input: string): void => {
+    if (hasNavigated) return;
+    hasNavigated = true;
+    trackGardenNavigated({ input });
+  };
 
   // Bind before garden load so nav clicks never fall through to hash navigation.
   document.addEventListener("click", (event) => {
@@ -45,7 +68,13 @@ async function main(): Promise<void> {
     event.stopPropagation();
     if (!turnRight) return;
     const steps = Number(link.dataset.turnRight);
-    turnRight(Number.isFinite(steps) ? steps : 16);
+    const resolved = Number.isFinite(steps) ? steps : 16;
+    turnRight(resolved);
+    markNavigated("hero_link");
+    trackHeroViewTurn({
+      steps: resolved,
+      label: (link.textContent ?? "").trim(),
+    });
   });
 
   new LightRays(raysCanvas);
@@ -66,39 +95,60 @@ async function main(): Promise<void> {
 
   turnRight = (steps) => garden.navigation.animateTurnRightSteps(steps);
 
-  const openPoint = (point: InspectionPoint, closeOnLeave: boolean): void => {
+  const openPoint = (
+    point: InspectionPoint,
+    closeOnLeave: boolean,
+    source: ProjectOpenSource,
+  ): void => {
     const item = getPortfolioById(point.data.portfolioId) ?? point.item;
     openProximityId = point.data.id;
     closeOverlayOnLeave = closeOnLeave;
+    openItem = item;
+    carouselInteracted = false;
     garden.setOverlayProjectId(point.data.id);
+    trackProjectOpened({
+      projectId: item.id,
+      title: item.title,
+      category: item.category,
+      label: point.data.label,
+      pointId: point.data.id,
+      source,
+    });
     panel.show(item);
   };
 
   garden.bindControls(app, canvas, movePad);
+  garden.navigation.setOnFirstMoveIntent(() => markNavigated("locomotion"));
   loadStatus.hidden = true;
+
+  const isTouch = window.matchMedia("(pointer: coarse)").matches;
+  trackGardenReady({
+    inputMode: isTouch ? "touch" : "desktop",
+    foliagePending: true,
+  });
 
   void garden.whenFoliageReady.finally(() => {
     loadStatus.hidden = true;
     loadStatus.textContent = "";
+    trackGardenFoliageReady();
   });
 
-  const isTouch = window.matchMedia("(pointer: coarse)").matches;
   if (isTouch) {
     document.documentElement.classList.add("is-touch");
     document.body.classList.add("is-touch");
     touchControls.hidden = false;
   }
 
-  const openActivePortfolio = (): void => {
+  const openActivePortfolio = (source: ProjectOpenSource): void => {
     const point = garden.getActivePoint();
     if (!point) return;
-    openPoint(point, true);
+    openPoint(point, true, source);
   };
 
-  const openProjectByNumber = (n: number): void => {
+  const openProjectByNumber = (n: number, source: ProjectOpenSource): void => {
     const point = garden.getPointByNumber(n);
     if (!point) return;
-    openPoint(point, false);
+    openPoint(point, false, source);
   };
 
   const setControlsCollapsed = (collapsed: boolean): void => {
@@ -108,12 +158,13 @@ async function main(): Promise<void> {
     controlsRight.setAttribute("aria-hidden", collapsed ? "true" : "false");
     controlsHide.setAttribute("aria-expanded", String(!collapsed));
     controlsHide.setAttribute("aria-label", collapsed ? "Show controls (H)" : "Hide controls (H)");
+    trackControlsToggled({ collapsed });
   };
 
   let openProximityId: string | null = null;
   let closeOverlayOnLeave = false;
 
-  panel.setOnOpenChange((open) => {
+  panel.setOnOpenChange((open, reason) => {
     document.documentElement.classList.toggle("portfolio-open", open);
     document.body.classList.toggle("portfolio-open", open);
     garden.setRenderSuspended(open);
@@ -121,7 +172,21 @@ async function main(): Promise<void> {
       garden.setOverlayProjectId(null);
       openProximityId = null;
       closeOverlayOnLeave = false;
+      if (openItem) {
+        trackProjectClosed({
+          projectId: openItem.id,
+          title: openItem.title,
+          reason: reason ?? "unknown",
+        });
+        openItem = null;
+      }
     }
+  });
+
+  panel.setOnCarouselInteract(() => {
+    if (carouselInteracted || !openItem) return;
+    carouselInteracted = true;
+    trackCarouselInteracted({ projectId: openItem.id, title: openItem.title });
   });
 
   let raf = 0;
@@ -131,13 +196,28 @@ async function main(): Promise<void> {
 
     garden.update();
 
+    const active = garden.getActivePoint();
+    const activeId = active?.data.id ?? null;
+    if (activeId && activeId !== lastApproachedPointId && active) {
+      lastApproachedPointId = activeId;
+      const item = getPortfolioById(active.data.portfolioId) ?? active.item;
+      trackInspectionApproached({
+        pointId: active.data.id,
+        portfolioId: active.data.portfolioId,
+        label: active.data.label,
+        title: item.title,
+      });
+    } else if (!activeId) {
+      lastApproachedPointId = null;
+    }
+
     if (
       panel.isOpen &&
       closeOverlayOnLeave &&
       openProximityId &&
       !garden.isPointWithinInteractRadius(openProximityId, 1.05)
     ) {
-      panel.hide();
+      panel.hide("walk_away");
     }
 
     raf = requestAnimationFrame(tick);
@@ -167,7 +247,7 @@ async function main(): Promise<void> {
   document.querySelectorAll<HTMLButtonElement>(".project-key[data-project]").forEach((button) => {
     button.addEventListener("click", () => {
       const n = Number(button.dataset.project);
-      if (Number.isFinite(n)) openProjectByNumber(n);
+      if (Number.isFinite(n)) openProjectByNumber(n, "project_button");
       button.blur();
     });
   });
@@ -179,20 +259,20 @@ async function main(): Promise<void> {
       setControlsCollapsed(!controlsBar.classList.contains("is-collapsed"));
     }
     if (event.code === "KeyE") {
-      openActivePortfolio();
+      openActivePortfolio("inspect_key");
     }
     if (event.code === "Escape" && panel.isOpen) {
-      panel.hide();
+      panel.hide("escape_key");
     }
     if (event.code === "KeyX" && panel.isOpen) {
       event.preventDefault();
-      panel.hide();
+      panel.hide("x_key");
     }
 
     const digit = /^Digit([1-5])$/.exec(event.code)?.[1] ?? /^Numpad([1-5])$/.exec(event.code)?.[1];
     if (digit) {
       event.preventDefault();
-      openProjectByNumber(Number(digit));
+      openProjectByNumber(Number(digit), "hotkey");
     }
   });
 
@@ -206,12 +286,12 @@ async function main(): Promise<void> {
     if (panel.isOpen) return;
     const hit = garden.pickInspectionPoint(event.clientX, event.clientY);
     if (hit) {
-      openPoint(hit, false);
+      openPoint(hit, false, "canvas_click");
       event.preventDefault();
       return;
     }
     if (isTouch && garden.getActivePoint()) {
-      openActivePortfolio();
+      openActivePortfolio("touch_tap");
       event.preventDefault();
     }
   });

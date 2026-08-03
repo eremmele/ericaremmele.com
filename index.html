@@ -164,14 +164,18 @@
     <!-- End Google Tag Manager (noscript) -->
     <div id="app">
       <canvas id="light-rays" class="light-rays" aria-hidden="true"></canvas>
-      <canvas id="garden-canvas" aria-hidden="true"></canvas>
+      <canvas
+        id="garden-canvas"
+        aria-hidden="true"
+        data-fs-element="Garden WebGL Canvas"
+      ></canvas>
       <div id="css3d-root" class="css3d-root" aria-hidden="true"></div>
 
-      <header id="hero" class="hero" data-name="Hero">
+      <header id="hero" class="hero" data-name="Hero" data-fs-element="Hero">
         <div class="hero-content" data-name="hero-content">
           <div class="hero-columns" data-name="column-set">
             <div class="hero-col hero-col-intro" data-name="col-intro">
-              <a class="hero-name" data-name="name" href="./">Erica Remmele</a>
+              <a class="hero-name" data-name="name" data-fs-element="Hero Name" href="./">Erica Remmele</a>
               <p class="hero-bio" data-name="bio">
                 <span class="hero-bio-name">Erica Remmele</span>
                 is a multidisciplinary product and brand designer shaping UX, design systems, and visual identity for startups, enterprises, and creative teams across tech and entertainment.
@@ -182,6 +186,7 @@
               <a
                 class="hero-nav-label hero-nav-link hero-view-link"
                 data-name="nav-label"
+                data-fs-element="Nav Graphic Design"
                 href="#view"
                 data-turn-right="16"
                 >/ Graphic Design</a
@@ -193,6 +198,7 @@
                 <a
                   class="hero-nav-label hero-nav-link hero-view-link"
                   data-name="nav-label"
+                  data-fs-element="Nav Product Design"
                   href="#view"
                   data-turn-right="16"
                   >/ Product Design</a
@@ -200,6 +206,7 @@
                 <a
                   class="hero-nav-label hero-nav-link"
                   data-name="nav-label"
+                  data-fs-element="Nav LinkedIn"
                   href="https://www.linkedin.com/in/ericaremmele"
                   target="_blank"
                   rel="noreferrer"
@@ -213,33 +220,34 @@
                     >Wieden+Kennedy, Nike, Abercrombie &amp; Fitch, Universal Music, fashion startups, tech startups, and enterprise platforms.</span
                   >
                 </p>
-                <a class="hero-hire" href="mailto:erica@seeyoufriday.com">—Inquire!</a>
+                <a class="hero-hire" data-fs-element="Hire Inquire" href="mailto:erica@seeyoufriday.com">—Inquire!</a>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div id="controls-bar" class="controls-bar">
+      <div id="controls-bar" class="controls-bar" data-fs-element="Move Controls">
         <div class="controls-left" role="group" aria-label="Move">
-          <button type="button" class="arrow-key arrow-up" data-key="ArrowUp" aria-label="Move forward">↑</button>
-          <button type="button" class="arrow-key arrow-left" data-key="ArrowLeft" aria-label="Turn left">←</button>
-          <button type="button" class="arrow-key arrow-down" data-key="ArrowDown" aria-label="Move backward">↓</button>
-          <button type="button" class="arrow-key arrow-right" data-key="ArrowRight" aria-label="Turn right">→</button>
+          <button type="button" class="arrow-key arrow-up" data-key="ArrowUp" data-fs-element="Move Forward" aria-label="Move forward">↑</button>
+          <button type="button" class="arrow-key arrow-left" data-key="ArrowLeft" data-fs-element="Turn Left" aria-label="Turn left">←</button>
+          <button type="button" class="arrow-key arrow-down" data-key="ArrowDown" data-fs-element="Move Backward" aria-label="Move backward">↓</button>
+          <button type="button" class="arrow-key arrow-right" data-key="ArrowRight" data-fs-element="Turn Right" aria-label="Turn right">→</button>
         </div>
       </div>
 
-      <div class="controls-right" role="group" aria-label="Open project">
-        <button type="button" class="arrow-key project-key" data-project="1" aria-label="Open project 1" aria-keyshortcuts="1">1</button>
-        <button type="button" class="arrow-key project-key" data-project="2" aria-label="Open project 2" aria-keyshortcuts="2">2</button>
-        <button type="button" class="arrow-key project-key" data-project="3" aria-label="Open project 3" aria-keyshortcuts="3">3</button>
-        <button type="button" class="arrow-key project-key" data-project="4" aria-label="Open project 4" aria-keyshortcuts="4">4</button>
-        <button type="button" class="arrow-key project-key" data-project="5" aria-label="Open project 5" aria-keyshortcuts="5">5</button>
+      <div class="controls-right" role="group" aria-label="Open project" data-fs-element="Project Hotkeys">
+        <button type="button" class="arrow-key project-key" data-project="1" data-fs-element="Open Project 1" aria-label="Open project 1" aria-keyshortcuts="1">1</button>
+        <button type="button" class="arrow-key project-key" data-project="2" data-fs-element="Open Project 2" aria-label="Open project 2" aria-keyshortcuts="2">2</button>
+        <button type="button" class="arrow-key project-key" data-project="3" data-fs-element="Open Project 3" aria-label="Open project 3" aria-keyshortcuts="3">3</button>
+        <button type="button" class="arrow-key project-key" data-project="4" data-fs-element="Open Project 4" aria-label="Open project 4" aria-keyshortcuts="4">4</button>
+        <button type="button" class="arrow-key project-key" data-project="5" data-fs-element="Open Project 5" aria-label="Open project 5" aria-keyshortcuts="5">5</button>
       </div>
       <button
         type="button"
         id="controls-hide"
         class="arrow-key inspect-key"
+        data-fs-element="Toggle Controls"
         aria-expanded="true"
         aria-label="Toggle controls (H)"
         aria-keyshortcuts="H"
@@ -249,11 +257,12 @@
 
       <p id="load-status" class="load-status" aria-live="polite">Loading garden…</p>
 
-      <div id="portfolio-panel" class="portfolio-panel" hidden>
+      <div id="portfolio-panel" class="portfolio-panel" data-fs-element="Portfolio Panel" hidden>
         <button
           id="portfolio-esc"
           type="button"
           class="arrow-key portfolio-esc"
+          data-fs-element="Close Project Esc"
           aria-label="Close project (Esc)"
           aria-keyshortcuts="Escape"
         >
@@ -263,13 +272,14 @@
           id="portfolio-close"
           type="button"
           class="arrow-key portfolio-close"
+          data-fs-element="Close Project X"
           aria-label="Close project (X)"
           aria-keyshortcuts="X"
         >
           X
         </button>
         <div class="portfolio-content portfolio-content--carousel">
-          <div id="portfolio-carousel" class="smear-carousel" aria-label="Project carousel"></div>
+          <div id="portfolio-carousel" class="smear-carousel" data-fs-element="Project Carousel" aria-label="Project carousel"></div>
         </div>
         <div id="portfolio-scroll-hint" class="portfolio-scroll-hint is-hidden" aria-hidden="true">
           <span class="portfolio-scroll-hint__mouse" aria-hidden="true"><span class="portfolio-scroll-hint__wheel"></span></span>
@@ -278,7 +288,7 @@
       </div>
 
       <div id="touch-controls" class="touch-controls" hidden>
-        <div id="move-pad" class="move-pad" role="application" aria-label="Move joystick">
+        <div id="move-pad" class="move-pad" role="application" data-fs-element="Touch Move Pad" aria-label="Move joystick">
           <span class="move-pad__ring" aria-hidden="true"></span>
           <span id="move-pad-knob" class="move-pad__knob" aria-hidden="true"></span>
         </div>

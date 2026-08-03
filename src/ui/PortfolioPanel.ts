@@ -1,3 +1,4 @@
+import type { ProjectCloseReason } from "../analytics/fullstory";
 import type { PortfolioItem } from "../types";
 import { ProgressiveSmearCarousel } from "./ProgressiveSmearCarousel";
 
@@ -14,8 +15,9 @@ export class PortfolioPanel {
   private readonly dragHint: HTMLElement;
   private readonly scrollHint: HTMLElement;
   private carousel: ProgressiveSmearCarousel | null = null;
-  private onClose?: () => void;
-  private onOpenChange?: (open: boolean) => void;
+  private onClose?: (reason: ProjectCloseReason) => void;
+  private onOpenChange?: (open: boolean, reason?: ProjectCloseReason) => void;
+  private onCarouselUserInteract?: () => void;
   private idleHintTimer: number | null = null;
   private hintPhase: "initial" | "repeat" = "initial";
   private frustrationClickTimes: number[] = [];
@@ -37,14 +39,14 @@ export class PortfolioPanel {
 
     this.closeButton.addEventListener("click", (event) => {
       event.stopPropagation();
-      this.hide();
+      this.hide("close_button");
     });
     this.escButton.addEventListener("click", (event) => {
       event.stopPropagation();
-      this.hide();
+      this.hide("esc_button");
     });
     this.panel.addEventListener("click", (event) => {
-      if (event.target === this.panel) this.hide();
+      if (event.target === this.panel) this.hide("backdrop");
     });
     this.dragHint.addEventListener("animationend", (event) => {
       if (event.animationName !== "portfolio-hint-flash") return;
@@ -53,12 +55,16 @@ export class PortfolioPanel {
     this.panel.addEventListener("pointermove", this.onPointerMove);
   }
 
-  setOnClose(callback: () => void): void {
+  setOnClose(callback: (reason: ProjectCloseReason) => void): void {
     this.onClose = callback;
   }
 
-  setOnOpenChange(callback: (open: boolean) => void): void {
+  setOnOpenChange(callback: (open: boolean, reason?: ProjectCloseReason) => void): void {
     this.onOpenChange = callback;
+  }
+
+  setOnCarouselInteract(callback: () => void): void {
+    this.onCarouselUserInteract = callback;
   }
 
   show(item: PortfolioItem): void {
@@ -84,7 +90,8 @@ export class PortfolioPanel {
     this.onOpenChange?.(true);
   }
 
-  hide(): void {
+  hide(reason: ProjectCloseReason = "unknown"): void {
+    if (this.panel.hidden) return;
     this.panel.hidden = true;
     this.clearIdleHintTimer();
     this.dragHint.classList.remove("is-flashing");
@@ -92,8 +99,8 @@ export class PortfolioPanel {
     this.carousel?.destroy();
     this.carousel = null;
     this.mount.replaceChildren();
-    this.onOpenChange?.(false);
-    this.onClose?.();
+    this.onOpenChange?.(false, reason);
+    this.onClose?.(reason);
   }
 
   get isOpen(): boolean {
@@ -122,6 +129,7 @@ export class PortfolioPanel {
     this.frustrationClickTimes = [];
     this.setScrollHintVisible(false);
     this.resetIdleHintTimer();
+    this.onCarouselUserInteract?.();
   }
 
   private resetIdleHintTimer(): void {
