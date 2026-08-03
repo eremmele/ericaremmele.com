@@ -852,9 +852,30 @@ body.is-touch .touch-hint {
   display: block;
 }
 
-/* Hide on-screen arrows on touch; joystick / desktop-drag handle move. */
-body.is-touch .controls-left {
-  display: none;
+/* Hide desktop chrome on touch from first paint (html.is-touch set in <head>). */
+html.is-touch .controls-left,
+body.is-touch .controls-left,
+html.is-touch .inspect-key,
+body.is-touch .inspect-key {
+  display: none !important;
+}
+
+@media (pointer: coarse) {
+  .controls-left,
+  .inspect-key {
+    display: none !important;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 767px) {
+  .controls-right .project-key {
+    display: none !important;
+  }
+
+  body.portfolio-open .controls-right .project-key,
+  html.portfolio-open .controls-right .project-key {
+    display: grid !important;
+  }
 }
 
 /* Tablet+ touch: 1–5 docked right (H hidden). */
@@ -895,7 +916,7 @@ body.is-touch .touch-controls {
   }
 
   body.is-touch .controls-right .project-key {
-    display: none;
+    display: none !important;
   }
 
   body.is-touch .controls-right {
@@ -915,7 +936,7 @@ body.is-touch .touch-controls {
   }
 
   body.is-touch.portfolio-open .controls-right .project-key {
-    display: grid;
+    display: grid !important;
   }
 }
 
@@ -1054,4 +1075,10 @@ body.is-touch .touch-controls {
     top: max(0.75rem, env(safe-area-inset-top, 0px));
     right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
   }
+}
+
+/* H collapse — must beat .controls-right { display: flex } (incl. [hidden]). */
+body.controls-collapsed .controls-right,
+.controls-right[hidden] {
+  display: none !important;
 }

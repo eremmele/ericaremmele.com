@@ -121,15 +121,15 @@ export const inspectionPoints: InspectionPointData[] = [
   },
   {
     id: "point-3",
-    portfolioId: "swgwars",
+    portfolioId: "undrmnd",
     position: [7, 0, -3],
-    label: "SWG Wars",
+    label: "Design Engineering",
   },
   {
     id: "point-4",
-    portfolioId: "undrmnd",
+    portfolioId: "swgwars",
     position: [4, 0, 4],
-    label: "Design Engineering",
+    label: "SWG Wars",
   },
   {
     id: "point-5",

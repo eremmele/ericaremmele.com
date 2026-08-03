@@ -5,13 +5,19 @@ import { NavigationController } from "../controls/NavigationController";
 import { createPlaceholderGarden } from "./PlaceholderGarden";
 import { defaultInspectionPositions, loadGardenGlb } from "./GlbGarden";
 import { updateMovingPixelsMaterials } from "./MovingPixels";
-import { InspectionPoint, getNearestPoint, INTERACT_RADIUS } from "./InspectionPoint";
+import {
+  InspectionPoint,
+  getNearestPoint,
+  INTERACT_RADIUS,
+} from "./InspectionPoint";
 import { PALETTE } from "./palette";
 import { EdgeLensPass } from "./EdgeLensPass";
 import { FloatingParticlesBlack } from "../ui/FloatingParticlesBlack";
 
 export class GardenScene {
   readonly scene = new THREE.Scene();
+  /** Thumbnails only — drawn after EdgeLens so edge blur never underexposes them. */
+  private readonly cardScene = new THREE.Scene();
   /** Separate scene so WebGL post-process never touches CSS3D objects. */
   readonly cssScene = new THREE.Scene();
   readonly renderer: THREE.WebGLRenderer;
@@ -22,6 +28,7 @@ export class GardenScene {
   private readonly clock = new THREE.Clock();
   private readonly edgeLens: EdgeLensPass;
   private readonly floatingParticles: FloatingParticlesBlack;
+  private readonly drawingBufferSize = new THREE.Vector2();
   private gardenMaterials: THREE.ShaderMaterial[] = [];
   private colliders: THREE.Object3D[] = [];
   private activePoint: InspectionPoint | null = null;
@@ -30,8 +37,8 @@ export class GardenScene {
   /** Skip WebGL draws while the portfolio overlay covers the garden. */
   private renderSuspended = false;
   private navAccumulator = 0;
-  private frameMsEma = 16;
   private preferBlur = true;
+  private foliageReady: Promise<void> = Promise.resolve();
   private static readonly NAV_STEP = 1 / 60;
   private static readonly NAV_MAX_STEPS = 3;
 
@@ -105,7 +112,7 @@ export class GardenScene {
       this.navigation.setSpawn(loaded.spawn);
       this.placeInspectionPoints(defaultInspectionPositions(loaded.walkBounds));
       // Foliage continues downloading/instancing after the garden is walkable.
-      void loaded.whenFoliageReady;
+      this.foliageReady = loaded.whenFoliageReady;
     } catch (error) {
       console.warn("Failed to load garden.glb — falling back to placeholder.", error);
       const placeholder = createPlaceholderGarden();
@@ -115,9 +122,15 @@ export class GardenScene {
       this.navigation.setBounds(placeholder.walkBounds);
       this.navigation.setHeightField(null);
       this.placeInspectionPoints(inspectionPoints.map((p) => p.position));
+      this.foliageReady = Promise.resolve();
     }
 
     this.ready = true;
+  }
+
+  /** Resolves when deferred foliage has finished (or failed safely). */
+  get whenFoliageReady(): Promise<void> {
+    return this.foliageReady;
   }
 
   static async create(
@@ -138,8 +151,7 @@ export class GardenScene {
       const marker = new InspectionPoint({ ...point, position }, item);
       this.liftMarkerToGround(marker);
       this.inspectionPoints.push(marker);
-      // WebGL mesh so foliage / landscape depth can occlude the card.
-      this.scene.add(marker.group);
+      this.cardScene.add(marker.group);
     });
   }
 
@@ -191,19 +203,9 @@ export class GardenScene {
       typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
     // No peripheral landscape blur on phones/tablets (incl. landscape widths > 900).
     this.preferBlur = !narrow && !touch;
+    // Keep blur steadily on/off — toggling mid-session reads as a separate layer popping.
     this.edgeLens.setEnabled(this.preferBlur);
-    if (this.preferBlur) this.edgeLens.setFocusBand(1 / 3, 2 / 3);
-  }
-
-  private tuneAdaptiveQuality(frameMs: number): void {
-    this.frameMsEma = this.frameMsEma * 0.88 + frameMs * 0.12;
-    if (!this.preferBlur) {
-      this.edgeLens.setEnabled(false);
-      return;
-    }
-    // Drop blur when frames sag; restore when they recover.
-    if (this.frameMsEma > 20) this.edgeLens.setEnabled(false);
-    else if (this.frameMsEma < 14) this.edgeLens.setEnabled(true);
+    if (this.preferBlur) this.edgeLens.setFocusBand(0.26, 0.74);
   }
 
   resize(): void {
@@ -296,11 +298,22 @@ export class GardenScene {
       point.update(elapsed, playerPosition, camera);
     });
 
-    const t0 = performance.now();
+    // Foliage: lit + edge-blurred. Thumbnails: unlit, depth-tested against sharp garden.
+    this.renderer.autoClear = true;
     this.edgeLens.render(this.renderer, this.scene, camera);
+
+    this.renderer.getDrawingBufferSize(this.drawingBufferSize);
+    const gardenDepth = this.preferBlur ? this.edgeLens.sharpDepth : null;
+    for (const point of this.inspectionPoints) {
+      point.setGardenDepth(gardenDepth, this.drawingBufferSize);
+    }
+
+    this.renderer.autoClear = false;
+    this.renderer.render(this.cardScene, camera);
+    this.renderer.autoClear = true;
+
     if (this.cssScene.children.length > 0) {
       this.cssRenderer.render(this.cssScene, camera);
     }
-    this.tuneAdaptiveQuality(performance.now() - t0);
   }
 }

@@ -17,6 +17,12 @@
     <!-- End Google Tag Manager -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script>
+      // Before first paint — avoid arrow/number flash on touch devices.
+      if (window.matchMedia("(pointer: coarse)").matches) {
+        document.documentElement.classList.add("is-touch");
+      }
+    </script>
     <title>Erica Remmele — Senior Product Designer &amp; Creative Director | Remote US</title>
     <meta
       name="description"
@@ -168,7 +174,7 @@
               <a class="hero-name" data-name="name" href="./">Erica Remmele</a>
               <p class="hero-bio" data-name="bio">
                 <span class="hero-bio-name">Erica Remmele</span>
-                is a founding product designer and creative director working across UX, design systems, and brand for tech, cybersecurity, and creative teams.
+                is a multidisciplinary product and brand designer shaping UX, design systems, and visual identity for startups, enterprises, and creative teams across tech and entertainment.
               </p>
             </div>
 

@@ -1,30 +1,28 @@
 /**
- * Full-viewport light rays — white, 1px, 20% opacity, soft-light blend.
+ * Full-viewport light rays — soft-light shafts over the garden.
+ * Offsets are stable across resize so chrome show/hide never reshuffles them.
  */
-const ANGLE = (65 * Math.PI) / 180; // steeper than the original 45°
-// Canvas alpha is kept at 1.0; overall intensity is controlled via `.light-rays { opacity }`.
+const ANGLE = (65 * Math.PI) / 180;
 const OPACITY = 1.0;
-const THICKNESS = 1; // base; per-ray width varies 1–5px at draw time
+const THICKNESS = 1;
 const DRIFT_PX_PER_SEC = 8;
-/** Approximate rays per 1000px of diagonal coverage. */
 const DENSITY = 0.055;
 
 export class LightRays {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
-  /** Offsets along the perpendicular axis, in CSS pixels (stable across resize). */
-  private offsets: number[] = [];
-  private seedExtent = 0;
+  /** Normalized offsets in [-0.5, 0.5] — scaled by extent at draw time. */
+  private readonly normOffsets: number[] = [];
   private driftX = 0;
   private lastTs = 0;
   private raf = 0;
-  private skipDraw = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) throw new Error("2D context unavailable for light rays");
     this.ctx = ctx;
+    this.seedOffsets();
     this.resize();
     window.addEventListener("resize", () => this.resize());
     document.addEventListener("visibilitychange", () => {
@@ -41,23 +39,17 @@ export class LightRays {
     this.raf = requestAnimationFrame((ts) => this.animate(ts));
   }
 
-  private ensureOffsets(extent: number): void {
-    if (this.offsets.length > 0 && Math.abs(extent - this.seedExtent) < 80) {
-      return;
-    }
-    this.seedExtent = extent;
-    const count = Math.max(24, Math.round(extent * DENSITY));
-    const offsets: number[] = [];
+  private seedOffsets(): void {
+    if (this.normOffsets.length > 0) return;
+    const count = Math.max(24, Math.round(1200 * DENSITY));
     for (let i = 0; i < count; i += 1) {
-      // Bias slightly toward clustered shafts (a few closer pairs)
       let t = Math.random();
       if (Math.random() < 0.22) {
         t = Math.min(1, t + (Math.random() - 0.5) * 0.04);
       }
-      offsets.push((t - 0.5) * extent);
+      this.normOffsets.push(t - 0.5);
     }
-    offsets.sort((a, b) => a - b);
-    this.offsets = offsets;
+    this.normOffsets.sort((a, b) => a - b);
   }
 
   resize(): void {
@@ -69,10 +61,7 @@ export class LightRays {
     this.canvas.style.width = `${w}px`;
     this.canvas.style.height = `${h}px`;
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const extent = (w + h) * Math.SQRT1_2 * 2;
-    this.ensureOffsets(extent);
-    this.draw(w, h, 0);
+    this.draw(w, h, this.lastTs > 0 ? this.lastTs / 1000 : 0);
   }
 
   private draw(w: number, h: number, tsSec: number): void {
@@ -83,27 +72,23 @@ export class LightRays {
 
     const cos = Math.cos(ANGLE);
     const sin = Math.sin(ANGLE);
-    // Perpendicular unit vector
     const px = -sin;
     const py = cos;
-    // Half-length long enough to cross the full viewport from any offset
     const halfLen = (w + h) * 0.75;
     const cx = w * 0.5 + this.driftX;
     const cy = h * 0.5;
-
-    const wrap = window.innerWidth + window.innerHeight;
+    const extent = (w + h) * Math.SQRT1_2 * 2;
+    const wrap = w + h;
     const motionPhase = wrap > 0 ? this.driftX / wrap : 0;
 
-    for (const offset of this.offsets) {
+    for (const norm of this.normOffsets) {
+      const offset = norm * extent;
       const ox = cx + px * offset;
       const oy = cy + py * offset;
-      // Vary beam width with smooth "random" oscillation (drift + time),
-      // tuned to be subtle: 1–3px.
       const phaseA = offset * 0.045 + motionPhase * 8 + tsSec * 0.18;
       const phaseB = offset * 0.013 - motionPhase * 5 - tsSec * 0.12;
-      const width01 = (Math.sin(phaseA) + Math.sin(phaseB)) * 0.25 + 0.5; // 0..1
-      const lineW = THICKNESS + 2 * width01; // 1..3px
-      ctx.lineWidth = lineW;
+      const width01 = (Math.sin(phaseA) + Math.sin(phaseB)) * 0.25 + 0.5;
+      ctx.lineWidth = THICKNESS + 2 * width01;
       ctx.beginPath();
       ctx.moveTo(ox - cos * halfLen, oy - sin * halfLen);
       ctx.lineTo(ox + cos * halfLen, oy + sin * halfLen);
@@ -121,15 +106,14 @@ export class LightRays {
     const dt = Math.min(0.1, Math.max(0, (ts - this.lastTs) / 1000));
     this.lastTs = ts;
 
-    this.driftX -= DRIFT_PX_PER_SEC * dt; // right-to-left drift
+    this.driftX -= DRIFT_PX_PER_SEC * dt;
     const wrap = window.innerWidth + window.innerHeight;
-    if (this.driftX <= -wrap) this.driftX += wrap;
-
-    // ~30fps draw — rays are slow-moving ambience, not gameplay-critical.
-    this.skipDraw = !this.skipDraw;
-    if (!this.skipDraw) {
-      this.draw(window.innerWidth, window.innerHeight, ts / 1000);
+    if (wrap > 0) {
+      if (this.driftX <= -wrap) this.driftX += wrap;
+      else if (this.driftX > 0) this.driftX -= wrap;
     }
+
+    this.draw(window.innerWidth, window.innerHeight, ts / 1000);
     this.schedule();
   }
 }

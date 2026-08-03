@@ -28,6 +28,7 @@ async function main(): Promise<void> {
   const app = document.getElementById("app")!;
   const loadStatus = document.getElementById("load-status") as HTMLElement;
   const controlsBar = document.getElementById("controls-bar") as HTMLElement;
+  const controlsRight = document.querySelector(".controls-right") as HTMLElement;
   const controlsHide = document.getElementById("controls-hide") as HTMLButtonElement;
   const touchControls = document.getElementById("touch-controls") as HTMLElement;
   const movePad = document.getElementById("move-pad") as HTMLElement;
@@ -76,8 +77,14 @@ async function main(): Promise<void> {
   garden.bindControls(app, canvas, movePad);
   loadStatus.hidden = true;
 
+  void garden.whenFoliageReady.finally(() => {
+    loadStatus.hidden = true;
+    loadStatus.textContent = "";
+  });
+
   const isTouch = window.matchMedia("(pointer: coarse)").matches;
   if (isTouch) {
+    document.documentElement.classList.add("is-touch");
     document.body.classList.add("is-touch");
     touchControls.hidden = false;
   }
@@ -96,15 +103,18 @@ async function main(): Promise<void> {
 
   const setControlsCollapsed = (collapsed: boolean): void => {
     controlsBar.classList.toggle("is-collapsed", collapsed);
+    document.body.classList.toggle("controls-collapsed", collapsed);
+    controlsRight.hidden = collapsed;
+    controlsRight.setAttribute("aria-hidden", collapsed ? "true" : "false");
     controlsHide.setAttribute("aria-expanded", String(!collapsed));
     controlsHide.setAttribute("aria-label", collapsed ? "Show controls (H)" : "Hide controls (H)");
   };
 
-  let lastProximityId: string | null = null;
   let openProximityId: string | null = null;
   let closeOverlayOnLeave = false;
 
   panel.setOnOpenChange((open) => {
+    document.documentElement.classList.toggle("portfolio-open", open);
     document.body.classList.toggle("portfolio-open", open);
     garden.setRenderSuspended(open);
     if (!open) {
@@ -120,8 +130,6 @@ async function main(): Promise<void> {
     if (document.hidden) return;
 
     garden.update();
-    const active = garden.getActivePoint();
-    const id = active?.data.id ?? null;
 
     if (
       panel.isOpen &&
@@ -132,11 +140,6 @@ async function main(): Promise<void> {
       panel.hide();
     }
 
-    if (active && id !== lastProximityId && !panel.isOpen) {
-      openPoint(active, true);
-    }
-
-    lastProximityId = id;
     raf = requestAnimationFrame(tick);
   };
 

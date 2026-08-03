@@ -37,6 +37,8 @@ export class EdgeLensPass {
     this.level0 = new THREE.WebGLRenderTarget(width, height, {
       ...opts,
       depthBuffer: true,
+      // Sampled by project cards so they nest into foliage after the blur mix.
+      depthTexture: new THREE.DepthTexture(width, height),
     });
     this.level1 = new THREE.WebGLRenderTarget(width, height, { ...opts, depthBuffer: false });
     this.level2 = new THREE.WebGLRenderTarget(width, height, { ...opts, depthBuffer: false });
@@ -92,9 +94,9 @@ export class EdgeLensPass {
         tLevel1: { value: null },
         tLevel2: { value: null },
         tLevel3: { value: null },
-        // Middle third sharp (black band in reference mask)
-        uFocusMin: { value: 1 / 3 },
-        uFocusMax: { value: 2 / 3 },
+        // Slightly wider than middle-third so more of the view stays sharp
+        uFocusMin: { value: 0.26 },
+        uFocusMax: { value: 0.74 },
       },
       vertexShader: /* glsl */ `
         varying vec2 vUv;
@@ -169,6 +171,12 @@ export class EdgeLensPass {
     renderer.render(this.scene, this.camera);
   }
 
+  /** Sharp-pass garden depth — used to tuck bright cards into foliage. */
+  get sharpDepth(): THREE.DepthTexture | null {
+    if (!this.enabled) return null;
+    return (this.level0.depthTexture as THREE.DepthTexture | null) ?? null;
+  }
+
   setFocusBand(min: number, max: number): void {
     this.mixMat.uniforms.uFocusMin.value = min;
     this.mixMat.uniforms.uFocusMax.value = max;
@@ -176,6 +184,7 @@ export class EdgeLensPass {
 
   /** When false, skip the blur cascade and draw the scene once (mobile). */
   setEnabled(enabled: boolean): void {
+    if (this.enabled === enabled) return;
     this.enabled = enabled;
   }
 

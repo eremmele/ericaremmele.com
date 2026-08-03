@@ -304,6 +304,6 @@ export async function createForestFoliageLayer(
     root.add(mesh);
   }
 
-  onProgress?.("Foliage ready");
+  // Caller clears load status when this promise settles — no completion toast.
   return root;
 }
