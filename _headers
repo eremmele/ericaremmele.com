@@ -50,3 +50,6 @@
 
 /README.md
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
