@@ -13,6 +13,7 @@ import {
 import { PALETTE } from "./palette";
 import { EdgeLensPass } from "./EdgeLensPass";
 import { FloatingParticlesBlack } from "../ui/FloatingParticlesBlack";
+import { createBrowserProfile, type BrowserProfile } from "../util/browserProfile";
 
 export class GardenScene {
   readonly scene = new THREE.Scene();
@@ -29,6 +30,7 @@ export class GardenScene {
   private readonly edgeLens: EdgeLensPass;
   private readonly floatingParticles: FloatingParticlesBlack;
   private readonly drawingBufferSize = new THREE.Vector2();
+  private readonly profile: BrowserProfile;
   private gardenMaterials: THREE.ShaderMaterial[] = [];
   private colliders: THREE.Object3D[] = [];
   private activePoint: InspectionPoint | null = null;
@@ -38,24 +40,33 @@ export class GardenScene {
   private renderSuspended = false;
   private navAccumulator = 0;
   private preferBlur = true;
+  private frameIndex = 0;
   private foliageReady: Promise<void> = Promise.resolve();
   private static readonly NAV_STEP = 1 / 60;
   private static readonly NAV_MAX_STEPS = 3;
 
   private constructor(canvas: HTMLCanvasElement, cssHost: HTMLElement) {
+    this.profile = createBrowserProfile();
+
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: false,
       alpha: false,
-      powerPreference: "default",
+      powerPreference: this.profile.powerPreference,
       stencil: false,
       depth: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.profile.maxPixelRatio));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.35;
+    if (this.profile.toneMapping) {
+      this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      this.renderer.toneMappingExposure = 1.35;
+    } else {
+      // No ACES — cheaper on Firefox; exposure via output still reads fine.
+      this.renderer.toneMapping = THREE.NoToneMapping;
+      this.renderer.toneMappingExposure = 1;
+    }
 
     this.cssRenderer = new CSS3DRenderer();
     this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -66,6 +77,10 @@ export class GardenScene {
       Math.floor(window.innerWidth * this.renderer.getPixelRatio()),
       Math.floor(window.innerHeight * this.renderer.getPixelRatio()),
     );
+    this.edgeLens.configure({
+      blurScale: this.profile.edgeBlurScale,
+      blurLevels: this.profile.blurLevels,
+    });
     this.edgeLens.resize(
       Math.floor(window.innerWidth * this.renderer.getPixelRatio()),
       Math.floor(window.innerHeight * this.renderer.getPixelRatio()),
@@ -75,19 +90,11 @@ export class GardenScene {
 
     this.scene.background = new THREE.Color(0x000000);
     this.scene.fog = null;
-    this.floatingParticles = new FloatingParticlesBlack(this.scene);
+    this.floatingParticles = new FloatingParticlesBlack(this.scene, {
+      particleCount: this.profile.particleCount,
+    });
 
-    const ambient = new THREE.AmbientLight(PALETTE[6], 0.55);
-    const hemi = new THREE.HemisphereLight(PALETTE[1], PALETTE[4], 0.45);
-    const key = new THREE.DirectionalLight(PALETTE[5], 0.5);
-    key.position.set(12, 28, 8);
-    // Soft cool fill so PBR foliage reads without washing the particle garden.
-    const foliageFill = new THREE.HemisphereLight(0xb8d4a8, 0x1a2820, 0.85);
-    foliageFill.name = "foliage-fill";
-    const foliageKey = new THREE.DirectionalLight(0xe8f0d8, 1.15);
-    foliageKey.name = "foliage-key";
-    foliageKey.position.set(-10, 22, 14);
-    this.scene.add(ambient, hemi, key, foliageFill, foliageKey);
+    this.addLights();
 
     const tempBounds = new THREE.Box3(
       new THREE.Vector3(-20, 0, -20),
@@ -98,6 +105,26 @@ export class GardenScene {
       tempBounds,
     );
     this.scene.add(this.navigation.player);
+  }
+
+  private addLights(): void {
+    if (this.profile.foliageLights === "simple") {
+      const ambient = new THREE.AmbientLight(0xb8d4a8, 0.7);
+      const key = new THREE.DirectionalLight(0xe8f0d8, 1.05);
+      key.position.set(-10, 22, 14);
+      this.scene.add(ambient, key);
+      return;
+    }
+    const ambient = new THREE.AmbientLight(PALETTE[6], 0.55);
+    const hemi = new THREE.HemisphereLight(PALETTE[1], PALETTE[4], 0.45);
+    const key = new THREE.DirectionalLight(PALETTE[5], 0.5);
+    key.position.set(12, 28, 8);
+    const foliageFill = new THREE.HemisphereLight(0xb8d4a8, 0x1a2820, 0.85);
+    foliageFill.name = "foliage-fill";
+    const foliageKey = new THREE.DirectionalLight(0xe8f0d8, 1.15);
+    foliageKey.name = "foliage-key";
+    foliageKey.position.set(-10, 22, 14);
+    this.scene.add(ambient, hemi, key, foliageFill, foliageKey);
   }
 
   private async loadWorld(onProgress?: (message: string) => void): Promise<void> {
@@ -201,9 +228,8 @@ export class GardenScene {
     const narrow = typeof window !== "undefined" && window.innerWidth <= 900;
     const touch =
       typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
-    // No peripheral landscape blur on phones/tablets (incl. landscape widths > 900).
-    this.preferBlur = !narrow && !touch;
-    // Keep blur steadily on/off — toggling mid-session reads as a separate layer popping.
+    // Profile may disable blur entirely (Firefox); touch/narrow always off.
+    this.preferBlur = this.profile.edgeBlur && !narrow && !touch;
     this.edgeLens.setEnabled(this.preferBlur);
     if (this.preferBlur) this.edgeLens.setFocusBand(0.26, 0.74);
   }
@@ -211,8 +237,13 @@ export class GardenScene {
   resize(): void {
     const width = window.innerWidth;
     const height = window.innerHeight;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.profile.maxPixelRatio));
     this.renderer.setSize(width, height);
     this.cssRenderer.setSize(width, height);
+    this.edgeLens.configure({
+      blurScale: this.profile.edgeBlurScale,
+      blurLevels: this.profile.blurLevels,
+    });
     this.edgeLens.resize(
       Math.floor(width * this.renderer.getPixelRatio()),
       Math.floor(height * this.renderer.getPixelRatio()),
@@ -269,6 +300,7 @@ export class GardenScene {
 
     const frameDelta = Math.min(this.clock.getDelta(), 0.05);
     const elapsed = this.clock.getElapsedTime();
+    this.frameIndex += 1;
 
     // Fixed-step locomotion so motion stays smooth when render frames hitch.
     this.navAccumulator += frameDelta;
@@ -289,16 +321,23 @@ export class GardenScene {
       return;
     }
 
-    this.floatingParticles.update(frameDelta);
-    if (this.gardenMaterials.length > 0) {
-      updateMovingPixelsMaterials(this.gardenMaterials, elapsed);
+    const moving = this.navigation.motionActivity > 0.28;
+    // Firefox/Safari: drop post while panning — biggest pan-latency win.
+    this.edgeLens.setLean(Boolean(this.preferBlur && moving && !this.profile.blurWhileMoving));
+
+    const runFx = this.frameIndex % this.profile.fxFrameStride === 0;
+    if (runFx) {
+      this.floatingParticles.update(frameDelta * this.profile.fxFrameStride);
+      if (this.gardenMaterials.length > 0) {
+        updateMovingPixelsMaterials(this.gardenMaterials, elapsed);
+      }
     }
 
     this.inspectionPoints.forEach((point) => {
       point.update(elapsed, playerPosition, camera);
     });
 
-    // Foliage: lit + edge-blurred. Thumbnails: unlit, depth-tested against sharp garden.
+    // Foliage: lit (+ edge blur when settled). Thumbnails: unlit, depth-nested.
     this.renderer.autoClear = true;
     this.edgeLens.render(this.renderer, this.scene, camera);
 

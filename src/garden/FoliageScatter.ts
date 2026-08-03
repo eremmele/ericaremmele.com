@@ -84,7 +84,16 @@ function mulberry32(seed: number): () => number {
  * Meshy foliage ships as metalness=1 + dark-scene lights → near-black PBR.
  * Force dielectric leaves and lift albedo via soft emissive so they read on
  * the particle garden's near-black lighting. Keep original maps otherwise.
+ * On mobile, a fragment dim uniform pulls leaves back so they don't blow out
+ * under simpler/no-blur lighting.
  */
+function isMobileFoliageView(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 900
+  );
+}
+
 function prepareFoliageMaterial(material: THREE.Material): void {
   const std = material as THREE.MeshStandardMaterial;
   if (std.map instanceof THREE.Texture) {
@@ -110,19 +119,49 @@ function prepareFoliageMaterial(material: THREE.Material): void {
     std.roughnessMap.colorSpace = THREE.NoColorSpace;
   }
 
+  const mobile = isMobileFoliageView();
+
   // Soft albedo lift — original Meshy emissive maps are often near-black.
   if (std.map) {
     std.emissiveMap = std.map;
-    std.emissive.setRGB(0.35, 0.35, 0.35);
-    std.emissiveIntensity = 1;
+    if (mobile) {
+      // Lower self-light so leaves don't read neon on phones.
+      std.emissive.setRGB(0.14, 0.16, 0.13);
+      std.emissiveIntensity = 0.55;
+      std.color.setRGB(0.78, 0.82, 0.76);
+    } else {
+      std.emissive.setRGB(0.35, 0.35, 0.35);
+      std.emissiveIntensity = 1;
+      std.color.set(0xffffff);
+    }
   }
 
-  std.color.set(0xffffff);
   std.envMapIntensity = 0;
   std.side = THREE.DoubleSide;
   // Write depth so project thumbnails nest behind leaves/stems.
   std.depthWrite = true;
   std.depthTest = true;
+
+  if (mobile) {
+    const dim = 0.58;
+    std.onBeforeCompile = (shader) => {
+      shader.uniforms.uFoliageDim = { value: dim };
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "void main() {",
+        "uniform float uFoliageDim;\nvoid main() {",
+      );
+      // Multiply final lit color before tonemap/output packing.
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <opaque_fragment>",
+        /* glsl */ `
+          outgoingLight *= uFoliageDim;
+          #include <opaque_fragment>
+        `,
+      );
+    };
+    std.customProgramCacheKey = () => `foliage-mobile-dim-${dim}`;
+  }
+
   std.needsUpdate = true;
 }
 

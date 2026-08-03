@@ -130,9 +130,14 @@ export class InspectionPoint {
    * behind leaves. Pass null to rely on the canvas depth buffer (no-blur path).
    */
   setGardenDepth(depth: THREE.Texture | null, drawingBufferSize: THREE.Vector2): void {
-    this.material.uniforms.sceneDepth.value = depth;
-    this.material.uniforms.useSceneDepth.value = depth ? 1 : 0;
-    this.material.uniforms.resolution.value.copy(drawingBufferSize);
+    const use = depth ? 1 : 0;
+    const u = this.material.uniforms;
+    if (u.useSceneDepth.value !== use) u.useSceneDepth.value = use;
+    if (u.sceneDepth.value !== depth) u.sceneDepth.value = depth;
+    const res = u.resolution.value as THREE.Vector2;
+    if (res.x !== drawingBufferSize.x || res.y !== drawingBufferSize.y) {
+      res.copy(drawingBufferSize);
+    }
   }
 
   /** Hide the garden thumbnail while its project overlay is open. */

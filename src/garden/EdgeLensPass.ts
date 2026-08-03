@@ -24,7 +24,11 @@ export class EdgeLensPass {
   private readonly blurMat: THREE.ShaderMaterial;
   private readonly mixMat: THREE.ShaderMaterial;
   private readonly blurMesh: THREE.Mesh;
+  private blurScale = 0.33;
+  private blurLevels: 1 | 2 | 3 = 3;
   private enabled = true;
+  /** When true, skip the blur cascade for this stretch of frames (moving camera). */
+  private lean = false;
 
   constructor(width: number, height: number) {
     const opts: THREE.RenderTargetOptions = {
@@ -173,7 +177,7 @@ export class EdgeLensPass {
 
   /** Sharp-pass garden depth — used to tuck bright cards into foliage. */
   get sharpDepth(): THREE.DepthTexture | null {
-    if (!this.enabled) return null;
+    if (!this.enabled || this.lean) return null;
     return (this.level0.depthTexture as THREE.DepthTexture | null) ?? null;
   }
 
@@ -182,18 +186,28 @@ export class EdgeLensPass {
     this.mixMat.uniforms.uFocusMax.value = max;
   }
 
-  /** When false, skip the blur cascade and draw the scene once (mobile). */
+  /** When false, skip the blur cascade and draw the scene once (mobile / low GPU). */
   setEnabled(enabled: boolean): void {
     if (this.enabled === enabled) return;
     this.enabled = enabled;
   }
 
+  /** Browser budget: cheaper cascade scale / fewer blur levels. */
+  configure(options: { blurScale?: number; blurLevels?: 1 | 2 | 3 }): void {
+    if (options.blurScale !== undefined) this.blurScale = options.blurScale;
+    if (options.blurLevels !== undefined) this.blurLevels = options.blurLevels;
+  }
+
+  /** Skip post while the camera is whipping around (restored when settled). */
+  setLean(lean: boolean): void {
+    this.lean = lean;
+  }
+
   resize(width: number, height: number, pixelRatio = 1): void {
-    const scale = 0.33;
+    const scale = this.blurScale;
     const bw = Math.max(1, (width * scale) | 0);
     const bh = Math.max(1, (height * scale) | 0);
     this.level0.setSize(width, height);
-    // Low-res blur cascade — same look, much less fill-rate heat while moving.
     this.level1.setSize(bw, bh);
     this.level2.setSize(bw, bh);
     this.level3.setSize(bw, bh);
@@ -206,7 +220,7 @@ export class EdgeLensPass {
     scene: THREE.Scene,
     camera: THREE.Camera,
   ): void {
-    if (!this.enabled) {
+    if (!this.enabled || this.lean) {
       renderer.setRenderTarget(null);
       renderer.render(scene, camera);
       return;
@@ -222,17 +236,24 @@ export class EdgeLensPass {
 
     renderer.toneMapping = THREE.NoToneMapping;
 
-    // Cascaded horizontal motion blurs (recursive increasing blur)
+    // Cascaded horizontal motion blurs (level count from browser profile)
     this.blurMesh.material = this.blurMat;
     this.blurHorizontal(renderer, this.level0.texture, this.level1);
-    this.blurHorizontal(renderer, this.level1.texture, this.level2);
-    this.blurHorizontal(renderer, this.level2.texture, this.level3);
+    if (this.blurLevels >= 2) {
+      this.blurHorizontal(renderer, this.level1.texture, this.level2);
+    }
+    if (this.blurLevels >= 3) {
+      this.blurHorizontal(renderer, this.level2.texture, this.level3);
+    }
 
-    // Mix levels by distance from vertical focus band
+    const l1 = this.level1.texture;
+    const l2 = this.blurLevels >= 2 ? this.level2.texture : l1;
+    const l3 = this.blurLevels >= 3 ? this.level3.texture : l2;
+
     this.mixMat.uniforms.tLevel0.value = this.level0.texture;
-    this.mixMat.uniforms.tLevel1.value = this.level1.texture;
-    this.mixMat.uniforms.tLevel2.value = this.level2.texture;
-    this.mixMat.uniforms.tLevel3.value = this.level3.texture;
+    this.mixMat.uniforms.tLevel1.value = l1;
+    this.mixMat.uniforms.tLevel2.value = l2;
+    this.mixMat.uniforms.tLevel3.value = l3;
     this.blurMesh.material = this.mixMat;
 
     renderer.setRenderTarget(null);

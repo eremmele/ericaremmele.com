@@ -70,6 +70,15 @@ export default defineConfig({
   base: "./",
   plugins: [portfolioNoIndexPlugin()],
   build: {
+    target: "es2020",
+    minify: "esbuild",
+    cssMinify: true,
+    cssCodeSplit: true,
+    sourcemap: false,
+    reportCompressedSize: false,
+    assetsInlineLimit: 2048,
+    chunkSizeWarningLimit: 700,
+    modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -77,6 +86,12 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 700,
+  },
+  esbuild: {
+    legalComments: "none",
+    drop: ["debugger"],
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true,
   },
 });

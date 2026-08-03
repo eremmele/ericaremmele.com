@@ -1,6 +1,7 @@
 /**
  * Full-viewport light rays — soft-light shafts over the garden.
  * Offsets are stable across resize so chrome show/hide never reshuffles them.
+ * No-ops when the canvas is CSS-hidden (opacity 0) so it costs nothing.
  */
 const ANGLE = (65 * Math.PI) / 180;
 const OPACITY = 1.0;
@@ -16,12 +17,23 @@ export class LightRays {
   private driftX = 0;
   private lastTs = 0;
   private raf = 0;
+  private readonly active: boolean;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) throw new Error("2D context unavailable for light rays");
     this.ctx = ctx;
+
+    // CSS currently sets opacity: 0 — skip the entire RAF loop until re-enabled.
+    const cssOpacity = Number.parseFloat(getComputedStyle(canvas).opacity || "1");
+    this.active = Number.isFinite(cssOpacity) && cssOpacity > 0.01;
+    if (!this.active) {
+      canvas.width = 0;
+      canvas.height = 0;
+      return;
+    }
+
     this.seedOffsets();
     this.resize();
     window.addEventListener("resize", () => this.resize());
@@ -35,7 +47,7 @@ export class LightRays {
   }
 
   private schedule(): void {
-    if (this.raf || document.hidden) return;
+    if (!this.active || this.raf || document.hidden) return;
     this.raf = requestAnimationFrame((ts) => this.animate(ts));
   }
 
@@ -53,6 +65,7 @@ export class LightRays {
   }
 
   resize(): void {
+    if (!this.active) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 1);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -98,7 +111,7 @@ export class LightRays {
 
   private animate(ts: number): void {
     this.raf = 0;
-    if (document.hidden) {
+    if (!this.active || document.hidden) {
       this.lastTs = 0;
       return;
     }

@@ -28,6 +28,9 @@ const GARDEN_URL = "./models/garden.glb";
 
 function preferLeanLoad(): boolean {
   if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  // Firefox WebGL fill-rate is the main pan bottleneck — lean particle bake.
+  if (/firefox\//i.test(ua) || /fxios\//i.test(ua)) return true;
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
     .connection;
   if (connection?.saveData) return true;

@@ -312,6 +312,18 @@ export class NavigationController {
     canvas.addEventListener("lostpointercapture", (event) => reset(event.pointerId));
   }
 
+  /** 0..1 — turn / look / move intensity for adaptive render quality. */
+  get motionActivity(): number {
+    const turn = Math.min(1, Math.abs(this.turnRate) / Math.max(1e-3, this.turnSpeed));
+    const move = Math.min(1, Math.hypot(this.planarVel.x, this.planarVel.z) / this.moveSpeed);
+    const touchLook = this.lookTouchId !== null || this.dragMoveId !== null ? 1 : 0;
+    const lookLag = Math.hypot(
+      this.mouseTarget.x - this.mouseShift.x,
+      this.mouseTarget.y - this.mouseShift.y,
+    );
+    return Math.max(turn, move * 0.55, touchLook, Math.min(1, lookLag * 10));
+  }
+
   resize(aspect: number): void {
     this.camera.aspect = aspect;
     this.camera.updateProjectionMatrix();
