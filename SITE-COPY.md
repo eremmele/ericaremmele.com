@@ -172,6 +172,19 @@ Design and creative direction for a cybersecurity brand marketing site, ongoing 
 - **link:** `#`
 - **garden label:** `Creative Direction`
 
+### Cyber Print *(hidden)*
+- **id:** `cyber-print`
+- **title:** `Print & Typography`
+- **year:** `2021-2026`
+- **category:** `Brand Design, Print Design, Typography`
+- **description:**
+```
+Print systems, typography, and graphic applications for a cybersecurity brand.
+```
+- **link:** `#`
+- **garden label:** `Print & Type`
+- **status:** Hidden from garden / hotkeys for now; assets remain in `public/portfolio/cyber-print/`.
+
 ---
 
 ## Notes

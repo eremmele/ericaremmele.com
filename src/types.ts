@@ -23,6 +23,8 @@ export type InspectionPointData = {
   portfolioId: string;
   position: [number, number, number];
   label: string;
+  /** World Y offset for the card plane (default canopy height). Lower = more buried. */
+  floatHeight?: number;
 };
 
 export type InputMode = "desktop" | "touch";

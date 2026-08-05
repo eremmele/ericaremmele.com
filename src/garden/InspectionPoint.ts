@@ -26,6 +26,7 @@ export class InspectionPoint {
   private readonly material: THREE.ShaderMaterial;
   private readonly texture: THREE.CanvasTexture;
   private readonly canvas: HTMLCanvasElement;
+  private readonly floatHeight: number;
   private thumbnailHidden = false;
   private baseOpacity = 1;
   private readonly restQuat = new THREE.Quaternion();
@@ -114,7 +115,8 @@ export class InspectionPoint {
 
     this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(CARD_W, CARD_H), this.material);
     this.mesh.name = `project-card-${data.id}`;
-    this.mesh.position.y = FLOAT_HEIGHT;
+    this.floatHeight = data.floatHeight ?? FLOAT_HEIGHT;
+    this.mesh.position.y = this.floatHeight;
     this.mesh.quaternion.copy(this.restQuat);
     this.mesh.renderOrder = 2;
     this.mesh.userData.inspectionPoint = this;
@@ -154,7 +156,7 @@ export class InspectionPoint {
     const active = distance <= INTERACT_RADIUS;
 
     // Soft float
-    this.mesh.position.y = FLOAT_HEIGHT + Math.sin(elapsed * 1.2 + this.group.position.x) * 0.06;
+    this.mesh.position.y = this.floatHeight + Math.sin(elapsed * 1.2 + this.group.position.x) * 0.06;
 
     // Near: yaw toward the camera so the card reads head-on (camera is under player).
     // Far: ease back to rest facing. Yaw-only keeps cards upright.

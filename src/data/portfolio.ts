@@ -15,6 +15,7 @@ export const portfolioItems: PortfolioItem[] = [
     carouselSlides: [
       img("/portfolio/cyber-product/casb.png"),
       img("/portfolio/cyber-product/sspm.png"),
+      img("/portfolio/cyber-product/misc-product.png"),
       img("/portfolio/cyber-product/analytics-editorial.png"),
       img("/portfolio/cyber-product/casb-editorial.png"),
       img("/portfolio/cyber-product/misc-editorial.png"),
@@ -30,11 +31,11 @@ export const portfolioItems: PortfolioItem[] = [
       "Website design for a dental practice: home, full-page flows, design systems, and brand.",
     image: "/portfolio/thumbs/bridgeway.jpg",
     carouselSlides: [
-      img("/portfolio/bridgeway/bw_1-website_home.png"),
-      img("/portfolio/bridgeway/bw_2-website_full.png"),
-      img("/portfolio/bridgeway/bw_3-website_full.png"),
-      img("/portfolio/bridgeway/bw_4-website_section.png"),
-      img("/portfolio/bridgeway/bw_5-logo.png"),
+      img("/portfolio/bridgeway/bw_1-website_home.webp"),
+      img("/portfolio/bridgeway/bw_2-website_full.webp"),
+      img("/portfolio/bridgeway/bw_3-website_full.webp"),
+      img("/portfolio/bridgeway/bw_4-website_section.webp"),
+      img("/portfolio/bridgeway/bw_5-logo.webp"),
     ],
     link: "#",
   },
@@ -52,8 +53,9 @@ export const portfolioItems: PortfolioItem[] = [
         "/portfolio/swgwars/swgwars-02-screenplay-small-short.webm",
         "/portfolio/swgwars/swgwars-01-hero.png",
       ),
+      img("/portfolio/swgwars/swgwars-03-hero.png"),
       img("/portfolio/swgwars/swgwars-04-opponents.png"),
-      img("/portfolio/swgwars/swgwars-05-graphics.png"),
+      img("/portfolio/swgwars/swgwars-05-graphics.webp"),
       {
         kind: "embed",
         src: "/portfolio/swgwars/design-system/index.html?embed=carousel",
@@ -96,14 +98,35 @@ export const portfolioItems: PortfolioItem[] = [
       "Design and creative direction for a cybersecurity brand marketing site, ongoing iterations through the years.",
     image: "/portfolio/thumbs/cyber-brand.jpg",
     carouselSlides: [
-      img("/portfolio/cyber-brand/homepage.png"),
-      img("/portfolio/cyber-brand/desktop-1440.png"),
-      img("/portfolio/cyber-brand/desktop-1440-alt.png"),
-      img("/portfolio/cyber-brand/macbook.png"),
-      vid("/portfolio/cyber-brand/walkthrough.webm", "/portfolio/cyber-brand/homepage.png"),
+      img("/portfolio/cyber-brand/01_homepage.webp"),
+      img("/portfolio/cyber-brand/02_1440px.webp"),
+      img("/portfolio/cyber-brand/03_desktop-1440.webp"),
+      img("/portfolio/cyber-brand/04_macbook.webp"),
+      img("/portfolio/cyber-brand/05_composite.webp"),
+      img("/portfolio/cyber-brand/06_hero-prod.webp"),
+      vid(
+        "/portfolio/cyber-brand/07_walkthrough.webm",
+        "/portfolio/cyber-brand/01_homepage.webp",
+      ),
     ],
     link: "#",
   },
+  // Hidden for now — restore by uncommenting + re-adding point-6 / hotkey 6.
+  // {
+  //   id: "cyber-print",
+  //   title: "Print & Typography",
+  //   year: "2021-2026",
+  //   category: "Brand Design, Print Design, Typography",
+  //   description:
+  //     "Print systems, typography, and graphic applications for a cybersecurity brand.",
+  //   image: "/portfolio/thumbs/cyber-print.jpg",
+  //   carouselSlides: [
+  //     img("/portfolio/cyber-print/01_print-work.webp"),
+  //     img("/portfolio/cyber-print/02_typography.webp"),
+  //     img("/portfolio/cyber-print/03_graphic.webp"),
+  //   ],
+  //   link: "#",
+  // },
 ];
 
 export const inspectionPoints: InspectionPointData[] = [
