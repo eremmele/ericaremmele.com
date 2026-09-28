@@ -71,6 +71,22 @@ export function trackGardenReady(props: { inputMode: string; foliagePending: boo
   });
 }
 
+/** Fired when the 3D garden cannot start (WebGL blocked, renderer throw, etc.). */
+export function trackGardenLoadFailed(props: {
+  reason: "webgl_unavailable" | "init_failed";
+  detail?: string;
+}): void {
+  setPageProperties({
+    pageName: "Garden Fallback",
+    gardenLoadFailed: true,
+    gardenFailReason: props.reason,
+  });
+  trackEvent("Garden Load Failed", {
+    reason: props.reason,
+    detail: props.detail ?? "",
+  });
+}
+
 export function trackGardenFoliageReady(): void {
   trackEvent("Garden Foliage Ready", {});
 }

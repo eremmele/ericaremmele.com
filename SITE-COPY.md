@@ -69,9 +69,24 @@ Link: `mailto:erica@seeyoufriday.com`
 Loading garden…
 ```
 
-**Load error** (`src/main.ts`)
+**Load error — WebGL unavailable** (`src/main.ts`)
+```
+Garden needs WebGL — try enabling hardware acceleration
+```
+
+**Load error — other init failure** (`src/main.ts`)
 ```
 Could not load garden
+```
+
+**Garden fallback note — WebGL** (`src/main.ts` → `#garden-fallback-note`)
+```
+This browser can’t run the 3D garden. Open a project below, or enable hardware acceleration and reload.
+```
+
+**Garden fallback note — other** (`src/main.ts` → `#garden-fallback-note`)
+```
+The garden couldn’t start. Open a project below — the rest of the site still works.
 ```
 
 **Load progress (model)** (`src/garden/GlbGarden.ts`)
@@ -172,7 +187,7 @@ Design and creative direction for a cybersecurity brand marketing site, ongoing 
 - **link:** `#`
 - **garden label:** `Creative Direction`
 
-### Cyber Print *(hidden)*
+### Cyber Print
 - **id:** `cyber-print`
 - **title:** `Print & Typography`
 - **year:** `2021-2026`
@@ -183,7 +198,6 @@ Print systems, typography, and graphic applications for a cybersecurity brand.
 ```
 - **link:** `#`
 - **garden label:** `Print & Type`
-- **status:** Hidden from garden / hotkeys for now; assets remain in `public/portfolio/cyber-print/`.
 
 ---
 

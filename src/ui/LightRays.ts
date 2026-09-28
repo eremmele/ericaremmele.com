@@ -11,7 +11,7 @@ const DENSITY = 0.055;
 
 export class LightRays {
   private readonly canvas: HTMLCanvasElement;
-  private readonly ctx: CanvasRenderingContext2D;
+  private readonly ctx: CanvasRenderingContext2D | null;
   /** Normalized offsets in [-0.5, 0.5] — scaled by extent at draw time. */
   private readonly normOffsets: number[] = [];
   private driftX = 0;
@@ -22,12 +22,10 @@ export class LightRays {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) throw new Error("2D context unavailable for light rays");
-    this.ctx = ctx;
-
     // CSS currently sets opacity: 0 — skip the entire RAF loop until re-enabled.
     const cssOpacity = Number.parseFloat(getComputedStyle(canvas).opacity || "1");
-    this.active = Number.isFinite(cssOpacity) && cssOpacity > 0.01;
+    this.ctx = ctx;
+    this.active = Boolean(ctx) && Number.isFinite(cssOpacity) && cssOpacity > 0.01;
     if (!this.active) {
       canvas.width = 0;
       canvas.height = 0;
@@ -65,7 +63,7 @@ export class LightRays {
   }
 
   resize(): void {
-    if (!this.active) return;
+    if (!this.active || !this.ctx) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 1);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -79,6 +77,7 @@ export class LightRays {
 
   private draw(w: number, h: number, tsSec: number): void {
     const { ctx } = this;
+    if (!ctx) return;
     ctx.clearRect(0, 0, w, h);
     ctx.strokeStyle = `rgba(255, 255, 255, ${OPACITY})`;
     ctx.lineCap = "butt";

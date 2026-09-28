@@ -111,22 +111,21 @@ export const portfolioItems: PortfolioItem[] = [
     ],
     link: "#",
   },
-  // Hidden for now — restore by uncommenting + re-adding point-6 / hotkey 6.
-  // {
-  //   id: "cyber-print",
-  //   title: "Print & Typography",
-  //   year: "2021-2026",
-  //   category: "Brand Design, Print Design, Typography",
-  //   description:
-  //     "Print systems, typography, and graphic applications for a cybersecurity brand.",
-  //   image: "/portfolio/thumbs/cyber-print.jpg",
-  //   carouselSlides: [
-  //     img("/portfolio/cyber-print/01_print-work.webp"),
-  //     img("/portfolio/cyber-print/02_typography.webp"),
-  //     img("/portfolio/cyber-print/03_graphic.webp"),
-  //   ],
-  //   link: "#",
-  // },
+  {
+    id: "cyber-print",
+    title: "Print & Typography",
+    year: "2021-2026",
+    category: "Brand Design, Print Design, Typography",
+    description:
+      "Print systems, typography, and graphic applications for a cybersecurity brand.",
+    image: "/portfolio/thumbs/cyber-print.jpg",
+    carouselSlides: [
+      img("/portfolio/cyber-print/01_print-work.webp"),
+      img("/portfolio/cyber-print/02_typography.webp"),
+      img("/portfolio/cyber-print/03_graphic.webp"),
+    ],
+    link: "#",
+  },
 ];
 
 export const inspectionPoints: InspectionPointData[] = [
@@ -138,9 +137,9 @@ export const inspectionPoints: InspectionPointData[] = [
   },
   {
     id: "point-2",
-    portfolioId: "bridgeway",
-    position: [0, 0, -10],
-    label: "Web Design & Dev",
+    portfolioId: "cyber-brand",
+    position: [-5, 0, 3],
+    label: "Creative Direction",
   },
   {
     id: "point-3",
@@ -156,9 +155,16 @@ export const inspectionPoints: InspectionPointData[] = [
   },
   {
     id: "point-5",
-    portfolioId: "cyber-brand",
-    position: [-5, 0, 3],
-    label: "Creative Direction",
+    portfolioId: "bridgeway",
+    position: [0, 0, -10],
+    label: "Web Design & Dev",
+  },
+  {
+    id: "point-6",
+    portfolioId: "cyber-print",
+    position: [-3, 0, -7],
+    label: "Print & Type",
+    floatHeight: 0.72,
   },
 ];
 

@@ -362,6 +362,24 @@ body,
   opacity: 0.66;
 }
 
+.case-studies-soon {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 2rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.66;
+  pointer-events: none;
+  user-select: none;
+}
+
 .arrow-key {
   display: grid;
   place-items: center;
@@ -428,16 +446,99 @@ body,
   transform: translateX(-50%);
   z-index: 5;
   margin: 0;
+  max-width: min(36rem, calc(100vw - 2 * var(--page-pad-x)));
   font-size: 0.9rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  text-align: center;
   color: var(--accent);
   opacity: 0.85;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .load-status[hidden] {
   display: none !important;
+}
+
+.garden-fallback {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--page-pad-y) + 2.75rem);
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(28rem, calc(100vw - 2 * var(--page-pad-x)));
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  pointer-events: auto;
+}
+
+.garden-fallback[hidden] {
+  display: none !important;
+}
+
+.garden-fallback__note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--hero-soft);
+  text-align: center;
+}
+
+.garden-fallback__projects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.garden-fallback__soon {
+  margin: 0;
+  padding: 0.35rem 0.5rem;
+  color: var(--hero-dim);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.garden-fallback__link {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 0.55rem;
+  align-items: baseline;
+  padding: 0.35rem 0.5rem;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: var(--hero-dim);
+  font: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.garden-fallback__link:hover,
+.garden-fallback__link:focus-visible {
+  color: var(--hero-soft);
+  outline: none;
+}
+
+.garden-fallback__index {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+body.garden-fallback-active #controls-bar,
+body.garden-fallback-active #touch-controls,
+body.garden-fallback-active #controls-hide {
+  display: none !important;
+}
+
+body.garden-fallback-active #garden-canvas {
+  cursor: default;
 }
 
 .portfolio-panel {
@@ -446,7 +547,7 @@ body,
   z-index: 6;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   padding: 0;
 }
 
@@ -706,7 +807,8 @@ body,
 .portfolio-drag-hint {
   position: absolute;
   left: 50%;
-  bottom: var(--page-pad-y);
+  top: var(--page-pad-y);
+  bottom: auto;
   z-index: 10003;
   margin: 0;
   transform: translateX(-50%);
@@ -719,6 +821,11 @@ body,
   pointer-events: none;
   user-select: none;
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.65);
+  /* Match Esc/X control height so the label sits on the same row */
+  line-height: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
 }
 
 .portfolio-drag-hint.is-flashing {
@@ -868,13 +975,9 @@ body.is-touch .inspect-key {
 }
 
 @media (pointer: coarse) and (max-width: 767px) {
-  .controls-right .project-key {
-    display: none !important;
-  }
-
-  body.portfolio-open .controls-right .project-key,
-  html.portfolio-open .controls-right .project-key {
-    display: grid !important;
+  .case-studies-soon {
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
   }
 }
 
@@ -900,7 +1003,7 @@ body.is-touch .touch-controls {
   align-items: flex-start;
 }
 
-/* Phone: centered joystick; 1–5 only while overlay is open. */
+/* Phone: centered joystick; case-studies note docked right. */
 @media (max-width: 767px) {
   body.is-touch .touch-controls {
     left: 50%;
@@ -915,10 +1018,6 @@ body.is-touch .touch-controls {
     padding: 0.2rem 0 0.45rem;
   }
 
-  body.is-touch .controls-right .project-key {
-    display: none !important;
-  }
-
   body.is-touch .controls-right {
     right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
     left: auto;
@@ -927,16 +1026,12 @@ body.is-touch .touch-controls {
     bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
   }
 
-  body.is-touch.portfolio-open .controls-right {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    justify-content: center;
-    bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
-  }
-
-  body.is-touch.portfolio-open .controls-right .project-key {
-    display: grid !important;
+  body.is-touch .case-studies-soon {
+    font-size: 0.72rem;
+    max-width: 9.5rem;
+    white-space: normal;
+    line-height: 1.25;
+    text-align: right;
   }
 }
 
@@ -1011,7 +1106,7 @@ body.is-touch .touch-controls {
   }
 
   .portfolio-panel {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
   }
 
   .portfolio-esc,
@@ -1029,6 +1124,15 @@ body.is-touch .touch-controls {
     text-align: center;
     line-height: 1.35;
     font-size: 0.8rem;
+  }
+
+  body.garden-fallback-active .load-status {
+    bottom: var(--page-pad-y);
+  }
+
+  body.garden-fallback-active .garden-fallback {
+    bottom: calc(var(--page-pad-y) + 2.5rem);
+    width: min(22rem, calc(100vw - 2 * var(--page-pad-x)));
   }
 
   .smear-carousel {

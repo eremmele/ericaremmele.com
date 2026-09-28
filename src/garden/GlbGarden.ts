@@ -209,9 +209,13 @@ export function defaultInspectionPositions(
 
   return [
     [cx - spanX, 0, cz - spanZ * 0.2],
-    [cx, 0, cz - spanZ],
+    // Slot 2 = cyber-brand (swapped with bridgeway)
+    [cx - spanX * 0.55, 0, cz + spanZ * 0.4],
     [cx + spanX, 0, cz - spanZ * 0.15],
     [cx + spanX * 0.45, 0, cz + spanZ * 0.45],
-    [cx - spanX * 0.55, 0, cz + spanZ * 0.4],
+    // Slot 5 = bridgeway (swapped with cyber-brand)
+    [cx, 0, cz - spanZ],
+    // Print — between cyber-product and bridgeway
+    [cx - spanX * 0.48, 0, cz - spanZ * 0.58],
   ];
 }

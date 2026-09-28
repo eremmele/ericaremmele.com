@@ -236,12 +236,8 @@
         </div>
       </div>
 
-      <div class="controls-right" role="group" aria-label="Open project" data-fs-element="Project Hotkeys">
-        <button type="button" class="arrow-key project-key" data-project="1" data-fs-element="Open Project 1" aria-label="Open project 1" aria-keyshortcuts="1">1</button>
-        <button type="button" class="arrow-key project-key" data-project="2" data-fs-element="Open Project 2" aria-label="Open project 2" aria-keyshortcuts="2">2</button>
-        <button type="button" class="arrow-key project-key" data-project="3" data-fs-element="Open Project 3" aria-label="Open project 3" aria-keyshortcuts="3">3</button>
-        <button type="button" class="arrow-key project-key" data-project="4" data-fs-element="Open Project 4" aria-label="Open project 4" aria-keyshortcuts="4">4</button>
-        <button type="button" class="arrow-key project-key" data-project="5" data-fs-element="Open Project 5" aria-label="Open project 5" aria-keyshortcuts="5">5</button>
+      <div class="controls-right" role="status" aria-label="Case studies" data-fs-element="Case Studies Coming Soon">
+        <p class="case-studies-soon">case studies coming soon</p>
       </div>
       <button
         type="button"
@@ -256,6 +252,11 @@
       </button>
 
       <p id="load-status" class="load-status" aria-live="polite">Loading garden…</p>
+
+      <aside id="garden-fallback" class="garden-fallback" data-fs-element="Garden Fallback" hidden>
+        <p class="garden-fallback__note" id="garden-fallback-note"></p>
+        <nav class="garden-fallback__projects" id="garden-fallback-projects" aria-label="Projects"></nav>
+      </aside>
 
       <div id="portfolio-panel" class="portfolio-panel" data-fs-element="Portfolio Panel" hidden>
         <button

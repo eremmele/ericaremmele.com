@@ -2,22 +2,28 @@ import {
   trackCarouselInteracted,
   trackControlsToggled,
   trackGardenFoliageReady,
+  trackGardenLoadFailed,
   trackGardenNavigated,
   trackGardenReady,
   trackHeroViewTurn,
   trackInspectionApproached,
   trackProjectClosed,
-  trackProjectOpened,
-  type ProjectOpenSource,
 } from "./analytics/fullstory";
 import { getPortfolioById } from "./data/portfolio";
 import { GardenScene } from "./garden/GardenScene";
-import type { InspectionPoint } from "./garden/InspectionPoint";
 import { LightRays } from "./ui/LightRays";
 import { PortfolioPanel } from "./ui/PortfolioPanel";
 import type { PortfolioItem } from "./types";
+import { probeWebGL } from "./util/webgl";
 
 const ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"] as const;
+
+const WEBGL_STATUS = "Garden needs WebGL — try enabling hardware acceleration";
+const WEBGL_FALLBACK_NOTE =
+  "This browser can’t run the 3D garden. Open a project below, or enable hardware acceleration and reload.";
+const INIT_STATUS = "Could not load garden";
+const INIT_FALLBACK_NOTE =
+  "The garden couldn’t start. Open a project below — the rest of the site still works.";
 
 function bindHoldKeyButton(button: HTMLButtonElement, code: string, onChange: (code: string, pressed: boolean) => void): void {
   const release = (): void => onChange(code, false);
@@ -32,6 +38,45 @@ function bindHoldKeyButton(button: HTMLButtonElement, code: string, onChange: (c
   button.addEventListener("pointercancel", release);
   button.addEventListener("lostpointercapture", release);
   button.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+function enterStaticPortfolioFallback(options: {
+  loadStatus: HTMLElement;
+  panel: PortfolioPanel;
+  reason: "webgl_unavailable" | "init_failed";
+  detail?: string;
+}): void {
+  const { loadStatus, panel, reason, detail } = options;
+  trackGardenLoadFailed({ reason, detail });
+
+  document.body.classList.add("garden-fallback-active");
+  loadStatus.hidden = false;
+  loadStatus.textContent = reason === "webgl_unavailable" ? WEBGL_STATUS : INIT_STATUS;
+
+  const fallback = document.getElementById("garden-fallback");
+  const note = document.getElementById("garden-fallback-note");
+  const list = document.getElementById("garden-fallback-projects");
+  if (!(fallback instanceof HTMLElement) || !(note instanceof HTMLElement) || !(list instanceof HTMLElement)) {
+    return;
+  }
+
+  note.textContent =
+    reason === "webgl_unavailable"
+      ? `${WEBGL_FALLBACK_NOTE} Case studies coming soon.`
+      : `${INIT_FALLBACK_NOTE} Case studies coming soon.`;
+  list.replaceChildren();
+
+  const soon = document.createElement("p");
+  soon.className = "garden-fallback__soon";
+  soon.textContent = "Case studies coming soon";
+  list.appendChild(soon);
+
+  fallback.hidden = false;
+
+  panel.setOnOpenChange((open) => {
+    document.documentElement.classList.toggle("portfolio-open", open);
+    document.body.classList.toggle("portfolio-open", open);
+  });
 }
 
 async function main(): Promise<void> {
@@ -80,6 +125,18 @@ async function main(): Promise<void> {
   new LightRays(raysCanvas);
   const panel = new PortfolioPanel();
 
+  const webgl = probeWebGL();
+  if (!webgl.ok) {
+    console.error("WebGL unavailable:", webgl.reason);
+    enterStaticPortfolioFallback({
+      loadStatus,
+      panel,
+      reason: "webgl_unavailable",
+      detail: webgl.reason,
+    });
+    return;
+  }
+
   let garden: GardenScene;
   try {
     garden = await GardenScene.create(canvas, cssRoot, (message) => {
@@ -87,35 +144,17 @@ async function main(): Promise<void> {
       loadStatus.textContent = message;
     });
   } catch (error) {
-    loadStatus.hidden = false;
-    loadStatus.textContent = "Could not load garden";
     console.error(error);
+    enterStaticPortfolioFallback({
+      loadStatus,
+      panel,
+      reason: "init_failed",
+      detail: error instanceof Error ? error.message : String(error),
+    });
     return;
   }
 
   turnRight = (steps) => garden.navigation.animateTurnRightSteps(steps);
-
-  const openPoint = (
-    point: InspectionPoint,
-    closeOnLeave: boolean,
-    source: ProjectOpenSource,
-  ): void => {
-    const item = getPortfolioById(point.data.portfolioId) ?? point.item;
-    openProximityId = point.data.id;
-    closeOverlayOnLeave = closeOnLeave;
-    openItem = item;
-    carouselInteracted = false;
-    garden.setOverlayProjectId(point.data.id);
-    trackProjectOpened({
-      projectId: item.id,
-      title: item.title,
-      category: item.category,
-      label: point.data.label,
-      pointId: point.data.id,
-      source,
-    });
-    panel.show(item);
-  };
 
   garden.bindControls(app, canvas, movePad);
   garden.navigation.setOnFirstMoveIntent(() => markNavigated("locomotion"));
@@ -138,18 +177,6 @@ async function main(): Promise<void> {
     document.body.classList.add("is-touch");
     touchControls.hidden = false;
   }
-
-  const openActivePortfolio = (source: ProjectOpenSource): void => {
-    const point = garden.getActivePoint();
-    if (!point) return;
-    openPoint(point, true, source);
-  };
-
-  const openProjectByNumber = (n: number, source: ProjectOpenSource): void => {
-    const point = garden.getPointByNumber(n);
-    if (!point) return;
-    openPoint(point, false, source);
-  };
 
   const setControlsCollapsed = (collapsed: boolean): void => {
     controlsBar.classList.toggle("is-collapsed", collapsed);
@@ -244,22 +271,11 @@ async function main(): Promise<void> {
     });
   });
 
-  document.querySelectorAll<HTMLButtonElement>(".project-key[data-project]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const n = Number(button.dataset.project);
-      if (Number.isFinite(n)) openProjectByNumber(n, "project_button");
-      button.blur();
-    });
-  });
-
   window.addEventListener("keydown", (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
 
     if (event.code === "KeyH") {
       setControlsCollapsed(!controlsBar.classList.contains("is-collapsed"));
-    }
-    if (event.code === "KeyE") {
-      openActivePortfolio("inspect_key");
     }
     if (event.code === "Escape" && panel.isOpen) {
       panel.hide("escape_key");
@@ -267,12 +283,6 @@ async function main(): Promise<void> {
     if (event.code === "KeyX" && panel.isOpen) {
       event.preventDefault();
       panel.hide("x_key");
-    }
-
-    const digit = /^Digit([1-5])$/.exec(event.code)?.[1] ?? /^Numpad([1-5])$/.exec(event.code)?.[1];
-    if (digit) {
-      event.preventDefault();
-      openProjectByNumber(Number(digit), "hotkey");
     }
   });
 
@@ -282,24 +292,9 @@ async function main(): Promise<void> {
     }
   });
 
-  canvas.addEventListener("click", (event) => {
+  canvas.addEventListener("pointermove", () => {
     if (panel.isOpen) return;
-    const hit = garden.pickInspectionPoint(event.clientX, event.clientY);
-    if (hit) {
-      openPoint(hit, false, "canvas_click");
-      event.preventDefault();
-      return;
-    }
-    if (isTouch && garden.getActivePoint()) {
-      openActivePortfolio("touch_tap");
-      event.preventDefault();
-    }
-  });
-
-  canvas.addEventListener("pointermove", (event) => {
-    if (panel.isOpen || event.buttons !== 0) return;
-    const hit = garden.pickInspectionPoint(event.clientX, event.clientY);
-    canvas.style.cursor = hit ? "pointer" : "crosshair";
+    canvas.style.cursor = "crosshair";
   });
 
   window.addEventListener("resize", () => garden.resize());
