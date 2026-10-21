@@ -237,8 +237,10 @@ export function projectGatePlugin(): Plugin {
     }
 
     if (urlPath === "/portfolio/robots.txt" || urlPath.startsWith("/portfolio/thumbs/")) {
-      next();
-      return;
+      if (!password || !authorized(req, password)) {
+        send(res, 404, "Not found", "text/plain; charset=utf-8");
+        return;
+      }
     }
 
     if (!password || !authorized(req, password)) {

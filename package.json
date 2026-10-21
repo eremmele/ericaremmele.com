@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "start": "node server/production.mjs",
+    "test:gate": "node --test server/production.test.mjs"
   },
   "dependencies": {
     "three": "^0.175.0"
