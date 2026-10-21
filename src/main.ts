@@ -10,6 +10,7 @@ import {
   trackProjectClosed,
   trackProjectOpened,
 } from "./analytics/fullstory";
+import { staticGateIsOpen, staticGateReady, staticGateUnlock } from "./gate/staticGate";
 import { getPortfolioById, inspectionPoints, portfolioItems } from "./data/portfolio";
 import { GardenScene } from "./garden/GardenScene";
 import { LightRays } from "./ui/LightRays";
@@ -219,7 +220,10 @@ async function main(): Promise<void> {
   let gatePromise: Promise<boolean> | null = null;
   let captions: Record<string, { description?: string }> | null = null;
 
+  const sealed = import.meta.env.PROD && (await staticGateReady());
+
   const gateIsOpen = async (): Promise<boolean> => {
+    if (sealed) return staticGateIsOpen();
     try {
       const res = await fetch("/__gate", { credentials: "same-origin" });
       return res.ok;
@@ -246,6 +250,16 @@ async function main(): Promise<void> {
         event.preventDefault();
         void (async () => {
           gateError.hidden = true;
+          if (sealed) {
+            const ok = await staticGateUnlock(gatePassword.value);
+            if (!ok) {
+              gateError.hidden = false;
+              gatePassword.select();
+              return;
+            }
+            finish(true);
+            return;
+          }
           const res = await fetch("/__gate", {
             method: "POST",
             credentials: "same-origin",
