@@ -1,4 +1,5 @@
 import { defineConfig, type Plugin, type Connect } from "vite";
+import { projectGatePlugin } from "./server/projectGate";
 
 const NOINDEX =
   "noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, max-snippet:0, max-image-preview:none, max-video-preview:0";
@@ -68,7 +69,12 @@ function portfolioNoIndexPlugin(): Plugin {
 
 export default defineConfig({
   base: "./",
-  plugins: [portfolioNoIndexPlugin()],
+  plugins: [projectGatePlugin(), portfolioNoIndexPlugin()],
+  server: {
+    fs: {
+      deny: ["**/.gate-secret", "**/private", "**/private/**"],
+    },
+  },
   build: {
     target: "es2020",
     minify: "esbuild",

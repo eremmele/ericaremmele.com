@@ -34,6 +34,7 @@ export class GardenScene {
   private gardenMaterials: THREE.ShaderMaterial[] = [];
   private colliders: THREE.Object3D[] = [];
   private activePoint: InspectionPoint | null = null;
+  private hoveredPoint: InspectionPoint | null = null;
   private running = false;
   private ready = false;
   /** Skip WebGL draws while the portfolio overlay covers the garden. */
@@ -255,6 +256,14 @@ export class GardenScene {
 
   getActivePoint(): InspectionPoint | null {
     return this.activePoint;
+  }
+
+  /** Cursor is over this thumbnail. Pass null when the pointer leaves every card. */
+  setHoveredPoint(point: InspectionPoint | null): void {
+    if (this.hoveredPoint === point) return;
+    this.hoveredPoint?.setHovered(false);
+    this.hoveredPoint = point;
+    point?.setHovered(true);
   }
 
   /** 1-based hotkey index into inspection points (1 = first project). */

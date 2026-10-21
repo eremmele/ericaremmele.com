@@ -15,9 +15,11 @@ export class PortfolioPanel {
   private readonly dragHint: HTMLElement;
   private readonly scrollHint: HTMLElement;
   private carousel: ProgressiveSmearCarousel | null = null;
+  private pageFrame: HTMLIFrameElement | null = null;
   private onClose?: (reason: ProjectCloseReason) => void;
   private onOpenChange?: (open: boolean, reason?: ProjectCloseReason) => void;
   private onCarouselUserInteract?: () => void;
+  private onNext?: () => void;
   private idleHintTimer: number | null = null;
   private hintPhase: "initial" | "repeat" = "initial";
   private frustrationClickTimes: number[] = [];
@@ -53,6 +55,11 @@ export class PortfolioPanel {
       this.dragHint.classList.remove("is-flashing");
     });
     this.panel.addEventListener("pointermove", this.onPointerMove);
+    window.addEventListener("message", (event) => {
+      if (!this.pageFrame || event.source !== this.pageFrame.contentWindow) return;
+      if (event.data?.type === "portfolio-close") this.hide("close_button");
+      if (event.data?.type === "portfolio-next") this.onNext?.();
+    });
   }
 
   setOnClose(callback: (reason: ProjectCloseReason) => void): void {
@@ -67,12 +74,25 @@ export class PortfolioPanel {
     this.onCarouselUserInteract = callback;
   }
 
+  setOnNext(callback: () => void): void {
+    this.onNext = callback;
+  }
+
   show(item: PortfolioItem): void {
     this.carousel?.destroy();
+    this.carousel = null;
+    this.pageFrame = null;
     this.mount.replaceChildren();
+    this.setPageChrome(false);
     this.hintPhase = "initial";
     this.frustrationClickTimes = [];
     this.clearIdleHintTimer();
+    this.dragHint.classList.remove("is-flashing");
+
+    if (item.page) {
+      this.showPage(item.page);
+      return;
+    }
 
     this.carousel = new ProgressiveSmearCarousel(this.mount, {
       slides: item.carouselSlides,
@@ -93,11 +113,13 @@ export class PortfolioPanel {
   hide(reason: ProjectCloseReason = "unknown"): void {
     if (this.panel.hidden) return;
     this.panel.hidden = true;
+    this.setPageChrome(false);
     this.clearIdleHintTimer();
     this.dragHint.classList.remove("is-flashing");
     this.setScrollHintVisible(false);
     this.carousel?.destroy();
     this.carousel = null;
+    this.pageFrame = null;
     this.mount.replaceChildren();
     this.onOpenChange?.(false, reason);
     this.onClose?.(reason);
@@ -105,6 +127,26 @@ export class PortfolioPanel {
 
   get isOpen(): boolean {
     return !this.panel.hidden;
+  }
+
+  private setPageChrome(active: boolean): void {
+    this.panel.classList.toggle("is-page", active);
+    document.body.classList.toggle("portfolio-page", active);
+    document.documentElement.classList.toggle("portfolio-page", active);
+  }
+
+  private showPage(src: string): void {
+    this.setScrollHintVisible(false);
+    this.dragHint.classList.remove("is-flashing");
+    this.setPageChrome(true);
+    const frame = document.createElement("iframe");
+    frame.className = "portfolio-page";
+    frame.src = src;
+    frame.title = "Project";
+    this.pageFrame = frame;
+    this.mount.append(frame);
+    this.panel.hidden = false;
+    this.onOpenChange?.(true);
   }
 
   private scheduleIdleHintFlash(): void {

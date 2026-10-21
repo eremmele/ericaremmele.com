@@ -9,6 +9,8 @@ export type PortfolioItem = {
   image: string;
   /** Slides shown in this project's carousel overlay. */
   carouselSlides: CarouselSlide[];
+  /** Full case-study page opened instead of the carousel. */
+  page?: string;
   link?: string;
 };
 

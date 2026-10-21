@@ -3,3 +3,13 @@ dist
 .DS_Store
 *.local
 .verify-chrome
+.gate-secret
+archive/
+private/
+
+# Retired thumbnails. Kept on disk, not published.
+public/portfolio/thumbs/bridgeway.jpg
+public/portfolio/thumbs/cyber-print.jpg
+public/portfolio/thumbs/cyber-product.jpg
+public/portfolio/thumbs/swgwars.jpg
+public/portfolio/thumbs/undrmnd.svg

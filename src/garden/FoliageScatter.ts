@@ -97,7 +97,7 @@ function prepareFoliageMaterial(material: THREE.Material): THREE.Material {
   const map = std.map ?? null;
   if (map instanceof THREE.Texture) {
     map.colorSpace = THREE.SRGBColorSpace;
-    map.anisotropy = 4;
+    map.anisotropy = 1;
     map.needsUpdate = true;
   }
 
@@ -261,8 +261,11 @@ export async function createForestFoliageLayer(
 
   // Prefetch all foliage GLBs in parallel — sequential waits dominate on mid-speed links.
   onProgress?.("Growing foliage…");
+  const speciesList = lean
+    ? SPECIES.filter((species) => species.name !== "bright-accent-foliage")
+    : SPECIES;
   const templates = await Promise.all(
-    SPECIES.map(async (species) => {
+    speciesList.map(async (species) => {
       const gltf = await loader.loadAsync(species.url);
       return { species, ...extractPlantTemplate(gltf.scene) };
     }),
@@ -275,7 +278,7 @@ export async function createForestFoliageLayer(
     const mesh = new THREE.InstancedMesh(geometry, material, count);
     mesh.name = species.name;
     mesh.castShadow = false;
-    mesh.receiveShadow = true;
+    mesh.receiveShadow = false;
     mesh.frustumCulled = false;
     mesh.matrixAutoUpdate = false;
 

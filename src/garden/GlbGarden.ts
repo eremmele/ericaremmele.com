@@ -159,15 +159,15 @@ export async function loadGardenGlb(
     walkBounds,
     walkCircle: { x: cx, z: cz, radius: walkRadius },
     clearCenter: { x: spawn.x, z: spawn.z, radius: 2.8 },
-    lean: false,
+    lean,
     onProgress,
   }).then((layer) => {
     foliageHost.add(layer);
   });
 
   const cloud = await meshSceneToParticleCloud(gltf.scene, {
-    targetCount: lean ? 180_000 : 260_000,
-    maxCount: lean ? 220_000 : 300_000,
+    targetCount: lean ? 110_000 : 180_000,
+    maxCount: lean ? 140_000 : 210_000,
     bottomCutRatio: 0.12,
     groundBandRatio: 0.5,
     groundDensityBoost: 2.2,
@@ -213,9 +213,7 @@ export function defaultInspectionPositions(
     [cx - spanX * 0.55, 0, cz + spanZ * 0.4],
     [cx + spanX, 0, cz - spanZ * 0.15],
     [cx + spanX * 0.45, 0, cz + spanZ * 0.45],
-    // Slot 5 = bridgeway (swapped with cyber-brand)
-    [cx, 0, cz - spanZ],
-    // Print — between cyber-product and bridgeway
-    [cx - spanX * 0.48, 0, cz - spanZ * 0.58],
+    // Dollyverse — was slot 7, now project 5
+    [cx + spanX * 0.9, 0, cz + spanZ * 0.75],
   ];
 }

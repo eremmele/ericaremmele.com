@@ -8,13 +8,13 @@ const FOLLOW_RADIUS = INTERACT_RADIUS * 2.6;
 const CARD_W = 2.4;
 const CARD_H = 1.5;
 /** Sit in the canopy so leaves can depth-occlude the frame. */
-const FLOAT_HEIGHT = 1.12;
+const FLOAT_HEIGHT = 1.55;
 /** 2× atlas — mipmaps + soft alpha give edge AA without MSAA on the garden pass. */
 const TEX_W = 800;
 const TEX_H = 500;
 const UP = new THREE.Vector3(0, 1, 0);
-/** Unlit brightness lift — isolates cards from garden exposure/lights. */
-const CARD_BRIGHT = 1.28;
+/** Unlit, at 1 — cards ignore scene exposure and lights. */
+const CARD_BRIGHT = 1;
 
 export class InspectionPoint {
   readonly data: InspectionPointData;
@@ -28,6 +28,8 @@ export class InspectionPoint {
   private readonly canvas: HTMLCanvasElement;
   private readonly floatHeight: number;
   private thumbnailHidden = false;
+  private hovered = false;
+  private hoverElapsed = -1;
   private baseOpacity = 1;
   private readonly restQuat = new THREE.Quaternion();
   private readonly targetQuat = new THREE.Quaternion();
@@ -148,12 +150,19 @@ export class InspectionPoint {
     this.mesh.visible = visible;
     if (!visible) {
       this.material.uniforms.opacity.value = 0;
+      this.hovered = false;
     }
+  }
+
+  setHovered(hovered: boolean): void {
+    this.hovered = hovered && !this.thumbnailHidden;
+    this.mesh.renderOrder = this.hovered ? 4 : 2;
   }
 
   update(elapsed: number, playerPosition: THREE.Vector3, camera: THREE.Camera): boolean {
     const distance = this.group.position.distanceTo(playerPosition);
     const active = distance <= INTERACT_RADIUS;
+    this.applyHover(elapsed);
 
     // Soft float
     this.mesh.position.y = this.floatHeight + Math.sin(elapsed * 1.2 + this.group.position.x) * 0.06;
@@ -183,6 +192,21 @@ export class InspectionPoint {
 
   distanceTo(point: THREE.Vector3): number {
     return this.group.position.distanceTo(point);
+  }
+
+  private applyHover(elapsed: number): void {
+    const dt =
+      this.hoverElapsed < 0
+        ? 1 / 60
+        : Math.min(0.05, Math.max(0, elapsed - this.hoverElapsed));
+    this.hoverElapsed = elapsed;
+    const ease = 1 - Math.exp(-12 * dt);
+    const show = this.hovered && !this.thumbnailHidden;
+    const targetScale = show ? 1.07 : 1;
+    const targetBright = show ? 1.12 : CARD_BRIGHT;
+    this.mesh.scale.setScalar(THREE.MathUtils.lerp(this.mesh.scale.x, targetScale, ease));
+    const bright = this.material.uniforms.bright.value as number;
+    this.material.uniforms.bright.value = THREE.MathUtils.lerp(bright, targetBright, ease);
   }
 
   dispose(): void {
@@ -274,11 +298,7 @@ export class InspectionPoint {
     bctx.clip();
     bctx.fillStyle = "#222222";
     bctx.fillRect(mx, my, mw, mh);
-    if (image) {
-      bctx.filter = "brightness(1.12) contrast(1.04)";
-      drawCover(bctx, image, mx, my, mw, mh);
-      bctx.filter = "none";
-    }
+    if (image) drawCover(bctx, image, mx, my, mw, mh);
     bctx.restore();
 
     // Meta — brighter than before so cards stay readable in the canopy

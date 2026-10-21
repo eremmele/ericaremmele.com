@@ -11,6 +11,7 @@ export class NavigationController {
   readonly player: THREE.Object3D;
   private static readonly INITIAL_RIGHT_ARROW_STEPS = 16;
   private static readonly KEYBOARD_STEP_FPS = 60;
+  private static readonly TURN_SPEED = 2.35;
 
   private yaw = 0;
   private pitch = 0;
@@ -18,7 +19,7 @@ export class NavigationController {
   private readonly planarVel = new THREE.Vector3();
   private turnRate = 0;
   private readonly moveSpeed = 7.4;
-  private readonly turnSpeed = 2.35;
+  private readonly turnSpeed = NavigationController.TURN_SPEED;
   /** How quickly planar velocity catches desired input (higher = snappier). */
   private readonly moveAccel = 22;
   private readonly moveDecel = 26;
