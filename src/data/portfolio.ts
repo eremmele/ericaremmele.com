@@ -108,12 +108,14 @@ export const inspectionPoints: InspectionPointData[] = [
     id: "point-1",
     portfolioId: "cyber-product",
     position: [-6, 0, -4],
+    floatHeight: 2.2,
     label: "Product Design",
   },
   {
     id: "point-2",
     portfolioId: "cyber-brand",
     position: [-5, 0, 3],
+    floatHeight: 2.2,
     label: "Creative Direction",
   },
   {

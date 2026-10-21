@@ -208,9 +208,9 @@ export function defaultInspectionPositions(
   const spanZ = (walkBounds.max.z - walkBounds.min.z) * 0.28;
 
   return [
-    [cx - spanX, 0, cz - spanZ * 0.2],
-    // Slot 2 = cyber-brand (swapped with bridgeway)
-    [cx - spanX * 0.55, 0, cz + spanZ * 0.4],
+    [cx - spanX, 0, cz + spanZ * 0.45],
+    // Slot 2 sits a little closer to the entrance than the canopy.
+    [cx - spanX * 0.55, 0, cz + spanZ * 1.05],
     [cx + spanX, 0, cz - spanZ * 0.15],
     [cx + spanX * 0.45, 0, cz + spanZ * 0.45],
     // Dollyverse — was slot 7, now project 5
