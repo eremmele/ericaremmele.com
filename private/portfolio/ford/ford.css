@@ -1,0 +1,46 @@
+body.case-ford {
+  background: #090909;
+}
+
+.case-ford .eyebrow,
+.case-ford .work__note {
+  color: #666;
+}
+
+.case-ford .close {
+  color: #dbbd43;
+}
+
+.case-ford .close:hover,
+.case-ford .close:focus-visible {
+  color: #fff;
+}
+
+.case-ford .showcase,
+.case-ford .artwork {
+  margin: 0;
+}
+
+.case-ford .showcase img,
+.case-ford .artwork img {
+  width: 100%;
+  height: auto;
+}
+
+.case-ford .artwork {
+  width: min(1160px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.case-ford .work__note {
+  margin: 8px 0 0;
+  max-width: 303px;
+  font-size: 18.4px;
+  line-height: 25.3px;
+}
+
+@media (max-width: 980px) {
+  .case-ford .artwork {
+    width: calc(100% - 24px);
+  }
+}

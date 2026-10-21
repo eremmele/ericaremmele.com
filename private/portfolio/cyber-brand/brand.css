@@ -1,0 +1,60 @@
+body.case-brand {
+  background: #090909;
+}
+
+.case-brand .eyebrow,
+.case-brand .work__note,
+.case-brand .close {
+  color: #666;
+}
+
+.case-brand .close:hover,
+.case-brand .close:focus-visible {
+  color: #fff;
+}
+
+.case-brand .hero {
+  margin: 0;
+  height: auto;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.case-brand .hero video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.case-brand .work__note {
+  margin: 8px 0 0;
+  max-width: 303px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.case-brand .mission {
+  width: min(1160px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.case-brand .mission img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+.case-brand .gallery-slide {
+  display: grid;
+  place-items: center;
+  background: #090909;
+}
+
+.case-brand .gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

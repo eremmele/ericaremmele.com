@@ -5,9 +5,16 @@ dist
 .verify-chrome
 .gate-secret
 archive/
-private/
 
-# Retired thumbnails. Kept on disk, not published.
+# Retired projects and thumbnails. Kept on disk, not published.
+private/portfolio/bridgeway/
+private/portfolio/carousel/
+private/portfolio/cyber-print/
+private/portfolio/undrmnd/
+private/portfolio/motion-study.jpg
+private/portfolio/placeholder-1.svg
+private/portfolio/placeholder-2.svg
+private/portfolio/placeholder-3.svg
 public/portfolio/thumbs/bridgeway.jpg
 public/portfolio/thumbs/cyber-print.jpg
 public/portfolio/thumbs/cyber-product.jpg
