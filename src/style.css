@@ -327,7 +327,7 @@ body,
   position: fixed;
   right: var(--page-pad-x);
   bottom: var(--page-pad-y);
-  /* Below .portfolio-panel (6) so H stays under the overlay; 1–5 stay above. */
+  /* Below .portfolio-panel (6) so H stays under the overlay; 1–6 stay above. */
   z-index: 5;
   width: 2rem;
   min-width: 2rem;
@@ -360,24 +360,6 @@ body,
   letter-spacing: 0;
   text-transform: none;
   opacity: 0.66;
-}
-
-.case-studies-soon {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  line-height: 2rem;
-  text-transform: uppercase;
-  white-space: nowrap;
-  opacity: 0.66;
-  pointer-events: none;
-  user-select: none;
 }
 
 .arrow-key {
@@ -541,6 +523,68 @@ body.garden-fallback-active #garden-canvas {
   cursor: default;
 }
 
+.project-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.project-gate[hidden] {
+  display: none !important;
+}
+
+.project-gate__card {
+  width: min(360px, calc(100% - 32px));
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.project-gate__label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hero-dim);
+}
+
+.project-gate__input {
+  width: 100%;
+  margin: 12px 0 16px;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.project-gate__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.project-gate__actions button {
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.project-gate__error {
+  margin: 12px 0 0;
+  color: #c44;
+}
+
 .portfolio-panel {
   position: fixed;
   inset: 0;
@@ -575,6 +619,28 @@ body.garden-fallback-active #garden-canvas {
   border-radius: 0;
   background: transparent;
   overflow: hidden;
+}
+
+.portfolio-panel.is-page {
+  background: #000;
+}
+
+.portfolio-panel.is-page .smear-carousel {
+  min-width: 0;
+  min-height: 0;
+  display: block;
+}
+
+.portfolio-panel.is-page .portfolio-drag-hint {
+  display: none;
+}
+
+.portfolio-page {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
 }
 
 .smear-carousel {
@@ -975,13 +1041,17 @@ body.is-touch .inspect-key {
 }
 
 @media (pointer: coarse) and (max-width: 767px) {
-  .case-studies-soon {
-    font-size: 0.72rem;
-    letter-spacing: 0.05em;
+  .controls-right .project-key {
+    display: none !important;
+  }
+
+  body.portfolio-open .controls-right .project-key,
+  html.portfolio-open .controls-right .project-key {
+    display: grid !important;
   }
 }
 
-/* Tablet+ touch: 1–5 docked right (H hidden). */
+/* Tablet+ touch: 1–6 docked right (H hidden). */
 body.is-touch .controls-right {
   right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
   left: auto;
@@ -1003,7 +1073,7 @@ body.is-touch .touch-controls {
   align-items: flex-start;
 }
 
-/* Phone: centered joystick; case-studies note docked right. */
+/* Phone: centered joystick; 1–6 only while overlay is open. */
 @media (max-width: 767px) {
   body.is-touch .touch-controls {
     left: 50%;
@@ -1018,6 +1088,10 @@ body.is-touch .touch-controls {
     padding: 0.2rem 0 0.45rem;
   }
 
+  body.is-touch .controls-right .project-key {
+    display: none !important;
+  }
+
   body.is-touch .controls-right {
     right: max(var(--page-pad-x), env(safe-area-inset-right, 0px));
     left: auto;
@@ -1026,12 +1100,16 @@ body.is-touch .touch-controls {
     bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
   }
 
-  body.is-touch .case-studies-soon {
-    font-size: 0.72rem;
-    max-width: 9.5rem;
-    white-space: normal;
-    line-height: 1.25;
-    text-align: right;
+  body.is-touch.portfolio-open .controls-right {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    justify-content: center;
+    bottom: max(var(--page-pad-y), env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-touch.portfolio-open .controls-right .project-key {
+    display: grid !important;
   }
 }
 
