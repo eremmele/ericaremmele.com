@@ -232,9 +232,18 @@ async function main(): Promise<void> {
     }
   };
 
+  const setGateInvalid = (invalid: boolean): void => {
+    gate.classList.toggle("is-invalid", invalid);
+    gateError.hidden = !invalid;
+  };
+
   const askForPassword = (): Promise<boolean> => {
     gate.hidden = false;
-    gateError.hidden = true;
+    document.body.classList.add("gate-open");
+    if (controlsBar.classList.contains("is-collapsed") || controlsRight.hidden) {
+      setControlsCollapsed(false);
+    }
+    setGateInvalid(false);
     gatePassword.value = "";
     gatePassword.focus();
     return new Promise((resolve) => {
@@ -242,6 +251,8 @@ async function main(): Promise<void> {
         gateForm.removeEventListener("submit", onSubmit);
         gateCancel.removeEventListener("click", onCancel);
         gate.hidden = true;
+        document.body.classList.remove("gate-open");
+        setGateInvalid(false);
         gatePassword.value = "";
         resolve(ok);
       };
@@ -249,11 +260,11 @@ async function main(): Promise<void> {
       const onSubmit = (event: Event) => {
         event.preventDefault();
         void (async () => {
-          gateError.hidden = true;
+          setGateInvalid(false);
           if (sealed) {
             const ok = await staticGateUnlock(gatePassword.value);
             if (!ok) {
-              gateError.hidden = false;
+              setGateInvalid(true);
               gatePassword.select();
               return;
             }
@@ -267,7 +278,7 @@ async function main(): Promise<void> {
             body: JSON.stringify({ password: gatePassword.value }),
           });
           if (!res.ok) {
-            gateError.hidden = false;
+            setGateInvalid(true);
             gatePassword.select();
             return;
           }
@@ -278,6 +289,13 @@ async function main(): Promise<void> {
       gateCancel.addEventListener("click", onCancel);
     });
   };
+
+  gatePassword.addEventListener("keydown", (event) => {
+    if (gate.hidden) return;
+    if (event.key !== "Enter" && event.code !== "NumpadEnter") return;
+    event.preventDefault();
+    gateForm.requestSubmit();
+  });
 
   const ensureUnlocked = (): Promise<boolean> => {
     if (!gatePromise) {
@@ -478,6 +496,10 @@ async function main(): Promise<void> {
 
   window.addEventListener("keydown", (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const typing =
+      !gate.hidden ||
+      (event.target instanceof HTMLElement && Boolean(event.target.closest("input, textarea")));
+    if (typing) return;
 
     if (event.code === "KeyH") {
       setControlsCollapsed(!controlsBar.classList.contains("is-collapsed"));

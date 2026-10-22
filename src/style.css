@@ -593,6 +593,17 @@ body.garden-fallback-active #garden-canvas {
   color: var(--text);
   font: inherit;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.project-gate__actions button:hover,
+.project-gate__actions button:focus-visible {
+  background: rgba(255, 255, 255, 0.33);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.project-gate.is-invalid .project-gate__input {
+  border-color: #c44;
 }
 
 .project-gate__error {
@@ -1278,4 +1289,19 @@ body.is-touch .touch-controls {
 body.controls-collapsed .controls-right,
 .controls-right[hidden] {
   display: none !important;
+}
+
+/* Password prompt must not cover or collapse the project numbers. */
+body.gate-open .controls-right,
+body.gate-open .inspect-key {
+  z-index: 10030;
+}
+
+body.gate-open .controls-right,
+body.gate-open .controls-right[hidden] {
+  display: flex !important;
+}
+
+body.gate-open .controls-right .project-key {
+  display: grid !important;
 }
