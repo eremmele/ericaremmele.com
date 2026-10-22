@@ -2,11 +2,20 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { openPortfolioSeal } from "./sealed.mjs";
 
-const ROOT = process.cwd();
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.resolve(ROOT, "dist");
 const PRIVATE = path.resolve(ROOT, "private/portfolio");
+const SEAL_DIR = process.env.SEAL_DIR ? path.resolve(process.env.SEAL_DIR) : path.join(DIST, "sealed");
 const PASSWORD = process.env.GATE_PASSWORD ?? "";
+const seal = openPortfolioSeal(SEAL_DIR, PASSWORD);
+if (!seal && !fs.existsSync(path.join(PRIVATE, "captions.json"))) {
+  console.error("Portfolio thumbnails and pages are unavailable. Copy private/portfolio onto this instance and run npm run build with GATE_PASSWORD set.");
+} else if (!seal && fs.existsSync(path.join(SEAL_DIR, "manifest.json"))) {
+  console.error("Sealed portfolio could not be opened. Rebuild with the same GATE_PASSWORD the server uses.");
+}
 const SESSION_MS = Number(process.env.GATE_SESSION_MS ?? 12 * 60 * 60 * 1000);
 const PORT = Number(process.env.PORT ?? 8787);
 const COOKIE = "pg_session";
@@ -212,6 +221,37 @@ function sendFile(req, res, file) {
   fs.createReadStream(file).pipe(res);
 }
 
+function sendBytes(req, res, bytes, type) {
+  guarded(res);
+  res.setHeader("Content-Type", type);
+  res.setHeader("Accept-Ranges", "bytes");
+  const range = req.headers.range;
+  if (range && bytes.length > 0 && req.method !== "HEAD") {
+    const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+    if (!match) {
+      res.statusCode = 416;
+      res.end();
+      return;
+    }
+    const start = match[1] ? Number(match[1]) : 0;
+    const end = match[2] ? Number(match[2]) : bytes.length - 1;
+    if (start > end || end >= bytes.length) {
+      res.statusCode = 416;
+      res.setHeader("Content-Range", `bytes */${bytes.length}`);
+      res.end();
+      return;
+    }
+    res.statusCode = 206;
+    res.setHeader("Content-Range", `bytes ${start}-${end}/${bytes.length}`);
+    res.setHeader("Content-Length", String(end - start + 1));
+    res.end(bytes.subarray(start, end + 1));
+    return;
+  }
+  res.statusCode = 200;
+  res.setHeader("Content-Length", String(bytes.length));
+  res.end(req.method === "HEAD" ? undefined : bytes);
+}
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -278,11 +318,19 @@ function serveAuthed(req, res, urlPath) {
   const root = urlPath === "/portfolio" || urlPath.startsWith("/portfolio/") ? PRIVATE : DIST;
   const lookup = urlPath === "/" ? "/index.html" : urlPath;
   const file = resolveFile(root, lookup);
-  if (!file || file.endsWith(".map")) {
-    send(res, 404, "Not found", "text/plain; charset=utf-8");
+  if (file && !file.endsWith(".map")) {
+    sendFile(req, res, file);
     return;
   }
-  sendFile(req, res, file);
+  if ((urlPath === "/portfolio" || urlPath.startsWith("/portfolio/")) && seal) {
+    const bytes = seal.read(urlPath);
+    if (bytes) {
+      const type = MIME[path.extname(urlPath).toLowerCase()] ?? "application/octet-stream";
+      sendBytes(req, res, bytes, type);
+      return;
+    }
+  }
+  send(res, 404, "Not found", "text/plain; charset=utf-8");
 }
 
 const server = http.createServer((req, res) => {
@@ -301,6 +349,10 @@ const server = http.createServer((req, res) => {
     logout(req, res);
     return;
   }
+  if (urlPath === "/healthz" && (method === "GET" || method === "HEAD")) {
+    send(res, 200, method === "HEAD" ? "" : "ok", "text/plain; charset=utf-8");
+    return;
+  }
   if (urlPath === "/robots.txt" && (method === "GET" || method === "HEAD")) {
     guarded(res);
     res.statusCode = 200;
@@ -308,23 +360,46 @@ const server = http.createServer((req, res) => {
     res.end(method === "HEAD" ? undefined : ROBOTS);
     return;
   }
-  if (!PASSWORD || !sessionOk(req)) {
-    if ((method === "GET" || method === "HEAD") && (urlPath === "/" || urlPath === "/index.html")) {
-      send(res, 200, method === "HEAD" ? "" : LOGIN, "text/html; charset=utf-8");
-      return;
-    }
-    send(res, 404, "Not found", "text/plain; charset=utf-8");
-    return;
-  }
+if (!PASSWORD || !sessionOk(req)) {
   if (method !== "GET" && method !== "HEAD") {
     send(res, 404, "Not found", "text/plain; charset=utf-8");
     return;
   }
+
+  const publicPrivate =
+    urlPath === "/portfolio/captions.json" ||
+    urlPath.startsWith("/portfolio/thumbs/");
+
+  if (publicPrivate) {
+    const file = resolveFile(PRIVATE, urlPath.replace(/^\/portfolio/, "") || "/");
+    if (!file || file.endsWith(".map")) {
+      send(res, 404, "Not found", "text/plain; charset=utf-8");
+      return;
+    }
+    sendFile(req, res, file);
+    return;
+  }
+
+  if (!urlPath.startsWith("/portfolio/") && urlPath !== "/portfolio") {
+    const lookup = urlPath === "/" ? "/index.html" : urlPath;
+    const file = resolveFile(DIST, lookup);
+    if (!file || file.endsWith(".map")) {
+      send(res, 404, "Not found", "text/plain; charset=utf-8");
+      return;
+    }
+    sendFile(req, res, file);
+    return;
+  }
+
+  send(res, 404, "Not found", "text/plain; charset=utf-8");
+  return;
+}
+
   serveAuthed(req, res, urlPath);
 });
 
 if (process.env.GATE_NO_LISTEN !== "1") {
-  server.listen(PORT, "127.0.0.1");
+  server.listen(PORT, "0.0.0.0");
 }
 
 export { server, sessions };
