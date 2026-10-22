@@ -103,6 +103,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
 ];
 
+/** Numbered garden order. Next Project advances through this list and wraps to the first. */
 export const inspectionPoints: InspectionPointData[] = [
   {
     id: "point-1",

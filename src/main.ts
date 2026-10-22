@@ -11,7 +11,7 @@ import {
   trackProjectOpened,
 } from "./analytics/fullstory";
 import { staticGateIsOpen, staticGateReady, staticGateUnlock } from "./gate/staticGate";
-import { getPortfolioById, inspectionPoints, portfolioItems } from "./data/portfolio";
+import { getPortfolioById, inspectionPoints } from "./data/portfolio";
 import { GardenScene } from "./garden/GardenScene";
 import { LightRays } from "./ui/LightRays";
 import { PortfolioPanel } from "./ui/PortfolioPanel";
@@ -373,11 +373,14 @@ async function main(): Promise<void> {
   });
 
   panel.setOnNext(() => {
-    if (!openItem) return;
-    const index = portfolioItems.findIndex((item) => item.id === openItem?.id);
-    const next = portfolioItems[(index + 1) % portfolioItems.length];
+    if (!openItem || inspectionPoints.length === 0) return;
+    // Next follows the numbered garden order (1 → 2 → … → 1), not portfolioItems order.
+    const index = inspectionPoints.findIndex((point) => point.portfolioId === openItem?.id);
+    if (index < 0) return;
+    const nextPoint = inspectionPoints[(index + 1) % inspectionPoints.length];
+    const next = getPortfolioById(nextPoint.portfolioId);
     if (!next || next.id === openItem.id) return;
-    showProject(next, "project_button");
+    showProject(next, "project_button", nextPoint.id, nextPoint.label);
   });
 
   panel.setOnCarouselInteract(() => {
@@ -441,7 +444,31 @@ async function main(): Promise<void> {
     });
   });
 
+  const prefetchedProjects = new Set<string>();
+  const prefetchPortfolioImages = (item: PortfolioItem | null | undefined): void => {
+    if (!item || prefetchedProjects.has(item.id)) return;
+    prefetchedProjects.add(item.id);
+    for (const slide of item.carouselSlides) {
+      const src =
+        slide.kind === "image" ? slide.src : slide.kind === "video" || slide.kind === "embed" ? slide.poster : undefined;
+      if (!src) continue;
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+    }
+  };
+
   document.querySelectorAll<HTMLButtonElement>(".project-key[data-project]").forEach((button) => {
+    const warm = () => {
+      const n = Number(button.dataset.project);
+      if (!Number.isFinite(n)) return;
+      const point = garden.getPointByNumber(n);
+      if (!point) return;
+      prefetchPortfolioImages(getPortfolioById(point.data.portfolioId) ?? point.item);
+    };
+    button.addEventListener("pointerenter", warm);
+    button.addEventListener("pointerdown", warm);
+    button.addEventListener("focus", warm);
     button.addEventListener("click", () => {
       const n = Number(button.dataset.project);
       if (Number.isFinite(n)) openProjectByNumber(n, "project_button");
@@ -480,6 +507,7 @@ async function main(): Promise<void> {
     if (panel.isOpen) return;
     const hit = garden.pickInspectionPoint(event.clientX, event.clientY);
     garden.setHoveredPoint(hit);
+    if (hit) prefetchPortfolioImages(getPortfolioById(hit.data.portfolioId) ?? hit.item);
     canvas.style.cursor = hit ? "pointer" : "crosshair";
   });
 

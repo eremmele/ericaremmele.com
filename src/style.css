@@ -327,8 +327,8 @@ body,
   position: fixed;
   right: var(--page-pad-x);
   bottom: var(--page-pad-y);
-  /* Below .portfolio-panel (6) so H stays under the overlay; 1–6 stay above. */
-  z-index: 5;
+  /* Same layer as 1–6 so H stays visible whenever the project numbers do. */
+  z-index: 10006;
   width: 2rem;
   min-width: 2rem;
   max-width: 2rem;
@@ -395,6 +395,21 @@ body,
 
 .arrow-key:focus:not(:focus-visible) {
   background: transparent;
+}
+
+/* Project images sit behind these keys; a light fill keeps the numerals readable. */
+body.portfolio-open .project-key,
+html.portfolio-open .project-key {
+  background: rgba(16, 18, 17, 0.55);
+}
+
+body.portfolio-open .project-key:hover,
+body.portfolio-open .project-key:focus-visible,
+body.portfolio-open .project-key:active,
+html.portfolio-open .project-key:hover,
+html.portfolio-open .project-key:focus-visible,
+html.portfolio-open .project-key:active {
+  background: rgba(255, 255, 255, 0.33);
 }
 
 .arrow-key:active {

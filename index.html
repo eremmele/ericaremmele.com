@@ -58,14 +58,41 @@
     <link rel="alternate" type="text/plain" href="https://ericaremmele.com/llms.txt" title="llms.txt" />
     <link rel="preconnect" href="https://use.typekit.net" crossorigin />
     <link rel="preconnect" href="https://p.typekit.net" crossorigin />
-    <link rel="preload" href="https://use.typekit.net/kwl7pnb.css" as="style" />
     <link
-      rel="stylesheet"
-      href="https://use.typekit.net/kwl7pnb.css"
-      media="print"
-      onload="this.media='all'"
+      rel="preload"
+      href="https://use.typekit.net/af/6fcc0f/00000000000000007735e263/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
-    <noscript><link rel="stylesheet" href="https://use.typekit.net/kwl7pnb.css" /></noscript>
+    <link rel="preload" href="https://use.typekit.net/kwl7pnb.css" as="style" />
+    <link rel="stylesheet" href="https://use.typekit.net/kwl7pnb.css" />
+    <style>
+      /* Hold the intro until swear-text is ready so the fallback face never paints. */
+      html:not(.hero-bio-font) .hero-bio {
+        visibility: hidden;
+      }
+    </style>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var reveal = function () {
+          root.classList.add("hero-bio-font");
+        };
+        if (!document.fonts || !document.fonts.load) {
+          reveal();
+          return;
+        }
+        var done = false;
+        var finish = function () {
+          if (done) return;
+          done = true;
+          reveal();
+        };
+        document.fonts.load('300 32px "swear-text"').then(finish, finish);
+        setTimeout(finish, 2500);
+      })();
+    </script>
     <link rel="stylesheet" href="/src/style.css" />
 
     <script type="application/ld+json">
