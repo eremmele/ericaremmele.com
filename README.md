@@ -39,10 +39,44 @@ Edit `src/data/portfolio.ts`:
 
 `garden.glb` is ~12MB (Draco + 1k textures). Original Meshy export was ~94MB.
 
-## Deploy
+## Deploy on Lightsail
 
-```bash
-npm run build
-```
+Use one Lightsail instance and one Node process. PM2 must stay in fork mode with `instances: 1`. Sessions live in that process, so do not add instances or switch PM2 to cluster mode.
 
-Host `dist/` anywhere (Vercel, Netlify, GitHub Pages, Cloudflare). Point your domain's DNS away from Cargo Collective when you're ready to go live.
+1. Attach a static IP. In the instance firewall, open ports 80 and 443.
+2. Install Node.js 20 or newer and PM2 (`npm install -g pm2`).
+3. Copy this repo to the instance, including `private/portfolio`. That directory is gitignored, and both the build and the server read it.
+4. On the instance, create a root-only env file (for example `/home/ubuntu/portfolio.env`, mode `600`):
+
+   ```
+   GATE_PASSWORD=the-password
+   GATE_SECURE=1
+   PORT=8787
+   ```
+
+   `GATE_PASSWORD` is the only seal secret. The build does not read `.gate-secret`.
+
+5. Build on the instance:
+
+   ```bash
+   cd /path/to/portfolio-garden
+   npm ci
+   set -a && source /home/ubuntu/portfolio.env && set +a
+   npm run build
+   ```
+
+   `npm run build` typechecks, runs the Vite build, then seals `private/portfolio` into `dist/sealed`. The command exits with an error if `GATE_PASSWORD` is unset or `private/portfolio` is missing. After login, the server serves thumbnails and project pages from `private/portfolio` when those files are on the instance, and from `dist/sealed` otherwise.
+
+6. Start the single process:
+
+   ```bash
+   pm2 start ecosystem.config.cjs --update-env
+   pm2 save
+   pm2 startup
+   ```
+
+   `ecosystem.config.cjs` pins fork mode and one instance. Restart with `pm2 restart portfolio-garden --update-env` after changing the env file.
+
+7. On the same VM, terminate TLS with Caddy or nginx and proxy to `127.0.0.1:8787`. Forward `X-Forwarded-Proto: https`.
+
+Leave `private/portfolio` on the instance after the build. The server reads it at runtime. `npm run start:prod` builds and runs in the foreground; on Lightsail, use the PM2 commands above instead.

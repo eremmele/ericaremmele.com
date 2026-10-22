@@ -80,6 +80,12 @@ test("production gate hides private content until login", async () => {
     assert.match(home.headers.get("x-robots-tag") ?? "", /noindex/);
     for (const word of words) assert.equal(homeText.includes(word), false);
 
+    const health = await fetch(`http://127.0.0.1:${PORT}/healthz`);
+    assert.equal(health.status, 200);
+    assert.equal(await health.text(), "ok");
+    const healthHead = await fetch(`http://127.0.0.1:${PORT}/healthz`, { method: "HEAD" });
+    assert.equal(healthHead.status, 200);
+
     const files = discover();
     const thumb = await fetch(`http://127.0.0.1:${PORT}${files.thumb}`);
     assert.equal(thumb.status, 404);
@@ -167,6 +173,9 @@ test("missing password fails closed", async () => {
     assert.equal(login.status, 404);
     const hidden = await fetch(`http://127.0.0.1:8792${discover().page}`);
     assert.equal(hidden.status, 404);
+    const health = await fetch("http://127.0.0.1:8792/healthz");
+    assert.equal(health.status, 200);
+    assert.equal(await health.text(), "ok");
   } finally {
     child.kill();
   }

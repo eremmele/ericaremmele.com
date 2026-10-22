@@ -1,0 +1,22 @@
+---
+description: Commit and deploy portfolio-garden to Lightsail when asked to commit updates
+alwaysApply: true
+---
+
+# Deploy updates
+
+When asked to commit updates, use this flow and stop after it succeeds.
+
+1. Commit locally.
+2. Push to GitHub.
+3. SSH to Lightsail: `ssh -i ~/Downloads/LightsailDefaultKey-eu-west-2.pem admin@52.56.69.225`
+4. On the instance, run:
+
+```bash
+cd /home/admin/portfolio
+git pull origin master
+GATE_PASSWORD="$(cat /home/admin/portfolio/.gate-secret)" npm run build
+sudo pm2 restart portfolio-gate --update-env
+```
+
+`private/` is gitignored. Case-study HTML and images there are not in the commit. After the pull, copy changed files under `private/portfolio/` to the same path on the instance before the build.

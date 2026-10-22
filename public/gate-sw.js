@@ -74,6 +74,7 @@ function headers(type, extra) {
 }
 
 self.addEventListener("fetch", (event) => {
+  if (!aesKey) return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin || !protectedPath(url)) return;
   event.respondWith(openProtected(url.pathname, event.request));

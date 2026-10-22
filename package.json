@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/seal-portfolio.mjs",
     "start": "node server/production.mjs",
-    "test:gate": "node --test server/production.test.mjs"
+    "start:prod": "npm run build && node server/production.mjs",
+    "test:gate": "node --test server/production.test.mjs server/sealed-serve.test.mjs scripts/seal-portfolio.test.mjs"
   },
   "dependencies": {
     "three": "^0.175.0"
