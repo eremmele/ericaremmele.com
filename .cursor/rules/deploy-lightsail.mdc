@@ -1,22 +1,67 @@
 ---
-description: Commit and deploy portfolio-garden to Lightsail when asked to commit updates
+description: Enforce a clean GitHub-to-Lightsail deployment workflow for this portfolio project.
+globs: []
 alwaysApply: true
 ---
 
-# Deploy updates
+# Lightsail deployment rule
 
-When asked to commit updates, use this flow and stop after it succeeds.
+This repository deploys to a Lightsail server at `/home/admin/portfolio`.
 
-1. Commit locally.
-2. Push to GitHub.
-3. SSH to Lightsail: `ssh -i ~/Downloads/LightsailDefaultKey-eu-west-2.pem admin@52.56.69.225`
-4. On the instance, run:
+## Core policy
 
-```bash
-cd /home/admin/portfolio
-git pull origin master
-GATE_PASSWORD="$(cat /home/admin/portfolio/.gate-secret)" npm run build
-sudo pm2 restart portfolio-gate --update-env
-```
+- GitHub is the single source of truth for production code.
+- Make code changes locally in Cursor, commit locally, and push to GitHub.
+- Do not create or edit tracked source files directly on the Lightsail server unless the user explicitly asks for emergency hotfix work.
+- Do not leave behind backup copies, rescue files, or alternate versions of tracked files on the server.
+- Do not use ad hoc deploy flows that stash tracked files on the server, copy random folders into production, or modify tracked files outside Git.
 
-`private/` is gitignored. Case-study HTML and images there are not in the commit. After the pull, copy changed files under `private/portfolio/` to the same path on the instance before the build.
+## Production process manager
+
+- Production is managed by PM2.
+- The PM2 app name is `portfolio-gate`.
+- Do not use `nohup node ...` for this app.
+- Do not manually start a second Node process for this app.
+- When restarting production, use PM2 only.
+
+## Required deploy sequence
+
+When the user asks to deploy, publish, push and deploy, or update production, use this sequence:
+
+1. Check local Git state.
+2. Commit only the intended tracked changes.
+3. Push to `origin master`.
+4. On the Lightsail server, run exactly these commands in `/home/admin/portfolio`:
+   - `git pull origin master`
+   - `GATE_PASSWORD="$(cat /home/admin/portfolio/.gate-secret)" npm run build`
+   - `sudo pm2 restart portfolio-gate --update-env`
+
+## Server safety rules
+
+- Never run `git stash` on the server unless the user explicitly asks for it.
+- Never create files like `*.backup`, `*.before-*`, `*.live.*`, or similar rescue copies on the server.
+- Never move production files around to work around Git conflicts.
+- If `git pull` fails because the server working tree is dirty, stop and report the exact blocking files instead of improvising.
+- The server may contain `.gate-secret`, which is required at build/restart time and must never be committed to Git.
+- `portfolio-garden.log` is a server-local runtime log and should never be committed.
+
+## Local safety rules
+
+- Untracked local helper files such as `server/production.live.mjs` or `server/production.mjs.before-gate-fix` must not be added unless the user explicitly asks.
+- Before committing, verify that only intended tracked files are staged.
+- If only untracked local debris exists, explain that it will not be pushed unless explicitly added.
+
+## How to report back
+
+When deployment work is done, report:
+- what was committed
+- the commit hash
+- whether the push succeeded
+- whether the server pull succeeded
+- whether the build succeeded
+- whether the PM2 restart succeeded
+- whether any server-local untracked files or dirty-state blockers were detected
+
+## If uncertain
+
+If the server state is not clean or the deployment path is ambiguous, ask before taking destructive action.
