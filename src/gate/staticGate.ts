@@ -57,6 +57,36 @@ async function verified(key: CryptoKey, packed: string): Promise<boolean> {
   return new TextDecoder().decode(plain) === "ok";
 }
 
+async function waitForWorker(registration: ServiceWorkerRegistration): Promise<ServiceWorker | null> {
+  const current = navigator.serviceWorker.controller ?? registration.active;
+  if (current) return current;
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(() => resolve(registration.active), 2000);
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      () => {
+        window.clearTimeout(timer);
+        resolve(navigator.serviceWorker.controller ?? registration.active);
+      },
+      { once: true },
+    );
+  });
+}
+
+/** Deliver the decrypt key and wait until the worker has imported it. */
+async function sendKey(worker: ServiceWorker, raw: ArrayBuffer): Promise<void> {
+  await new Promise<void>((resolve) => {
+    const channel = new MessageChannel();
+    const timer = window.setTimeout(resolve, 2000);
+    channel.port1.onmessage = (event: MessageEvent<{ type?: string }>) => {
+      if (event.data?.type !== "key-ready" && event.data?.type !== "key-error") return;
+      window.clearTimeout(timer);
+      resolve();
+    };
+    worker.postMessage({ type: "key", raw }, [channel.port2]);
+  });
+}
+
 async function arm(key: CryptoKey): Promise<void> {
   const raw = await crypto.subtle.exportKey("raw", key);
   try {
@@ -66,24 +96,8 @@ async function arm(key: CryptoKey): Promise<void> {
   }
   const registration = await navigator.serviceWorker.register("/gate-sw.js");
   await navigator.serviceWorker.ready;
-  const post = (): void => {
-    const target = navigator.serviceWorker.controller ?? registration.active;
-    target?.postMessage({ type: "key", raw });
-  };
-  post();
-  if (navigator.serviceWorker.controller) return;
-  await new Promise<void>((resolve) => {
-    const timer = window.setTimeout(resolve, 2000);
-    navigator.serviceWorker.addEventListener(
-      "controllerchange",
-      () => {
-        window.clearTimeout(timer);
-        post();
-        resolve();
-      },
-      { once: true },
-    );
-  });
+  const worker = await waitForWorker(registration);
+  if (worker) await sendKey(worker, raw);
 }
 
 async function keyFromStorage(): Promise<CryptoKey | null> {

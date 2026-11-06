@@ -17,6 +17,8 @@ const MIME = {
 };
 
 let aesKey = null;
+/** Resolves when the latest unlock key has been imported. */
+let keyReady = Promise.resolve();
 let manifest = null;
 const plainCache = new Map();
 
@@ -30,11 +32,19 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data?.type !== "key" || !event.data.raw) return;
-  event.waitUntil(
-    crypto.subtle.importKey("raw", event.data.raw, "AES-GCM", false, ["decrypt"]).then((key) => {
+  const port = event.ports?.[0];
+  const done = crypto.subtle
+    .importKey("raw", event.data.raw, "AES-GCM", false, ["decrypt"])
+    .then((key) => {
       aesKey = key;
-    }),
-  );
+      plainCache.clear();
+      port?.postMessage({ type: "key-ready" });
+    })
+    .catch(() => {
+      port?.postMessage({ type: "key-error" });
+    });
+  keyReady = done;
+  event.waitUntil(done);
 });
 
 function protectedPath(url) {
@@ -55,6 +65,7 @@ async function plaintext(id) {
   const cached = plainCache.get(id);
   if (cached) return cached;
   const res = await fetch(`/sealed/f/${id}`);
+  if (!res.ok) throw new Error("sealed asset missing");
   const buf = await res.arrayBuffer();
   const bytes = new Uint8Array(buf);
   const plain = new Uint8Array(
@@ -74,11 +85,24 @@ function headers(type, extra) {
 }
 
 self.addEventListener("fetch", (event) => {
-  if (!aesKey) return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin || !protectedPath(url)) return;
-  event.respondWith(openProtected(url.pathname, event.request));
+  event.respondWith(serveProtected(url.pathname, event.request));
 });
+
+async function serveProtected(pathname, request) {
+  // Unlock posts the key asynchronously — wait briefly so the first project
+  // open after password entry does not fall through to a bare server 404.
+  if (!aesKey) {
+    try {
+      await Promise.race([keyReady, new Promise((resolve) => setTimeout(resolve, 1500))]);
+    } catch {
+      // ignore
+    }
+  }
+  if (!aesKey) return new Response("Not found", { status: 404 });
+  return openProtected(pathname, request);
+}
 
 async function openProtected(pathname, request) {
   if (!aesKey) return new Response("Not found", { status: 404 });
